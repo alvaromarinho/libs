@@ -1,0 +1,36 @@
+<table [ngClass]="tableClass">
+    <div class="table-spinner" *ngIf="loading">
+        <div class="spinner-border"></div>
+    </div>
+    <ng-content select="thead[position=top]"></ng-content>
+    <thead>
+        <tr><th align="left" [ngClass]="column.thClass" *ngFor="let column of columns">{{ column.label || '' }}</th></tr>
+    </thead>
+    <ng-content select="thead[position=bottom]"></ng-content>
+    <ng-content select="tbody[position=top]"></ng-content>
+    <tbody>
+        <tr *ngIf="!data || !data.length">
+            <td [attr.colspan]="columns.length+1" class="no-data" *ngIf="!loading">
+                <span>Nenhum dado encontrado</span>
+            </td>
+            <td [attr.colspan]="columns.length+1" *ngIf="loading">
+                <span>Carregando</span>
+            </td>
+        </tr>
+        <ng-container *ngIf="data && data.length">
+            <tr *ngFor="let d of data">
+                <ng-container *ngFor="let column of columns; last as last">
+                    <td [ngClass]="column.tdClass">
+                        <!-- COLUMN DATA -->
+                        <span *ngIf="column.field">{{ (d[column.field] | dynamicPipe:column.pipe:column.pipeArgs) || '---' }}</span>
+                        
+                        <!-- TEMPLATE -->
+                        <div (click)="column.click && column.click(d)" [innerHTML]="column.template(d) | safeHtml" *ngIf="column.template"></div>
+                    </td>
+                </ng-container>
+            </tr>
+        </ng-container>
+    </tbody>
+    <ng-content select="tbody[position=bottom]"></ng-content>
+    <ng-content select="tfoot"></ng-content>
+</table>
