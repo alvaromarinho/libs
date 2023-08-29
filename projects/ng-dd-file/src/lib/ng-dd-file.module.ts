@@ -9,10 +9,7 @@ import { FormsModule } from '@angular/forms';
         NgDdFileComponent,
         NgDdFileDirective
     ],
-    imports: [
-        CommonModule,
-        FormsModule
-    ],
+    imports: [CommonModule],
     exports: [NgDdFileComponent]
 })
 export class NgDdFileModule { }
