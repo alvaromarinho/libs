@@ -12,6 +12,9 @@
     "noFallthroughCasesInSwitch": true,
     "sourceMap": true,
     "paths": {
+      "ng-dd-file": [
+        "dist/ng-dd-file"
+      ],
       "ng-generate-table": [
         "dist/ng-generate-table"
       ]

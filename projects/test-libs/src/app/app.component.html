@@ -34,3 +34,6 @@
 <h2>add class e pipes</h2>
 <ng-generate-table [columns]="columnsClassAndPipe" [data]="data"></ng-generate-table>
 <hr>
+
+<h1>&lt;ng-dd-file&gt;</h1>
+<ng-dd-file [filesIn]="filesIn" (filesOut)="filesOut($event)" (fileRemove)="filesIn = []" [multiple]="true" [btnClass]="{ file: 'text-red' }"></ng-dd-file>

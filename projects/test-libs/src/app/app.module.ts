@@ -3,6 +3,7 @@ import { BrowserModule } from '@angular/platform-browser';
 
 import { AppComponent } from './app.component';
 import { NgGenerateTableModule } from 'ng-generate-table';
+import { NgDdFileModule } from 'ng-dd-file';
 
 @NgModule({
     declarations: [
@@ -10,7 +11,8 @@ import { NgGenerateTableModule } from 'ng-generate-table';
     ],
     imports: [
         BrowserModule,
-        NgGenerateTableModule
+        NgGenerateTableModule,
+        NgDdFileModule
     ],
     providers: [],
     bootstrap: [AppComponent]

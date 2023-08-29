@@ -12,6 +12,9 @@ import { NgGenerateTableColumns } from 'ng-generate-table';
     providers: [DatePipe]
 })
 export class AppComponent {
+
+    filesIn?: any[]
+
     data = [
         { name: 'Álvaro', email: 'alvaro@email.com', date: '2023-08-23' },
         { name: 'Marinho', email: 'marinho@email.com', date: '2023-08-23' },
@@ -40,4 +43,7 @@ export class AppComponent {
         { field: 'date', pipe: DatePipe, pipeArgs: ['dd MMM yyyy'] },
     ]
 
+    filesOut($event: any) {
+        this.filesIn = this.filesIn ? [...this.filesIn, ...$event] : $event
+    }
 }

@@ -1,0 +1,28 @@
+p { margin-top: 0; margin-bottom: .5rem;  }
+
+table { position: relative; table-layout: auto; width: 100%; border-collapse: collapse; margin-top: .5rem; display: block; max-height: 10rem; overflow-y: auto; }
+table tr:not(:last-child) td { border-bottom: 1px solid #ccc; padding: 0.2rem 0; }
+table a { text-decoration: none; }
+table a:hover { text-decoration: underline; }
+
+.td-w-auto { white-space: nowrap; width: 1%; }
+
+.d-none { display: none; }
+
+.dropzone {
+    text-align: center;
+    border: dashed 2px #ccc;
+    position: relative;
+    margin: 0 auto;
+    min-height: 10rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    transition: all .3s ease-in;
+    justify-content: center;
+}
+
+.fileover {
+    border: dashed 2px black;
+    background-color: #eee;
+}

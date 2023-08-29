@@ -151,6 +151,39 @@
           }
         }
       }
+    },
+    "ng-dd-file": {
+      "projectType": "library",
+      "root": "projects/ng-dd-file",
+      "sourceRoot": "projects/ng-dd-file/src",
+      "prefix": "lib",
+      "architect": {
+        "build": {
+          "builder": "@angular-devkit/build-angular:ng-packagr",
+          "options": {
+            "project": "projects/ng-dd-file/ng-package.json"
+          },
+          "configurations": {
+            "production": {
+              "tsConfig": "projects/ng-dd-file/tsconfig.lib.prod.json"
+            },
+            "development": {
+              "tsConfig": "projects/ng-dd-file/tsconfig.lib.json"
+            }
+          },
+          "defaultConfiguration": "production"
+        },
+        "test": {
+          "builder": "@angular-devkit/build-angular:karma",
+          "options": {
+            "tsConfig": "projects/ng-dd-file/tsconfig.spec.json",
+            "polyfills": [
+              "zone.js",
+              "zone.js/testing"
+            ]
+          }
+        }
+      }
     }
   }
 }
