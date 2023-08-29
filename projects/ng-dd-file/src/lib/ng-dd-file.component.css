@@ -1,6 +1,6 @@
 p { margin-top: 0; margin-bottom: .5rem;  }
 
-table { position: relative; table-layout: auto; width: 100%; border-collapse: collapse; margin-top: .5rem; display: block; max-height: 12rem; overflow-y: auto; }
+table { position: relative; table-layout: auto; width: 100%; border-collapse: collapse; margin-top: .5rem; display: block; max-height: 10rem; overflow-y: auto; }
 table tr:not(:last-child) td { border-bottom: 1px solid #ccc; padding: 0.2rem 0; }
 table a { text-decoration: none; }
 table a:hover { text-decoration: underline; }
@@ -14,7 +14,7 @@ table a:hover { text-decoration: underline; }
     border: dashed 2px #ccc;
     position: relative;
     margin: 0 auto;
-    min-height: 10rem;
+    min-height: 12rem;
     display: flex;
     flex-direction: column;
     align-items: center;
