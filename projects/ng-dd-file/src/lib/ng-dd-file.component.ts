@@ -28,7 +28,6 @@ export class NgDdFileComponent {
         const filesArray = $event.target?.files || $event;
         const files: any[] = [];
         Array.from(filesArray).map(async (file: any) => {
-            file.id = Math.random().toString().slice(2);
             files.push(file);
             if (this.isImg(file.name))
                 file.base64 = await this.getBase64(file);
