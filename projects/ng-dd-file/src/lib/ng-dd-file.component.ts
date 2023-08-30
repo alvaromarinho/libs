@@ -36,8 +36,8 @@ export class NgDdFileComponent {
         this.filesOut.emit(files);
     }
 
-    removeFile(file: any) {
-        this.fileRemove.emit(file);
+    removeFile(file: any, index: number) {
+        this.fileRemove.emit({...file, index});
     }
 
     private isImg(url: string) {
