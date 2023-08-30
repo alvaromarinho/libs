@@ -27,7 +27,8 @@ export class NgDdFileComponent {
     fileBrowseHandler($event: any) {
         const filesArray = $event.target?.files || $event;
         const files: any[] = [];
-        Array.from(filesArray).map(async (file: any) => {
+        Array.from(filesArray).map(async (file: any, index: number) => {
+            file.index = index;
             files.push(file);
             if (this.isImg(file.name))
                 file.base64 = await this.getBase64(file);
@@ -36,8 +37,8 @@ export class NgDdFileComponent {
         this.filesOut.emit(files);
     }
 
-    removeFile(file: any, index: number) {
-        this.fileRemove.emit({...file, index});
+    removeFile(file: any) {
+        this.fileRemove.emit(file);
     }
 
     private isImg(url: string) {
