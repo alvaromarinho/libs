@@ -18,7 +18,7 @@ export class NgDdFileComponent {
     @Input() typeFileAccept: string = '*';
 
     @Output() filesOut = new EventEmitter<any[]>();
-    @Output() fileRemove = new EventEmitter<any>();
+    @Output() fileRemove = new EventEmitter<{file: any, index: number}>();
 
     triggerIputFile() {
         this.fileDropRef.nativeElement.click();
@@ -27,8 +27,7 @@ export class NgDdFileComponent {
     fileBrowseHandler($event: any) {
         const filesArray = $event.target?.files || $event;
         const files: any[] = [];
-        Array.from(filesArray).map(async (file: any, index: number) => {
-            file.index = index;
+        Array.from(filesArray).map(async (file: any) => {
             files.push(file);
             if (this.isImg(file.name))
                 file.base64 = await this.getBase64(file);
@@ -37,8 +36,8 @@ export class NgDdFileComponent {
         this.filesOut.emit(files);
     }
 
-    removeFile(file: any) {
-        this.fileRemove.emit(file);
+    removeFile(file: any, index: number) {
+        this.fileRemove.emit({file, index});
     }
 
     private isImg(url: string) {
