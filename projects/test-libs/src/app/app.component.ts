@@ -7,6 +7,7 @@ import { NgGenerateTableColumns } from 'ng-generate-table';
     templateUrl: './app.component.html',
     styles: [`
         /deep/ .dark { background-color: black; color: white; }
+        /deep/ .bg-gray { background-color: #ddd; }
         /deep/ .text-red { color: red; }
     `],
     providers: [DatePipe]
@@ -46,4 +47,6 @@ export class AppComponent {
     filesOut($event: any) {
         this.filesIn = this.filesIn ? [...this.filesIn, ...$event] : $event
     }
+
+    toggle?: boolean;
 }

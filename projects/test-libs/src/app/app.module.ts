@@ -4,6 +4,7 @@ import { BrowserModule } from '@angular/platform-browser';
 import { AppComponent } from './app.component';
 import { NgGenerateTableModule } from 'ng-generate-table';
 import { NgDdFileModule } from 'ng-dd-file';
+import { NgCollapseModule } from 'ng-collapse';
 
 @NgModule({
     declarations: [
@@ -11,6 +12,7 @@ import { NgDdFileModule } from 'ng-dd-file';
     ],
     imports: [
         BrowserModule,
+        NgCollapseModule,
         NgGenerateTableModule,
         NgDdFileModule
     ],

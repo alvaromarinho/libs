@@ -12,6 +12,9 @@
     "noFallthroughCasesInSwitch": true,
     "sourceMap": true,
     "paths": {
+      "ng-collapse": [
+        "dist/ng-collapse"
+      ],
       "ng-dd-file": [
         "dist/ng-dd-file"
       ],

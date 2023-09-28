@@ -1,39 +1,66 @@
-<h1>&lt;ng-generate-table&gt;</h1>
-<h2>Simple</h2>
-<ng-generate-table [columns]="columns" [data]="data"></ng-generate-table>
-<hr>
-<h2>Manual &lt;thead&gt;/&lt;tbody&gt;/&lt;tfoot&gt;</h2>
-<ng-generate-table [columns]="columnsManualTags" [data]="data">
-    <thead position="top" style="background-color: mistyrose;">
-        <tr>
-            <th colspan="6">Manual &lt;thead&gt; (top)</th>
-        </tr>
-    </thead>
-    <thead position="bottom" style="background-color: mistyrose;">
-        <tr>
-            <th colspan="6">Manual &lt;thead&gt; (bottom)</th>
-        </tr>
-    </thead>
-    <tbody position="top" style="background-color: gainsboro;">
-        <tr>
-            <td colspan="6">Manual &lt;tbody&gt; (top)</td>
-        </tr>
-    </tbody>
-    <tbody position="bottom" style="background-color: gainsboro;">
-        <tr>
-            <td colspan="6">Manual &lt;tbody&gt; (bottom)</td>
-        </tr>
-    </tbody>
-    <tfoot style="background-color: beige;">
-        <tr>
-            <td colspan="6">Manual &lt;tfoot&gt;</td>
-        </tr>
-    </tfoot>
-</ng-generate-table>
-<hr>
-<h2>add class e pipes</h2>
-<ng-generate-table [columns]="columnsClassAndPipe" [data]="data"></ng-generate-table>
-<hr>
-
-<h1>&lt;ng-dd-file&gt;</h1>
-<ng-dd-file [filesIn]="filesIn" (filesOut)="filesOut($event)" (fileRemove)="filesIn = []" [multiple]="true" [btnClass]="{ file: 'text-red' }"></ng-dd-file>
+<div class="p-3">
+    <ul class="nav nav-tabs" id="tab" role="tablist">
+        <li class="nav-item" role="presentation">
+            <button class="nav-link active" data-bs-toggle="tab" data-bs-target="#ng-collapse" type="button" role="tab">ng-collapse</button>
+        </li>
+        <li class="nav-item" role="presentation">
+            <button class="nav-link" data-bs-toggle="tab" data-bs-target="#ng-generate-table" type="button"role="tab">ng-generate-table</button>
+        </li>
+        <li class="nav-item" role="presentation">
+            <button class="nav-link" data-bs-toggle="tab" data-bs-target="#ng-dd-file" type="button" role="tab">ng-dd-file</button>
+        </li>
+    </ul>
+    <div class="tab-content" id="tabContent">
+        <div class="tab-pane fade pt-3 show active" id="ng-collapse" role="tabpanel" tabindex="0">
+            <button (click)="toggle = !toggle">toggle</button>
+            <ng-collapse [toggle]="toggle">
+                <div class="bg-gray text-red">
+                    Lorem ipsum dolor sit amet consectetur adipisicing elit. 
+                    Quasi expedita quisquam necessitatibus vitae maxime temporibus minima ex officia 
+                    nostrum aspernatur deserunt dolorum quaerat sunt aliquam, repudiandae non in fugit! Tempore.
+                </div>
+            </ng-collapse>
+        </div>
+        <div class="tab-pane fade pt-3" id="ng-generate-table" role="tabpanel" tabindex="0">
+            <h2>Simple</h2>
+            <ng-generate-table [columns]="columns" [data]="data"></ng-generate-table>
+            <hr>
+            <h2>Manual &lt;thead&gt;/&lt;tbody&gt;/&lt;tfoot&gt;</h2>
+            <ng-generate-table [columns]="columnsManualTags" [data]="data">
+                <thead position="top" style="background-color: mistyrose;">
+                    <tr>
+                        <th colspan="6">Manual &lt;thead&gt; (top)</th>
+                    </tr>
+                </thead>
+                <thead position="bottom" style="background-color: mistyrose;">
+                    <tr>
+                        <th colspan="6">Manual &lt;thead&gt; (bottom)</th>
+                    </tr>
+                </thead>
+                <tbody position="top" style="background-color: gainsboro;">
+                    <tr>
+                        <td colspan="6">Manual &lt;tbody&gt; (top)</td>
+                    </tr>
+                </tbody>
+                <tbody position="bottom" style="background-color: gainsboro;">
+                    <tr>
+                        <td colspan="6">Manual &lt;tbody&gt; (bottom)</td>
+                    </tr>
+                </tbody>
+                <tfoot style="background-color: beige;">
+                    <tr>
+                        <td colspan="6">Manual &lt;tfoot&gt;</td>
+                    </tr>
+                </tfoot>
+            </ng-generate-table>
+            <hr>
+            <h2>add class e pipes</h2>
+            <ng-generate-table [columns]="columnsClassAndPipe" [data]="data"></ng-generate-table>
+        </div>
+        <div class="tab-pane fade pt-3" id="ng-dd-file" role="tabpanel" tabindex="0">
+            <ng-dd-file [filesIn]="filesIn" (filesOut)="filesOut($event)" (fileRemove)="filesIn = []" [multiple]="true"
+                [btnClass]="{ file: 'text-red' }"></ng-dd-file>
+            <hr>
+        </div>
+    </div>
+</div>
