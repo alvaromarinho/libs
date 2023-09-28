@@ -1,24 +1,74 @@
 # NgDdFile
+Drag and Drop File for Angular
 
-This library was generated with [Angular CLI](https://github.com/angular/angular-cli) version 15.1.0.
+## Getting started
+### Step 1: Install `ng-dd-file`
 
-## Code scaffolding
+#### NPM
+```shell
+npm install --save ng-dd-file
+```
+#### YARN
+```shell
+yarn add ng-dd-file
+```
+### Step 2: Import the NgDdFileModule
+```js
+import { NgDdFileModule } from 'ng-dd-file';
 
-Run `ng generate component component-name --project ng-dd-file` to generate a new component. You can also use `ng generate directive|pipe|service|class|guard|interface|enum|module --project ng-dd-file`.
-> Note: Don't forget to add `--project ng-dd-file` or else it will be added to the default project in your `angular.json` file. 
+@NgModule({
+  declarations: [...],
+  imports: [NgDdFileModule],
+  bootstrap: [...]
+})
+export class AppModule {}
+```
 
-## Build
+### Usage
+In template use `ng-dd-file` component with your options
 
-Run `ng build ng-dd-file` to build the project. The build artifacts will be stored in the `dist/` directory.
+```html
+<ng-dd-file 
+    [btnClass]="{ file: 'text-red' }"
+    [filesList]="filesList" 
+    [labels]="{ text: 'Arraste e solte os arquivos', btn: 'SELECIONE O ARQUIVO' }"
+    [maxFiles]="3"
+    [maxFileSize]="200"
+    [maxTotalSize]="300"
+    [multiple]="true"
+    typeFileAccept="*"
 
-## Publishing
+    (fileError)="fileError($event)"
+    (fileRemove)="fileRemove($event)" 
+    (filesAdd)="filesAdd($event)" 
+></ng-dd-file>
+```
 
-After building your library with `ng build ng-dd-file`, go to the dist folder `cd dist/ng-dd-file` and run `npm publish`.
+## API
+### Inputs
+| Input  | Type | Default | Description |
+| ---------------- | -------------------------------- | ----- | ------------------------------------------------- |
+| [btnClass]       | { file: string, remove: string } |   -   | Custom class for `input:file` and `button:remove` |
+| [filesList]      | any[]                            |   -   | List of files                                     |
+| [labels]         | { text: string, btn: string }    | { text: 'Arraste e solte os arquivos', btn: 'SELECIONE O ARQUIVO' } | Text and button labels |
+| [maxFiles]       | number                           |   -   | Maximum files allowed               |
+| [maxFileSize]    | number (`kB`)                    |   -   | Maximum size of each file           |
+| [maxTotalSize]   | number (`kB`)                    |   -   | Maximum size of all file            |
+| [multiple]       | boolean                          | false | Allowed to add more than one file   |
+| [typeFileAccept] | string                           |   *   | Same as HTML attribute: accept      |
 
-## Running unit tests
+### Outputs
 
-Run `ng test ng-dd-file` to execute the unit tests via [Karma](https://karma-runner.github.io).
+| Output  | Description |
+| ------------- | ----------- |
+| (fileError)   | Fired when `[maxFileSize]` or `[maxTotalSize]` |
+| (fileRemove)  | Fired when `button:remove` is clicked |
+| (filesAdd)    | Fired when `File` is add |
 
-## Further help
 
-To get more help on the Angular CLI use `ng help` or go check out the [Angular CLI Overview and Command Reference](https://angular.io/cli) page.
+## Custom styles
+If your custom class doesn't work, use the `/deep/` selector
+
+```css
+/deep/ .text-red { color: red; }
+```

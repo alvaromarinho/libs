@@ -1,5 +1,5 @@
 <!-- Dropzone -->
-<div class="dropzone" (droppedFile)="fileBrowseHandler($event)" ddFile *ngIf="!(filesIn && maxFiles && filesIn.length >= maxFiles) || !filesIn">
+<div class="dropzone" (droppedFile)="fileBrowseHandler($event)" ddFile *ngIf="!(filesList && maxFiles && filesList.length >= maxFiles) || !filesList">
     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 32" width="48" height="48">
         <g>
             <path fill="none" d="M0 0h24v24H0z"/>
@@ -14,24 +14,21 @@
         (change)="fileBrowseHandler($event)" [multiple]="multiple" #fileDropRef />
 </div>
 
-<div class="dropzone" *ngIf="(filesIn && maxFiles && filesIn.length >= maxFiles)">
+<div class="dropzone" *ngIf="(filesList && maxFiles && filesList.length >= maxFiles)">
     <div class="d-flex flex-column align-items-center opacity-50">
-        <i class="bi fs-2 mb-2 bi-x-circle"></i>
         <span class="fw-bolder">{{'LIMITE MÁXIMO DE ' + maxFiles + ' ARQUIVO'}}{{maxFiles > 1 ? 'S' : ''}}</span>
     </div>
 </div>
 
 <!-- List Files -->
-<table class="table table-sm table-hover mt-3 mb-0" *ngIf="filesIn && filesIn.length">
+<table class="table table-sm table-hover mt-3 mb-0" *ngIf="filesList && filesList.length">
     <tbody>
-        <tr *ngFor="let file of filesIn; index as index">
+        <tr *ngFor="let file of filesList; index as index">
             <td>
                 <a [href]="file.url" [download]="file.name">{{ file.name }}</a>
             </td>
             <td class="td-w-auto">
-                <button type="button" [ngClass]="btnClass ? btnClass.remove : undefined" (click)="removeFile(file, index)">
-                    <i class="bi bi-trash3 pe-1"></i>Remover
-                </button>
+                <button type="button" [ngClass]="btnClass ? btnClass.remove : undefined" (click)="removeFile(file, index)">Remover</button>
             </td>
         </tr>
     </tbody>

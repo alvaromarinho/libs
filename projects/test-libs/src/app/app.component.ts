@@ -14,7 +14,7 @@ import { NgGenerateTableColumns } from 'ng-generate-table';
 })
 export class AppComponent {
 
-    filesIn?: any[]
+    files?: any[]
 
     data = [
         { name: 'Álvaro', email: 'alvaro@email.com', date: '2023-08-23' },
@@ -44,8 +44,12 @@ export class AppComponent {
         { field: 'date', pipe: DatePipe, pipeArgs: ['dd MMM yyyy'] },
     ]
 
-    filesOut($event: any) {
-        this.filesIn = this.filesIn ? [...this.filesIn, ...$event] : $event
+    filesAdd($event: any) {
+        this.files = this.files ? [...this.files, ...$event] : $event
+    }
+
+    error($event: string) {
+        alert($event)
     }
 
     toggle?: boolean;

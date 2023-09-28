@@ -11,6 +11,7 @@
         </li>
     </ul>
     <div class="tab-content" id="tabContent">
+        <!-- NG-COLLAPSE -->
         <div class="tab-pane fade pt-3 show active" id="ng-collapse" role="tabpanel" tabindex="0">
             <button (click)="toggle = !toggle">toggle</button>
             <ng-collapse [toggle]="toggle">
@@ -21,6 +22,8 @@
                 </div>
             </ng-collapse>
         </div>
+
+        <!-- NG-GENERATE-TABLE -->
         <div class="tab-pane fade pt-3" id="ng-generate-table" role="tabpanel" tabindex="0">
             <h2>Simple</h2>
             <ng-generate-table [columns]="columns" [data]="data"></ng-generate-table>
@@ -57,10 +60,22 @@
             <h2>add class e pipes</h2>
             <ng-generate-table [columns]="columnsClassAndPipe" [data]="data"></ng-generate-table>
         </div>
+
+        <!-- NG-DD-FILE -->
         <div class="tab-pane fade pt-3" id="ng-dd-file" role="tabpanel" tabindex="0">
-            <ng-dd-file [filesIn]="filesIn" (filesOut)="filesOut($event)" (fileRemove)="filesIn = []" [multiple]="true"
-                [btnClass]="{ file: 'text-red' }"></ng-dd-file>
-            <hr>
+            <ng-dd-file 
+                [btnClass]="{ file: 'text-red', remove: 'text-red' }"
+                [filesList]="files" 
+                [labels]="{ text: 'Arraste e solte os arquivos', btn: 'SELECIONE O ARQUIVO' }"
+                [maxFiles]="3"
+                [maxFileSize]="200"
+                [maxTotalSize]="300"
+                typeFileAccept="*"
+
+                (fileError)="error($event)"
+                (fileRemove)="files = []" 
+                (filesAdd)="filesAdd($event)" 
+            ></ng-dd-file>
         </div>
     </div>
 </div>
