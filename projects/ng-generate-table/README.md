@@ -127,7 +127,7 @@ columnsClassAndPipe: NgGenerateTableColumns[] = [
         </tr>
     </tbody>
 
-    <tfoot style="background-color: beige;">
+    <tfoot>
         <tr>
             <td colspan="6">Manual &lt;tfoot&gt;</td>
         </tr>
