@@ -25,16 +25,16 @@ export class AppComponent {
         { label: 'Name', field: 'name' },
         { label: 'Email', field: 'email' },
         { label: 'Data', field: 'date' },
+    ]
+
+    columnsTemplate: NgGenerateTableColumns[] = [
+        { label: 'Name', field: 'name' },
+        { label: 'Email', field: 'email' },
+        { label: 'Data', field: 'date' },
         {
             template: (rowData: any) => `<button type="button">Click to show ${rowData.name}'s email</button>`,
             click: (rowData: any) => alert(rowData.email)
         }
-    ]
-
-    columnsManualTags: NgGenerateTableColumns[] = [
-        { label: 'Name', field: 'name' },
-        { label: 'Email', field: 'email' },
-        { label: 'Data', field: 'date' },
     ]
 
     columnsClassAndPipe: NgGenerateTableColumns[] = [
@@ -43,6 +43,10 @@ export class AppComponent {
         { field: 'date', pipe: DatePipe },
         { field: 'date', pipe: DatePipe, pipeArgs: ['dd MMM yyyy'] },
     ]
+
+    rowClick(rowData : any) {
+        alert(rowData.email)
+    }
 
     filesAdd($event: any) {
         this.files = this.files ? [...this.files, ...$event] : $event

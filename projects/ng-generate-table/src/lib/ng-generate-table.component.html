@@ -18,7 +18,7 @@
             </td>
         </tr>
         <ng-container *ngIf="data && data.length">
-            <tr *ngFor="let d of data">
+            <tr [ngClass]="{'pointer': rowClickable}" *ngFor="let d of data" (click)="rowClickable && rowClick.emit(d)">
                 <ng-container *ngFor="let column of columns; last as last">
                     <td [ngClass]="column.tdClass">
                         <!-- COLUMN DATA -->

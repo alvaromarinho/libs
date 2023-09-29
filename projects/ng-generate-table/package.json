@@ -1,6 +1,10 @@
 {
   "name": "ng-generate-table",
   "version": "0.0.1",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/alvaromarinho/libs/tree/master/projects/ng-generate-table"
+  },
   "peerDependencies": {
     "@angular/common": "^15.1.0",
     "@angular/core": "^15.1.0"

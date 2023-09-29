@@ -26,10 +26,11 @@
         <!-- NG-GENERATE-TABLE -->
         <div class="tab-pane fade pt-3" id="ng-generate-table" role="tabpanel" tabindex="0">
             <h2>Simple</h2>
-            <ng-generate-table [columns]="columns" [data]="data"></ng-generate-table>
+            <ng-generate-table [columns]="columnsTemplate" [data]="data"></ng-generate-table>
             <hr>
+
             <h2>Manual &lt;thead&gt;/&lt;tbody&gt;/&lt;tfoot&gt;</h2>
-            <ng-generate-table [columns]="columnsManualTags" [data]="data">
+            <ng-generate-table [columns]="columns" [data]="data">
                 <thead position="top" style="background-color: mistyrose;">
                     <tr>
                         <th colspan="6">Manual &lt;thead&gt; (top)</th>
@@ -40,6 +41,7 @@
                         <th colspan="6">Manual &lt;thead&gt; (bottom)</th>
                     </tr>
                 </thead>
+
                 <tbody position="top" style="background-color: gainsboro;">
                     <tr>
                         <td colspan="6">Manual &lt;tbody&gt; (top)</td>
@@ -50,6 +52,7 @@
                         <td colspan="6">Manual &lt;tbody&gt; (bottom)</td>
                     </tr>
                 </tbody>
+
                 <tfoot style="background-color: beige;">
                     <tr>
                         <td colspan="6">Manual &lt;tfoot&gt;</td>
@@ -59,6 +62,9 @@
             <hr>
             <h2>add class e pipes</h2>
             <ng-generate-table [columns]="columnsClassAndPipe" [data]="data"></ng-generate-table>
+            <hr>
+            <h2>row click</h2>
+            <ng-generate-table [columns]="columnsClassAndPipe" [data]="data" [rowClickable]="true" (rowClick)="rowClick($event)"></ng-generate-table>
         </div>
 
         <!-- NG-DD-FILE -->

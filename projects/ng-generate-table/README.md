@@ -1,24 +1,143 @@
 # NgGenerateTable
+Generate table for Angular
 
-This library was generated with [Angular CLI](https://github.com/angular/angular-cli) version 15.1.0.
+## Getting started
+### Step 1: Install `ng-generate-table`
 
-## Code scaffolding
+#### NPM
+```shell
+npm install --save ng-generate-table
+```
+#### YARN
+```shell
+yarn add ng-generate-table
+```
+### Step 2: Import the NgGenerateTableModule
+```js
+import { NgGenerateTableModule } from 'ng-generate-table';
 
-Run `ng generate component component-name --project ng-generate-table` to generate a new component. You can also use `ng generate directive|pipe|service|class|guard|interface|enum|module --project ng-generate-table`.
-> Note: Don't forget to add `--project ng-generate-table` or else it will be added to the default project in your `angular.json` file. 
+@NgModule({
+    declarations: [...],
+    imports: [NgGenerateTableModule],
+    bootstrap: [...]
+})
+export class AppModule {}
+```
 
-## Build
+## Usage
 
-Run `ng build ng-generate-table` to build the project. The build artifacts will be stored in the `dist/` directory.
+Columns Interface:
+```js
+NgGenerateTableColumns {
+    label?: string,
+    field?: string,
 
-## Publishing
+    thClass?: string,
+    tdClass?: string,
 
-After building your library with `ng build ng-generate-table`, go to the dist folder `cd dist/ng-generate-table` and run `npm publish`.
+    pipe?: any,
+    pipeArgs?: any[],
 
-## Running unit tests
+    template?: Function,
+    click?: Function
+}
+```
 
-Run `ng test ng-generate-table` to execute the unit tests via [Karma](https://karma-runner.github.io).
+In template:
+```html
+<ng-generate-table [columns]="columns" [data]="data"></ng-generate-table>
+```
 
-## Further help
+Data source:
+```js
+data: CustomData[] = [
+    { name: 'Álvaro', email: 'alvaro@email.com', date: '2023-08-23' },
+    { name: 'Marinho', email: 'marinho@email.com', date: '2023-08-23' },
+]
+```
 
-To get more help on the Angular CLI use `ng help` or go check out the [Angular CLI Overview and Command Reference](https://angular.io/cli) page.
+### Simple example
+```js
+columns: NgGenerateTableColumns[] = [
+    { label: 'Name', field: 'name' },
+    { label: 'Email', field: 'email' },
+    { label: 'Data', field: 'date' },
+]
+```
+
+### Custom template
+```js
+columns: NgGenerateTableColumns[] = [
+    { label: 'Name', field: 'name' },
+    { label: 'Email', field: 'email' },
+    { label: 'Data', field: 'date' },
+    {
+        template: (rowData: CustomData) => `<button type="button">Click to show ${rowData.name}'s email</button>`,
+        click: (rowData: CustomData) => alert(rowData.email)
+    }
+]
+```
+
+### With Angular PIPE`s and custom CLASS
+```js
+columnsClassAndPipe: NgGenerateTableColumns[] = [
+    { label: 'Name', field: 'name', thClass: 'text-red', tdClass: 'bg-dark' },
+    { label: 'Email', field: 'email', thClass: 'text-red' },
+    { field: 'date', pipe: DatePipe },
+    { field: 'date', pipe: DatePipe, pipeArgs: ['dd MMM yyyy'] },
+]
+```
+
+### Loading and TableClass
+```html
+<ng-generate-table [columns]="columns" [data]="data" [loading]="true" [tableClass]="custom-table"></ng-generate-table>
+```
+
+### Clickable row
+```html
+<ng-generate-table [columns]="columns" [data]="data" [rowClickable]="true" (rowClick)="rowClick($event)"></ng-generate-table>
+```
+
+### Custom `<thead>` `<tbody>` `<tfooter>`
+```html
+<ng-generate-table [columns]="columns" [data]="data">
+    <!-- above the thead -->
+    <thead position="top"> 
+        <tr>
+            <th colspan="6">Manual &lt;thead&gt; (top)</th>
+        </tr>
+    </thead>
+    <!-- below the thead -->
+    <thead position="bottom">
+        <tr>
+            <th colspan="6">Manual &lt;thead&gt; (bottom)</th>
+        </tr>
+    </thead>
+
+    <!-- above the tbody -->
+    <tbody position="top">
+        <tr>
+            <td colspan="6">Manual &lt;tbody&gt; (top)</td>
+        </tr>
+    </tbody>
+    <!-- below the tbody -->
+    <tbody position="bottom">
+        <tr>
+            <td colspan="6">Manual &lt;tbody&gt; (bottom)</td>
+        </tr>
+    </tbody>
+
+    <tfoot style="background-color: beige;">
+        <tr>
+            <td colspan="6">Manual &lt;tfoot&gt;</td>
+        </tr>
+    </tfoot>
+</ng-generate-table>
+```
+
+## Custom styles
+If your custom class doesn't work, use the `/deep/` selector
+
+```css
+/deep/ .text-red { color: red; }
+```
