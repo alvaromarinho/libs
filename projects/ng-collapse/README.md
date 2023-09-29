@@ -1,24 +1,37 @@
 # NgCollapse
+Collapse for Angular
 
-This library was generated with [Angular CLI](https://github.com/angular/angular-cli) version 15.1.0.
+## Getting started
+### Step 1: Install `ng-collapse`
 
-## Code scaffolding
+#### NPM
+```shell
+npm install --save ng-collapse
+```
+#### YARN
+```shell
+yarn add ng-collapse
+```
+### Step 2: Import the NgCollapseModule
+```js
+import { NgCollapseModule } from 'ng-collapse';
 
-Run `ng generate component component-name --project ng-collapse` to generate a new component. You can also use `ng generate directive|pipe|service|class|guard|interface|enum|module --project ng-collapse`.
-> Note: Don't forget to add `--project ng-collapse` or else it will be added to the default project in your `angular.json` file. 
+@NgModule({
+  declarations: [...],
+  imports: [NgCollapseModule],
+  bootstrap: [...]
+})
+export class AppModule {}
+```
 
-## Build
+### Usage
+In template use `ng-collapse` component with your options. The `toggle` attribute controls the opening or closing of the collapse
 
-Run `ng build ng-collapse` to build the project. The build artifacts will be stored in the `dist/` directory.
-
-## Publishing
-
-After building your library with `ng build ng-collapse`, go to the dist folder `cd dist/ng-collapse` and run `npm publish`.
-
-## Running unit tests
-
-Run `ng test ng-collapse` to execute the unit tests via [Karma](https://karma-runner.github.io).
-
-## Further help
-
-To get more help on the Angular CLI use `ng help` or go check out the [Angular CLI Overview and Command Reference](https://angular.io/cli) page.
+```html
+<button (click)="toggle = !toggle">Toggle Collapse</button>
+<ng-collapse [toggle]="toggle">
+    Lorem ipsum dolor sit amet consectetur adipisicing elit. 
+    Quasi expedita quisquam necessitatibus vitae maxime temporibus minima ex officia 
+    nostrum aspernatur deserunt dolorum quaerat sunt aliquam, repudiandae non in fugit! Tempore.
+</ng-collapse>
+```

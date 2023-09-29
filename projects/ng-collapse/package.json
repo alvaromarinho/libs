@@ -1,6 +1,10 @@
 {
   "name": "ng-collapse",
-  "version": "0.0.1",
+  "version": "0.0.2",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/alvaromarinho/libs/tree/master/projects/ng-collapse"
+  },
   "peerDependencies": {
     "@angular/common": "^15.1.0",
     "@angular/core": "^15.1.0"

@@ -15,6 +15,5 @@ import { Component, Input } from '@angular/core';
 export class NgCollapseComponent {
 
     @Input() toggle?: boolean;
-    @Input() time?: boolean;
 
 }
