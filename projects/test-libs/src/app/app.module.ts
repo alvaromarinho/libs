@@ -6,9 +6,19 @@ import { NgGenerateTableModule } from 'ng-generate-table';
 import { NgDdFileModule } from 'ng-dd-file';
 import { NgCollapseModule } from 'ng-collapse';
 
+import { GTClassPipeExampleComponent, GTManualTagsComponent, GTRowClickExampleComponent, GTSimpleExampleComponent } from './generate-table-example';
+import { DDExampleComponent } from './dd-example.component';
+import { CollapseExampleComponent } from './collapse-example.component';
+
 @NgModule({
     declarations: [
-        AppComponent
+        AppComponent,
+        GTSimpleExampleComponent,
+        GTManualTagsComponent,
+        GTRowClickExampleComponent,
+        GTClassPipeExampleComponent,
+        DDExampleComponent,
+        CollapseExampleComponent,
     ],
     imports: [
         BrowserModule,
