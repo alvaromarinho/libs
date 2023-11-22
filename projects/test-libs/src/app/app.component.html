@@ -1,12 +1,24 @@
 <div class="pt-3">
     <div class="nav nav-tabs px-3" role="tablist">
-        <button class="nav-link active" data-bs-toggle="tab" data-bs-target="#ng-generate-table" type="button" role="tab">ng-generate-table</button>
+        <button class="nav-link active" data-bs-toggle="tab" data-bs-target="#ng-bs-calendar" type="button" role="tab">ng-bs-calendar</button>
+        <button class="nav-link" data-bs-toggle="tab" data-bs-target="#ng-generate-table" type="button" role="tab">ng-generate-table</button>
         <button class="nav-link" data-bs-toggle="tab" data-bs-target="#ng-dd-file" type="button" role="tab">ng-dd-file</button>
         <button class="nav-link" data-bs-toggle="tab" data-bs-target="#ng-collapse" type="button" role="tab">ng-collapse</button>
     </div>
     <div class="tab-content p-3">
+        <div class="tab-pane fade show active" id="ng-bs-calendar" role="tabpanel">
+            <ng-bs-calendar [data]="calendar" [loading]="loading" (changeWeek)="log($event)" (clickCell)="log($event)">
+                <div class="d-flex align-items-center">
+                    <h1 class="fs-3 fw-light me-3">Simple example</h1>
+                    <button class="btn btn-sm btn-secondary py-0" type="button">
+                        <i class="bi bi-code me-1"></i> CODE
+                    </button>
+                </div>
+            </ng-bs-calendar>
+        </div>
+
         <!-- NG-GENERATE-TABLE -->
-        <div class="tab-pane fade show active" id="ng-generate-table" role="tabpanel">
+        <div class="tab-pane fade" id="ng-generate-table" role="tabpanel">
             <div class="row align-items-start">
                 <div class="col nav flex-column nav-pills me-3" role="tablist">
                     <button class="nav-link active" id="gtse-tab" data-bs-toggle="pill" data-bs-target="#gtse" type="button" role="tab">Simple Example</button>

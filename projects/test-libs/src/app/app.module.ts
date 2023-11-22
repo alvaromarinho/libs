@@ -9,6 +9,7 @@ import { NgCollapseModule } from 'ng-collapse';
 import { GTClassPipeExampleComponent, GTManualTagsComponent, GTRowClickExampleComponent, GTSimpleExampleComponent } from './generate-table-example';
 import { DDExampleComponent } from './dd-example.component';
 import { CollapseExampleComponent } from './collapse-example.component';
+import { NgBsCalendarModule } from 'ng-bs-calendar';
 
 @NgModule({
     declarations: [
@@ -24,7 +25,8 @@ import { CollapseExampleComponent } from './collapse-example.component';
         BrowserModule,
         NgCollapseModule,
         NgGenerateTableModule,
-        NgDdFileModule
+        NgDdFileModule,
+        NgBsCalendarModule,
     ],
     providers: [],
     bootstrap: [AppComponent]

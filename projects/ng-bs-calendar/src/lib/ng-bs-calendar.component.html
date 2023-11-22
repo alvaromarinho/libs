@@ -1,0 +1,74 @@
+
+
+<div class="d-flex align-items-center justify-content-between mb-2">
+    <ng-content></ng-content>
+    <div>
+        <button class="btn btn-sm btn-outline-secondary ms-2 px-3" (click)="prevSchedule(schedule.prev)">«</button>
+        <button class="btn btn-sm btn-outline-secondary ms-2" (click)="todaySchedule()">HOJE</button>
+        <button class="btn btn-sm btn-outline-secondary ms-2 px-3" (click)="nextSchedule(schedule.next)">»</button>
+    </div>
+</div>
+
+<div class="position-absolute w-100 d-flex justify-content-center pt-5" *ngIf="loading">
+    <div class="spinner-border text-dark"></div>
+</div>
+
+<div class="d-flex" *ngIf="!loading">
+    <div class="card card-body" id="schedule">
+        <div class="container-fluid">
+            <div class="row border-inside-top" [ngClass]="{'position-sticky bg-white': firstRow || indexHour == 1, 'top-0': firstRow, 'top-day': indexHour == 1}" 
+                *ngFor="let hour of hours; index as indexHour; first as firstRow">
+                <div [ngClass]="{'col-day border-inside-start': !firstCol, 'col-1': firstCol, 'px-0': !firstRow && !firstCol}" 
+                    *ngFor="let day of [].constructor(8); index as indexDay; first as firstCol">
+
+                    <!-- MONTH CELL -->
+                    <div class="py-2" *ngIf="firstRow && firstCol">
+                        <div class="opacity-50">{{ schedule.startWeek | date:'YYYY' }}</div>
+                        <div class="fs-5 fw-lighter lh-sm">{{ schedule.startWeek | date:'MMM' | uppercase }}</div>
+                    </div>
+
+                    <!-- HEADER ROW -->
+                    <div class="py-2" *ngIf="firstRow && !firstCol">
+                        <span class="opacity-50">{{ schedule.week[indexDay-1].label | date:'E' }}</span>
+                        <div class="fs-4 fw-lighter lh-1">
+                            {{ schedule.week[indexDay-1].label | date:'dd' }}
+                            <span class="fw-bolder text-danger default" *ngIf="today == schedule.week[indexDay-1].label"
+                                data-bs-toggle="tooltip" data-bs-title="Hoje">•</span>
+                        </div>
+                    </div>
+
+                    <!-- HOURS COLUMN -->
+                    <div class="fs-7 opacity-50 p-1" *ngIf="!firstRow && indexHour != 1 && firstCol">
+                        {{ hour }}
+                    </div>
+
+                    <!-- TASK DAY -->
+                    <div class="fs-7 opacity-50 p-1" *ngIf="indexHour == 1 && firstCol">
+                        Dia
+                    </div>
+                    <div class="d-flex flex-column px-1 pb-1 w-100" *ngIf="indexHour == 1 && !firstCol">
+                        <ng-container *ngFor="let obj of schedule.week[indexDay-1].allDay; index as index; count as count">
+                            <div class="badge pointer text-truncate text-center mt-1 mb-0 w-100" [ngStyle]="{backgroundColor: obj.color}" (click)="clickCell.emit(obj)"
+                                data-bs-toggle="tooltip" data-bs-placement="bottom" data-bs-html="true" [attr.data-bs-title]="getTooltipHtml(obj)">
+                                <span>{{ obj.title }}</span>
+                            </div>
+                        </ng-container>
+                    </div>
+
+                    <div class="d-flex flex-column h-100" *ngIf="!firstRow && !firstCol">
+                        <div class="position-relative h-100" *ngIf="schedule.week[indexDay-1].hours[hour!]">
+                            <ng-container *ngFor="let obj of schedule.week[indexDay-1].hours[hour!]; index as index; count as count">
+                                <div class="position-absolute start-0 end-0 h-100 text-truncate text-center badge rounded-0 border-start border-end border-white pointer" 
+                                    [ngStyle]="{backgroundColor: obj.color, zIndex: index, marginLeft: 100/schedule.week[indexDay-1].size*index+'%'}" 
+                                    [ngClass]="{'border-top': obj.startNow, 'border-bottom': obj.endNow}" (click)="clickCell.emit(obj)"
+                                    data-bs-toggle="tooltip" data-bs-html="true" [attr.data-bs-title]="getTooltipHtml(obj)">
+                                    <span>{{ obj.startNow || hour == '00:00' ? obj.title : '' }}</span>
+                                </div>
+                            </ng-container>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

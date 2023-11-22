@@ -12,6 +12,9 @@
     "noFallthroughCasesInSwitch": true,
     "sourceMap": true,
     "paths": {
+      "ng-bs-calendar": [
+        "dist/ng-bs-calendar"
+      ],
       "ng-collapse": [
         "dist/ng-collapse"
       ],

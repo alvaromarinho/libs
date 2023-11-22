@@ -1,0 +1,56 @@
+:host {
+    display: flex;
+    flex-direction: column;
+}
+
+#schedule {
+    padding: 0;
+    overflow-x: auto;
+    height: 100%;
+    width: 100%;
+}
+
+#schedule .container-fluid {
+    min-width: 60rem;
+}
+
+#schedule .col-day {
+    flex: 0 0 auto;
+    width: 13.09523809571%;
+}
+
+#schedule .border-inside-top {
+    box-shadow: inset 0 -1px 0 #dee2e6;
+}
+
+#schedule .border-inside-start {
+    box-shadow: inset 1px 0 0 #dee2e6;
+}
+
+#schedule .position-sticky {
+    z-index: 10;
+}
+
+#schedule .top-day {
+    top: calc(4rem - 2px);
+}
+
+#schedule .p-no-ticket {
+    padding: .35rem 0;
+}
+
+.pointer {
+    cursor: pointer;
+}
+
+.default {
+    cursor: default;
+}
+
+.fs-7 {
+    font-size: .8rem;
+}
+
+@media only screen and (max-width: 768px) {
+    #schedule { width: calc(100vw - 2rem) }
+}
