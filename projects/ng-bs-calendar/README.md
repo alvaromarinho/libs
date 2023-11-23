@@ -69,20 +69,21 @@ In template:
 ### Input [data]
 ```js
 
-// data format: 'YYYY-MM-DDTHH:mm:ss',
+// date format: 'YYYY-MM-DDTHH:mm:ss'
+
 CalendarData[] = [{
-    id: any;
-    start: string;
-    end: string;
-    title: string;
-    description: string;
-    color: string;
+    id: any,
+    start: string,
+    end: string,
+    title: string,
+    description: string,
+    color: string,
 }]
 ```
 
 ### Outputs
 
-| Output        | Description |
-| ------------- | ----------- |
+| Output        | Return |
+| ------------- | ------ |
 | (changeWeek)  | { start: string, end: string } |
 | (clickCell)   | CalendarData |
