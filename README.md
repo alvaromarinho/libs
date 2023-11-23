@@ -3,5 +3,5 @@
 * [ng-collapse](https://github.com/alvaromarinho/libs/tree/master/projects/ng-collapse): Collapse for Angular
 * [ng-dd-file](https://github.com/alvaromarinho/libs/tree/master/projects/ng-dd-file): Drag and Drop files for Angular
 
-# Projects Angular + Bootstrap
+## Projects Angular + Bootstrap 5
 * [ng-bs-calendar](https://github.com/alvaromarinho/libs/tree/master/projects/ng-bs-calendar): Calendar with weekly view

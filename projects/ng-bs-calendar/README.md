@@ -1,24 +1,58 @@
 # NgBsCalendar
+Calendar for Angular and Bootstrap 5
 
-This library was generated with [Angular CLI](https://github.com/angular/angular-cli) version 15.1.0.
+## Getting started
+### Step 1: Install `ng-bs-calendar`
 
-## Code scaffolding
+#### NPM
+```shell
+npm install --save ng-bs-calendar
+```
+#### YARN
+```shell
+yarn add ng-bs-calendar
+```
+### Step 2: Import the NgBsCalendarModule
+```js
+import { NgBsCalendarModule } from 'ng-bs-calendar';
 
-Run `ng generate component component-name --project ng-bs-calendar` to generate a new component. You can also use `ng generate directive|pipe|service|class|guard|interface|enum|module --project ng-bs-calendar`.
-> Note: Don't forget to add `--project ng-bs-calendar` or else it will be added to the default project in your `angular.json` file. 
+@NgModule({
+  declarations: [...],
+  imports: [NgBsCalendarModule],
+  bootstrap: [...]
+})
+export class AppModule {}
+```
 
-## Build
+## Usage
 
-Run `ng build ng-bs-calendar` to build the project. The build artifacts will be stored in the `dist/` directory.
+Data source:
+```js
 
-## Publishing
+calendar = [{
+    id: 123,
+    start: '2023-11-21T09:00:00',
+    end: '2023-11-21T14:00:00',
+    title: 'title 1',
+    description: 'description 1',
+    color: '#ff0000cc'
+}, {
+    id: 456,
+    start: '2023-11-23T13:00:00',
+    end: '2023-11-25T17:00:00',
+    title: 'title 2',
+    description: 'description 2',
+    color: '#0000ffcc'
+}]
 
-After building your library with `ng build ng-bs-calendar`, go to the dist folder `cd dist/ng-bs-calendar` and run `npm publish`.
+log($event: any) {
+    console.log($event)
+}
+```
 
-## Running unit tests
-
-Run `ng test ng-bs-calendar` to execute the unit tests via [Karma](https://karma-runner.github.io).
-
-## Further help
-
-To get more help on the Angular CLI use `ng help` or go check out the [Angular CLI Overview and Command Reference](https://angular.io/cli) page.
+In template:
+```html
+<ng-bs-calendar [data]="calendar" [loading]="loading" (changeWeek)="log($event)" (clickCell)="log($event)">
+    <h1>Simple example</h1>
+</ng-bs-calendar>
+```
