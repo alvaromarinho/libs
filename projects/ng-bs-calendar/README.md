@@ -24,12 +24,19 @@ import { NgBsCalendarModule } from 'ng-bs-calendar';
 export class AppModule {}
 ```
 
+#### Dependencies
+
+```js
+"bootstrap": "^5.3.2",
+"luxon": "^3.4.4"
+```
+
 ## Usage
 
 Data source:
 ```js
 
-calendar = [{
+calendar: CalendarData[] = [{
     id: 123,
     start: '2023-11-21T09:00:00',
     end: '2023-11-21T14:00:00',
@@ -56,3 +63,26 @@ In template:
     <h1>Simple example</h1>
 </ng-bs-calendar>
 ```
+
+
+## API
+### Input [data]
+```js
+
+// data format: 'YYYY-MM-DDTHH:mm:ss',
+CalendarData[] = [{
+    id: any;
+    start: string;
+    end: string;
+    title: string;
+    description: string;
+    color: string;
+}]
+```
+
+### Outputs
+
+| Output        | Description |
+| ------------- | ----------- |
+| (changeWeek)  | { start: string, end: string } |
+| (clickCell)   | CalendarData |

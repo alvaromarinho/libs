@@ -60,9 +60,9 @@
                             <ng-container *ngFor="let obj of schedule.week[indexDay-1].hours[hour!]; index as index; count as count">
                                 <div class="position-absolute start-0 end-0 h-100 text-truncate text-center badge rounded-0 border-start border-end border-white pointer" 
                                     [ngStyle]="{backgroundColor: obj.color, zIndex: index, marginLeft: 100/schedule.week[indexDay-1].size*index+'%'}" 
-                                    [ngClass]="{'border-top': obj.startNow, 'border-bottom': obj.endNow}" (click)="clickCell.emit(obj)"
+                                    [ngClass]="{'border-top': obj._startNow, 'border-bottom': obj._endNow}" (click)="clickCell.emit(obj)"
                                     data-bs-toggle="tooltip" data-bs-html="true" [attr.data-bs-title]="getTooltipHtml(obj)">
-                                    <span>{{ obj.startNow || hour == '00:00' ? obj.title : '' }}</span>
+                                    <span>{{ obj._startNow || hour == '00:00' ? obj.title : '' }}</span>
                                 </div>
                             </ng-container>
                         </div>

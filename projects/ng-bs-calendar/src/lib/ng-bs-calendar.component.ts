@@ -2,15 +2,15 @@ import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { DateTime } from "luxon";
 import { Tooltip } from 'bootstrap';
 
-interface Data {
+export interface CalendarData {
     id: any;
     start: string;
     end: string;
     title: string;
     description: string;
     color: string;
-    startNow?: boolean;
-    endNow?: boolean;
+    _startNow?: boolean;
+    _endNow?: boolean;
 }
 
 interface ScheduleDay {
@@ -43,7 +43,7 @@ export class NgBsCalendarComponent implements OnInit {
     hours = [null, null, ...hours30min]
 
     @Input() loading = false;
-    @Input() data!: Data[];
+    @Input() data!: CalendarData[];
     @Output() clickCell = new EventEmitter<any>();
     @Output() changeWeek = new EventEmitter<any>();
 
@@ -96,7 +96,7 @@ export class NgBsCalendarComponent implements OnInit {
         }
 
         this.schedule.week.map((day: ScheduleDay) => {
-            this.data.map((d: Data) => {
+            this.data.map((d: CalendarData) => {
                 const isStartDay = day.label == date(d.start).toFormat('yyyy-MM-dd');
                 const isEndDay = day.label == date(d.end).toFormat('yyyy-MM-dd');
                 const isBetweenStartEnd = date(day.label).toMillis() > date(d.start).toMillis() && date(day.label).toMillis() < date(d.end).toMillis();
@@ -133,7 +133,7 @@ export class NgBsCalendarComponent implements OnInit {
         });
     }
 
-    getTooltipHtml(data: Data) {
+    getTooltipHtml(data: CalendarData) {
         return `
             <div class='text-start'>
                 <span class="d-inline-block lh-sm">${data.title}</span><br>
@@ -153,10 +153,10 @@ export class NgBsCalendarComponent implements OnInit {
     }
 
     private setInHour(obj: any, day: { label: string; hours: any; }, key: string) {
-        const startNow = day.label == date(obj.start).toFormat('yyyy-MM-dd') && key == date(obj.start).toFormat('HH:mm');
-        const endNow = day.label == date(obj.end).toFormat('yyyy-MM-dd') && key == date(obj.end).minus({ minute: 30 }).toFormat('HH:mm');
+        const _startNow = day.label == date(obj.start).toFormat('yyyy-MM-dd') && key == date(obj.start).toFormat('HH:mm');
+        const _endNow = day.label == date(obj.end).toFormat('yyyy-MM-dd') && key == date(obj.end).minus({ minute: 30 }).toFormat('HH:mm');
 
         day.hours[key] = day.hours[key] || [];
-        day.hours[key].push({ ...obj, startNow, endNow });
+        day.hours[key].push({ ...obj, _startNow, _endNow });
     }
 }
