@@ -59,7 +59,7 @@ log($event: any) {
 
 In template:
 ```html
-<ng-bs-calendar [data]="calendar" [loading]="loading" (changeWeek)="log($event)" (clickCell)="log($event)">
+<ng-bs-calendar [data]="calendar" [loading]="loading" start="2023-11-25" [showButtons]="true" (changeWeek)="log($event)" (clickCell)="log($event)">
     <h1>Simple example</h1>
 </ng-bs-calendar>
 ```

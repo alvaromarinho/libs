@@ -1,6 +1,6 @@
 
 
-<div class="d-flex align-items-center justify-content-between mb-2">
+<div class="d-flex align-items-center justify-content-between" [ngClass]="{'mb-2': showButtons}">
     <ng-content></ng-content>
     <div class="ms-auto" *ngIf="showButtons">
         <button class="btn btn-sm btn-outline-secondary ms-2 px-3" (click)="prevWeek()">«</button>
