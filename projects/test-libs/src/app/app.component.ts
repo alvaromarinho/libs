@@ -1,35 +1,36 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
+import { DateTime } from 'luxon';
 
 @Component({
     selector: 'app-root',
     templateUrl: './app.component.html',
 })
-export class AppComponent {
+export class AppComponent implements OnInit {
 
     loading = false;
 
     calendar = [{
         id: 123,
-        start: '2023-11-21T09:00:00',
-        end: '2023-11-21T14:00:00',
+        start: DateTime.now().minus({ day: 1, hour: 2 }).toFormat("yyyy-MM-dd'T'HH") + '00:00',
+        end: DateTime.now().plus({ day: 1, hour: 3 }).toFormat("yyyy-MM-dd'T'HH") + '00:00',
         title: 'title 1',
         description: 'description 1',
         color: '#ff0000cc'
     }, {
         id: 456,
-        start: '2023-11-23T13:00:00',
-        end: '2023-11-25T17:00:00',
+        start: DateTime.now().toFormat("yyyy-MM-dd'T'HH") + '00:00',
+        end: DateTime.now().plus({ hour: 2 }).toFormat("yyyy-MM-dd'T'HH") + '00:00',
         title: 'title 2',
         description: 'description 2',
         color: '#0000ffcc'
     }]
 
+    ngOnInit(): void {
+        console.log(this.calendar)
+    }
+
     log($event: any) {
-        // this.loading = true;
-        // setTimeout(() => {
-            console.log($event)
-    //         this.loading = false;
-    //     }, 2000)
+        console.log($event);
     }
 
 }

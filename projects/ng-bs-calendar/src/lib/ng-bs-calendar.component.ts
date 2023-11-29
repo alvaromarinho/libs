@@ -9,6 +9,9 @@ export interface CalendarData {
     title: string;
     description: string;
     color: string;
+}
+
+interface CalendarDataFull extends CalendarData {
     _startNow?: boolean;
     _endNow?: boolean;
 }
@@ -43,7 +46,7 @@ export class NgBsCalendarComponent implements OnInit {
     hours = [null, null, ...hours30min]
 
     @Input() loading = false;
-    @Input() data!: CalendarData[];
+    @Input() data!: CalendarDataFull[];
     @Output() clickCell = new EventEmitter<any>();
     @Output() changeWeek = new EventEmitter<any>();
 
