@@ -7,13 +7,17 @@
     </div>
     <div class="tab-content p-3">
         <div class="tab-pane fade show active" id="ng-bs-calendar" role="tabpanel">
-            <ng-bs-calendar [data]="calendar" [loading]="loading" (changeWeek)="log($event)" (clickCell)="log($event)">
-                <div class="d-flex align-items-center">
+            <button class="btn btn-sm btn-primary ms-2 px-3" (click)="prev()">«</button>
+            <button class="btn btn-sm btn-primary ms-2" (click)="today()">HOJE</button>
+            <button class="btn btn-sm btn-primary ms-2 px-3" (click)="next()">»</button>
+
+            <ng-bs-calendar [data]="calendar" start="2023-11-25" [loading]="loading" [showButtons]="false" (changeWeek)="log($event)" (clickCell)="log($event)">
+                <!-- <div class="d-flex align-items-center">
                     <h1 class="fs-3 fw-light me-3">Simple example</h1>
                     <button class="btn btn-sm btn-secondary py-0" type="button">
                         <i class="bi bi-code me-1"></i> CODE
                     </button>
-                </div>
+                </div> -->
             </ng-bs-calendar>
         </div>
 

@@ -41,12 +41,14 @@ const hours30min = Array(24 * 2).fill(0).map((_, i) => (`${~~(i / 2)}`.padStart(
 export class NgBsCalendarComponent implements OnInit {
 
     today = DateTime.now().toFormat('yyyy-MM-dd');
-    schedule = {} as Schedule;
-    index: any = {};
-    hours = [null, null, ...hours30min]
+    protected schedule = {} as Schedule;
+    protected index: any = {};
+    protected hours = [null, null, ...hours30min]
 
     @Input() loading = false;
     @Input() data!: CalendarDataFull[];
+    @Input() start = date(this.today).startOf('week').minus({ day: 1 }).toFormat('yyyy-MM-dd');
+    @Input() showButtons = true;
     @Output() clickCell = new EventEmitter<any>();
     @Output() changeWeek = new EventEmitter<any>();
 
@@ -62,31 +64,33 @@ export class NgBsCalendarComponent implements OnInit {
         this.setSchedule();
     }
 
-    todaySchedule() {
+    prevWeek() {
+        this.changeWeek.emit({
+            start: date(this.schedule.prev).startOf('week').minus({ day: 1 }).toFormat('yyyy-MM-dd'),
+            end: date(this.schedule.prev).endOf('week').minus({ day: 1 }).toFormat('yyyy-MM-dd')
+        })
+        this.setSchedule(this.schedule.prev);
+    }
+
+    todayWeek() {
         this.changeWeek.emit({
             start: date(this.today).startOf('week').minus({ day: 1 }).toFormat('yyyy-MM-dd'),
             end: date(this.today).endOf('week').minus({ day: 1 }).toFormat('yyyy-MM-dd')
         })
-        this.setSchedule();
+        this.setSchedule(this.today);
     }
 
-    prevSchedule(currentDate: string) {
+    nextWeek() {
         this.changeWeek.emit({
-            start: date(currentDate).startOf('week').minus({ day: 1 }).toFormat('yyyy-MM-dd'),
-            end: date(currentDate).endOf('week').minus({ day: 1 }).toFormat('yyyy-MM-dd')
+            start: date(this.schedule.next).startOf('week').minus({ day: 1 }).toFormat('yyyy-MM-dd'),
+            end: date(this.schedule.next).endOf('week').minus({ day: 1 }).toFormat('yyyy-MM-dd')
         })
-        this.setSchedule(currentDate);
+        this.setSchedule(this.schedule.next);
     }
 
-    nextSchedule(currentDate: string) {
-        this.changeWeek.emit({
-            start: date(currentDate).startOf('week').minus({ day: 1 }).toFormat('yyyy-MM-dd'),
-            end: date(currentDate).endOf('week').minus({ day: 1 }).toFormat('yyyy-MM-dd')
-        })
-        this.setSchedule(currentDate);
-    }
+    protected setSchedule(start = this.start) {
+        start = date(start).plus({ day: 1 }).toFormat('yyyy-MM-dd');
 
-    setSchedule(start = this.today) {
         this.schedule.prev = date(start).startOf('week').minus({ day: 2 }).toFormat('yyyy-MM-dd');
         this.schedule.next = date(start).startOf('week').plus({ day: 7 }).toFormat('yyyy-MM-dd');
         this.schedule.startWeek = date(start).startOf('week').minus({ day: 1 }).toFormat('yyyy-MM-dd');
@@ -136,7 +140,7 @@ export class NgBsCalendarComponent implements OnInit {
         });
     }
 
-    getTooltipHtml(data: CalendarData) {
+    protected getTooltipHtml(data: CalendarData) {
         return `
             <div class='text-start'>
                 <span class="d-inline-block lh-sm">${data.title}</span><br>

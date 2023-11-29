@@ -2,10 +2,10 @@
 
 <div class="d-flex align-items-center justify-content-between mb-2">
     <ng-content></ng-content>
-    <div>
-        <button class="btn btn-sm btn-outline-secondary ms-2 px-3" (click)="prevSchedule(schedule.prev)">«</button>
-        <button class="btn btn-sm btn-outline-secondary ms-2" (click)="todaySchedule()">HOJE</button>
-        <button class="btn btn-sm btn-outline-secondary ms-2 px-3" (click)="nextSchedule(schedule.next)">»</button>
+    <div class="ms-auto" *ngIf="showButtons">
+        <button class="btn btn-sm btn-outline-secondary ms-2 px-3" (click)="prevWeek()">«</button>
+        <button class="btn btn-sm btn-outline-secondary ms-2" (click)="todayWeek()">HOJE</button>
+        <button class="btn btn-sm btn-outline-secondary ms-2 px-3" (click)="nextWeek()">»</button>
     </div>
 </div>
 
@@ -13,11 +13,11 @@
     <div class="spinner-border text-dark"></div>
 </div>
 
-<div class="d-flex" *ngIf="!loading">
+<div class="d-flex h-100" *ngIf="!loading">
     <div class="card card-body" id="schedule">
         <div class="container-fluid">
             <div class="row border-inside-top" [ngClass]="{'position-sticky bg-white': firstRow || indexHour == 1, 'top-0': firstRow, 'top-day': indexHour == 1}" 
-                *ngFor="let hour of hours; index as indexHour; first as firstRow">
+                *ngFor="let hour of hours; index as indexHour; first as firstRow" [id]="hour">
                 <div [ngClass]="{'col-day border-inside-start': !firstCol, 'col-1': firstCol, 'px-0': !firstRow && !firstCol}" 
                     *ngFor="let day of [].constructor(8); index as indexDay; first as firstCol">
 

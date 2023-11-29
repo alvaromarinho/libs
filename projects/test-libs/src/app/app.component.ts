@@ -1,11 +1,14 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ViewChild } from '@angular/core';
 import { DateTime } from 'luxon';
+import { NgBsCalendarComponent } from 'ng-bs-calendar';
 
 @Component({
     selector: 'app-root',
     templateUrl: './app.component.html',
 })
 export class AppComponent implements OnInit {
+
+    @ViewChild(NgBsCalendarComponent) calendarComp!: NgBsCalendarComponent;
 
     loading = false;
 
@@ -25,12 +28,25 @@ export class AppComponent implements OnInit {
         color: '#0000ffcc'
     }]
 
-    ngOnInit(): void {
-        console.log(this.calendar)
+    ngOnInit() {
+        // console.log(this.calendar)
     }
 
     log($event: any) {
         console.log($event);
+    }
+
+    prev() {
+        this.calendarComp.prevWeek();
+    }
+
+    today() {
+        this.calendarComp.todayWeek();
+
+    }
+
+    next() {
+        this.calendarComp.nextWeek();
     }
 
 }
