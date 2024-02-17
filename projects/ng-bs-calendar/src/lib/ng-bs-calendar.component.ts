@@ -7,20 +7,20 @@ export interface CalendarData {
     start: string;
     end: string;
     title: string;
-    description: string;
     color: string;
 }
 
 interface CalendarDataFull extends CalendarData {
+    _index?: number;
     _startNow?: boolean;
     _endNow?: boolean;
+    _size?: number;
 }
 
 interface ScheduleDay {
     label: string;
     allDay: any;
     hours: any;
-    size: number;
 }
 
 interface Schedule {
@@ -42,7 +42,7 @@ export class NgBsCalendarComponent implements OnInit {
 
     today = DateTime.now().toFormat('yyyy-MM-dd');
     protected schedule = {} as Schedule;
-    protected index: any = {};
+    protected scheduleFlat: any[] = [];
     protected hours = [null, null, ...hours30min]
 
     @Input() loading = false;
@@ -61,6 +61,14 @@ export class NgBsCalendarComponent implements OnInit {
     }
 
     ngOnInit() {
+        // verificando overlap para setar o tamanho
+        this.data = this.data.sort((a, b) => date(a.start).diff(date(a.end)).toMillis() == date(b.start).diff(date(b.end)).toMillis() ? -1 : date(a.start).toMillis() - date(b.start).toMillis());
+
+        this.data.map((d1: CalendarDataFull) => {
+            d1._size = 0;
+            this.data.map((d2: CalendarDataFull) => this.overlaps(d1, d2) ? d1._size!++ : d1._size)
+        })
+        console.log(this.data)
         this.setSchedule();
     }
 
@@ -88,6 +96,11 @@ export class NgBsCalendarComponent implements OnInit {
         this.setSchedule(this.schedule.next);
     }
 
+    protected getIndexPosition(obj: CalendarDataFull, index: number) {
+        obj._index = this.scheduleFlat.find((d: CalendarDataFull) => d.id == obj.id)._index || index;
+        return obj._index!;
+    }
+
     protected setSchedule(start = this.start) {
         start = date(start).plus({ day: 1 }).toFormat('yyyy-MM-dd');
 
@@ -99,14 +112,14 @@ export class NgBsCalendarComponent implements OnInit {
         const hours = hours30min.reduce((accumulator, value, index) => ({ ...accumulator, [value!]: undefined }), {})
         for (let i = 0; i < 7; i++) {
             const day = date(this.schedule.startWeek).plus({ day: i }).toFormat('yyyy-MM-dd');
-            this.schedule.week.push({ label: day, hours: { ...hours }, size: 1, allDay: [] });
+            this.schedule.week.push({ label: day, hours: { ...hours }, allDay: [] });
         }
 
         this.schedule.week.map((day: ScheduleDay) => {
             this.data.map((d: CalendarData) => {
-                const isStartDay = day.label == date(d.start).toFormat('yyyy-MM-dd');
+                const isStartDay = day.label == date(d.start).toFormat('yyyy-MM-dd') && date(d.start).toFormat('HH:mm:ss') != '00:00:00';
                 const isEndDay = day.label == date(d.end).toFormat('yyyy-MM-dd');
-                const isBetweenStartEnd = date(day.label).toMillis() > date(d.start).toMillis() && date(day.label).toMillis() < date(d.end).toMillis();
+                const isBetweenStartEnd = date(day.label).toMillis() >= date(d.start).toMillis() && date(day.label).toMillis() < date(d.end).toMillis();
                 const isStartEqualsEnd = date(d.start).toFormat('yyyy-MM-dd') == date(d.end).toFormat('yyyy-MM-dd');
 
                 if (isStartDay && isStartEqualsEnd) { // começa e termina no mesmo dia
@@ -124,23 +137,10 @@ export class NgBsCalendarComponent implements OnInit {
             })
         });
 
-        // ordenando
-        this.schedule.week.map((day: any, indexWeek: number) => {
-            Object.entries(day.hours).map(([hour, obj]: any, indexDay: number) => {
-                if (obj) {
-                    day.size = day.size > obj.length ? day.size : obj.length;
-                    obj && obj.map((task: any) => {
-                        if (!this.index[task.id])
-                            this.index[task.id] = +`${indexWeek}${indexDay}` + 1;
-                        task.index = this.index[task.id]
-                    })
-                    obj.sort((a: any, b: any) => (a.index > b.index) ? 1 : ((b.index > a.index) ? -1 : 0))
-                }
-            })
-        });
+        this.scheduleFlat = this.schedule.week.map((day: ScheduleDay) => day.hours).map((hour: any) => Object.values(hour)).flat().filter(Boolean).flat();
     }
 
-    protected getTooltipHtml(data: CalendarData) {
+    protected getTooltipHtml(data: CalendarDataFull) {
         return `
             <div class='text-start'>
                 <span class="d-inline-block lh-sm">${data.title}</span><br>
@@ -166,4 +166,37 @@ export class NgBsCalendarComponent implements OnInit {
         day.hours[key] = day.hours[key] || [];
         day.hours[key].push({ ...obj, _startNow, _endNow });
     }
+
+    private overlaps(a: CalendarDataFull, b: CalendarDataFull) {
+        const aStart = new Date(a.start).getTime();
+        const aEnd = new Date(a.end).getTime();
+        const bStart = new Date(b.start).getTime();
+        const bEnd = new Date(b.end).getTime();
+
+        // DEBUG
+        // if (a.id == 16) {
+        //     if (
+        //         date(b.start).toFormat('yyyy-MM-dd') == date(b.end).toFormat('yyyy-MM-dd') && 
+        //         (date(a.start).toFormat('yyyy-MM-dd') == date(b.start).toFormat('yyyy-MM-dd') || date(a.end).toFormat('yyyy-MM-dd') == date(b.end).toFormat('yyyy-MM-dd'))
+        //     ) {
+        //         if (aStart <= bStart && aEnd <= bEnd && aEnd > bStart) console.log(b.id, 'aStart <= bStart && aEnd <= bEnd && aEnd > bStart');
+        //         else if (aStart >= bStart && aEnd >= bEnd && aStart < bEnd) console.log(b.id, 'aStart >= bStart && aEnd >= bEnd && aStart < bEnd');
+        //         else if (aStart <= bStart && aEnd >= bEnd) console.log(b.id, 'aStart <= bStart && aEnd >= bEnd');
+        //         else if (bStart <= aStart && bEnd >= aEnd) console.log(b.id, 'bStart <= aStart && bEnd >= aEnd');
+        //     }
+        // }
+
+        // verificando se o overlap é no mesmo dia
+        if (
+            date(b.start).toFormat('yyyy-MM-dd') == date(b.end).toFormat('yyyy-MM-dd') &&
+            (date(a.start).toFormat('yyyy-MM-dd') == date(b.start).toFormat('yyyy-MM-dd') || date(a.end).toFormat('yyyy-MM-dd') == date(b.end).toFormat('yyyy-MM-dd'))
+        ) {
+            if (aStart <= bStart && aEnd <= bEnd && aEnd > bStart) return true; // a ends in b
+            if (aStart >= bStart && aEnd >= bEnd && aStart < bEnd) return true; // a starts in b
+            if (aStart <= bStart && aEnd >= bEnd) return true; // a in b
+            if (bStart <= aStart && bEnd >= aEnd) return true; // b in a
+        }
+
+        return false;
+    };
 }

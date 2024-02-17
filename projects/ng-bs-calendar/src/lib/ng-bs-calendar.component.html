@@ -48,7 +48,8 @@
                     </div>
                     <div class="d-flex flex-column px-1 pb-1 w-100" *ngIf="indexHour == 1 && !firstCol">
                         <ng-container *ngFor="let obj of schedule.week[indexDay-1].allDay; index as index; count as count">
-                            <div class="badge pointer text-truncate text-center mt-1 mb-0 w-100" [ngStyle]="{backgroundColor: obj.color}" (click)="clickCell.emit(obj)"
+                            <div class="badge pointer text-truncate border text-start mt-1 w-100" (click)="clickCell.emit(obj)"
+                                [attr.style]="'border-color:rgba(0,0,0, .25) !important;'" [ngStyle]="{backgroundColor: obj.color+'80'}"
                                 data-bs-toggle="tooltip" data-bs-placement="bottom" data-bs-html="true" [attr.data-bs-title]="getTooltipHtml(obj)">
                                 <span>{{ obj.title }}</span>
                             </div>
@@ -58,10 +59,16 @@
                     <div class="d-flex flex-column h-100" *ngIf="!firstRow && !firstCol">
                         <div class="position-relative h-100" *ngIf="schedule.week[indexDay-1].hours[hour!]">
                             <ng-container *ngFor="let obj of schedule.week[indexDay-1].hours[hour!]; index as index; count as count">
-                                <div class="position-absolute start-0 end-0 h-100 text-truncate text-center badge rounded-0 border-start border-end border-white pointer" 
-                                    [ngStyle]="{backgroundColor: obj.color, zIndex: index, marginLeft: 100/schedule.week[indexDay-1].size*index+'%'}" 
-                                    [ngClass]="{'border-top': obj._startNow, 'border-bottom': obj._endNow}" (click)="clickCell.emit(obj)"
-                                    data-bs-toggle="tooltip" data-bs-html="true" [attr.data-bs-title]="getTooltipHtml(obj)">
+                                <div class="position-absolute start-0 end-0 h-100 text-truncate text-start badge rounded-0 border-start border-end pointer" 
+                                    [ngClass]="{'border-top rounded-top': obj._startNow, 'border-bottom rounded-bottom': obj._endNow }" 
+                                    (click)="clickCell.emit(obj)" data-bs-toggle="tooltip" data-bs-html="true" [attr.data-bs-title]="getTooltipHtml(obj)"
+                                    [attr.style]="'border-color:rgba(0,0,0, .25) !important;'"
+                                    [ngStyle]="{
+                                        backgroundColor: obj.color+'80',
+                                        zIndex: index, 
+                                        width: 100/(obj._size >= 5 ? 5 : obj._size )+'%', 
+                                        marginLeft: 100/obj._size*getIndexPosition(obj, index)+'%'
+                                    }">
                                     <span>{{ obj._startNow || hour == '00:00' ? obj.title : '' }}</span>
                                 </div>
                             </ng-container>

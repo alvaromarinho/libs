@@ -6,19 +6,18 @@
         <button class="nav-link" data-bs-toggle="tab" data-bs-target="#ng-collapse" type="button" role="tab">ng-collapse</button>
     </div>
     <div class="tab-content p-3">
-        <div class="tab-pane fade show active" id="ng-bs-calendar" role="tabpanel">
-            <button class="btn btn-sm btn-primary ms-2 px-3" (click)="prev()">«</button>
-            <button class="btn btn-sm btn-primary ms-2" (click)="today()">HOJE</button>
-            <button class="btn btn-sm btn-primary ms-2 px-3" (click)="next()">»</button>
 
-            <ng-bs-calendar [data]="calendar" start="2023-11-25" [loading]="loading" [showButtons]="false" (changeWeek)="log($event)" (clickCell)="log($event)">
-                <!-- <div class="d-flex align-items-center">
-                    <h1 class="fs-3 fw-light me-3">Simple example</h1>
-                    <button class="btn btn-sm btn-secondary py-0" type="button">
-                        <i class="bi bi-code me-1"></i> CODE
-                    </button>
-                </div> -->
-            </ng-bs-calendar>
+        <!-- NG-BS-CALENDAR -->
+        <div class="tab-pane fade show active" id="ng-bs-calendar" role="tabpanel">
+            <div class="d-flex align-items-center justify-content-between w-100 mb-2">
+                <h1 class="fs-3 fw-light me-3">Simple example</h1>
+                <div>
+                    <button class="btn btn-sm btn-outline-primary px-3" (click)="prev()">«</button>
+                    <button class="btn btn-sm btn-outline-primary ms-2" (click)="today()">HOJE</button>
+                    <button class="btn btn-sm btn-outline-primary ms-2 px-3" (click)="next()">»</button>
+                </div>
+            </div>
+            <ng-bs-calendar [data]="calendar" [loading]="loading" [showButtons]="false" styleCards="border" (changeWeek)="log($event)" (clickCell)="log($event)"></ng-bs-calendar>
         </div>
 
         <!-- NG-GENERATE-TABLE -->
