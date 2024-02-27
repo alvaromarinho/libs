@@ -15,6 +15,9 @@
       "ng-bs-calendar": [
         "dist/ng-bs-calendar"
       ],
+      "ng-bs-modal": [
+        "dist/ng-bs-modal"
+      ],
       "ng-collapse": [
         "dist/ng-collapse"
       ],

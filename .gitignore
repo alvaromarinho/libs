@@ -9,6 +9,7 @@
 # Node
 /node_modules
 /projects/ng-bs-calendar/node_modules
+/projects/ng-bs-modal/node_modules
 npm-debug.log
 yarn-error.log
 

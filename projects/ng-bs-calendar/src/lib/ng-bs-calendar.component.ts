@@ -63,12 +63,10 @@ export class NgBsCalendarComponent implements OnInit {
     ngOnInit() {
         // verificando overlap para setar o tamanho
         this.data = this.data.sort((a, b) => date(a.start).diff(date(a.end)).toMillis() == date(b.start).diff(date(b.end)).toMillis() ? -1 : date(a.start).toMillis() - date(b.start).toMillis());
-
         this.data.map((d1: CalendarDataFull) => {
             d1._size = 0;
             this.data.map((d2: CalendarDataFull) => this.overlaps(d1, d2) ? d1._size!++ : d1._size)
         })
-        console.log(this.data)
         this.setSchedule();
     }
 

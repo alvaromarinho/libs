@@ -5,11 +5,13 @@ import { AppComponent } from './app.component';
 import { NgGenerateTableModule } from 'ng-generate-table';
 import { NgDdFileModule } from 'ng-dd-file';
 import { NgCollapseModule } from 'ng-collapse';
+import { NgBsCalendarModule } from 'ng-bs-calendar';
+import { NgBsModalModule } from 'ng-bs-modal';
 
 import { GTClassPipeExampleComponent, GTManualTagsComponent, GTRowClickExampleComponent, GTSimpleExampleComponent } from './generate-table-example';
 import { DDExampleComponent } from './dd-example.component';
 import { CollapseExampleComponent } from './collapse-example.component';
-import { NgBsCalendarModule } from 'ng-bs-calendar';
+import { BsCalendarExampleComponent } from './bs-calendar-example.component';
 
 @NgModule({
     declarations: [
@@ -20,6 +22,7 @@ import { NgBsCalendarModule } from 'ng-bs-calendar';
         GTClassPipeExampleComponent,
         DDExampleComponent,
         CollapseExampleComponent,
+        BsCalendarExampleComponent,
     ],
     imports: [
         BrowserModule,
@@ -27,6 +30,7 @@ import { NgBsCalendarModule } from 'ng-bs-calendar';
         NgGenerateTableModule,
         NgDdFileModule,
         NgBsCalendarModule,
+        NgBsModalModule,
     ],
     providers: [],
     bootstrap: [AppComponent]

@@ -5,7 +5,7 @@ import { Component } from '@angular/core';
     template: `
             <div class="d-flex align-items-center">
                 <h1 class="fs-3 fw-light me-3">Drag and Drop File</h1>
-                <button class="btn btn-sm btn-secondary py-0" type="button" data-bs-toggle="collapse" data-bs-target="#dd-code">
+                <button class="btn btn-sm btn-secondary py-0" type="button" data-bs-toggle="collapse" data-bs-target="#collapse-code">
                      <i class="bi bi-code me-1"></i> CODE
                 </button>
             </div>
@@ -19,7 +19,7 @@ import { Component } from '@angular/core';
                     </div>
                 </ng-collapse>
             </div>
-            <div class="collapse" id="dd-code">
+            <div class="collapse" id="collapse-code">
                 <div class="style-code rounded mb-3">
 Template:
 <pre><code class="language-html">&lt;button class="btn btn-success mb-3" (click)="toggle = !toggle"&gt;Collapse&lt;/button&gt;
