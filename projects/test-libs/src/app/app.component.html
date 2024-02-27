@@ -1,3 +1,41 @@
+<nav class="navbar navbar-dark bg-dark d-md-none">
+    <div class="container-fluid">
+        <a class="navbar-brand" href="#">Angular Libs</a>
+        <button class="navbar-toggler" type="button" (click)="toggleNav = !toggleNav">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+    </div>
+    <ng-collapse [toggle]="toggleNav">
+        <ul class="navbar-nav px-3">
+            <li class="nav-item">
+                <button class="nav-link" (click)="changePage('ngBsModalService')">
+                    ng-bs-modal-service
+                </button>
+            </li>
+            <li class="nav-item">
+                <button class="nav-link" (click)="changePage('ngBsCalendar')">
+                    ng-bs-calendar
+                </button>
+            </li>
+            <li class="nav-item">
+                <button class="nav-link" (click)="changePage('ngGenerateTable')">
+                    ng-generate-table
+                </button>
+            </li>
+            <li class="nav-item">
+                <button class="nav-link" (click)="changePage('ngDdFile')">
+                    ng-dd-file
+                </button>
+            </li>
+            <li class="nav-item">
+                <button class="nav-link" (click)="changePage('ngCollapse')">
+                    ng-collapse
+                </button>
+            </li>
+        </ul>
+    </ng-collapse>
+</nav>
+
 <div class="row g-0 h-100">
     <div class="d-none d-md-block col-md-3 col-xxl-2 border-end">
         <div class="list-group list-group-flush" id="list-tab" role="tablist">
@@ -29,34 +67,34 @@
         <!-- NG-GENERATE-TABLE -->
         <div class="p-3" [ngClass]="{'d-none': !pages.ngGenerateTable}">
 
-                <ul class="nav nav-tabs" role="tablist">
-                    <li class="nav-item" role="presentation">
-                        <button class="nav-link active" id="gtse-tab" data-bs-toggle="tab" data-bs-target="#gtse" type="button" role="tab">Simple Example</button>
-                    </li>
-                    <li class="nav-item" role="presentation">
-                        <button class="nav-link" id="gtm-tab" data-bs-toggle="tab" data-bs-target="#gtm" type="button" role="tab">Manual Tags</button>
-                    </li>
-                    <li class="nav-item" role="presentation">
-                        <button class="nav-link" id="gtrc-tab" data-bs-toggle="tab" data-bs-target="#gtrc" type="button" role="tab">Row Click</button>
-                    </li>
-                    <li class="nav-item" role="presentation">
-                        <button class="nav-link" id="gtccp-tab" data-bs-toggle="tab" data-bs-target="#gtccp" type="button" role="tab">Class/Pipes</button>
-                    </li>
-                </ul>
-                <div class="tab-content mt-2 mx-2">
-                    <div class="tab-pane fade show active" id="gtse" role="tabpanel" tabindex="0">
-                        <gt-simple-example></gt-simple-example>
-                    </div>
-                    <div class="tab-pane fade" id="gtm" role="tabpanel" tabindex="0">
-                        <gt-manual-tags></gt-manual-tags>
-                    </div>
-                    <div class="tab-pane fade" id="gtrc" role="tabpanel" tabindex="0">
-                        <gt-row-click-example></gt-row-click-example>
-                    </div>
-                    <div class="tab-pane fade" id="gtccp" role="tabpanel" tabindex="0">
-                        <gt-class-pipe-example></gt-class-pipe-example>
-                    </div>
+            <ul class="nav nav-tabs" role="tablist">
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link active" id="gtse-tab" data-bs-toggle="tab" data-bs-target="#gtse" type="button" role="tab">Simple Example</button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link" id="gtm-tab" data-bs-toggle="tab" data-bs-target="#gtm" type="button" role="tab">Manual Tags</button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link" id="gtrc-tab" data-bs-toggle="tab" data-bs-target="#gtrc" type="button" role="tab">Row Click</button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link" id="gtccp-tab" data-bs-toggle="tab" data-bs-target="#gtccp" type="button" role="tab">Class/Pipes</button>
+                </li>
+            </ul>
+            <div class="tab-content mt-2 mx-2">
+                <div class="tab-pane fade show active" id="gtse" role="tabpanel" tabindex="0">
+                    <gt-simple-example></gt-simple-example>
                 </div>
+                <div class="tab-pane fade" id="gtm" role="tabpanel" tabindex="0">
+                    <gt-manual-tags></gt-manual-tags>
+                </div>
+                <div class="tab-pane fade" id="gtrc" role="tabpanel" tabindex="0">
+                    <gt-row-click-example></gt-row-click-example>
+                </div>
+                <div class="tab-pane fade" id="gtccp" role="tabpanel" tabindex="0">
+                    <gt-class-pipe-example></gt-class-pipe-example>
+                </div>
+            </div>
         </div>
 
         <div class="p-3" [ngClass]="{'d-none': !pages.ngDdFile}">

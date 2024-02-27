@@ -6,6 +6,8 @@ import { Component } from '@angular/core';
 })
 export class AppComponent {
 
+    toggleNav?: boolean;
+
     pages: any = {
         ngBsModalService: true,
         ngBsCalendar: false,
@@ -15,6 +17,7 @@ export class AppComponent {
     }
     
     changePage(page: string) {
+        this.toggleNav = false;
         Object.keys(this.pages).map((key) => {
             this.pages[key] = page == key ? true : false;
         });
