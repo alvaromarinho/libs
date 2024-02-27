@@ -7,7 +7,7 @@ import { NgBsCalendarComponent } from 'ng-bs-calendar';
         <div class="d-flex align-items-center justify-content-between mb-2">
             <div class="d-flex align-items-center">
                 <h1 class="fs-3 fw-light me-3 mb-0">Bootstrap Calendar</h1>
-                <button class="btn btn-sm btn-secondary py-0" type="button" data-bs-toggle="collapse" data-bs-target="#bs-calendar-code">
+                <button class="btn btn-sm btn-secondary py-0" type="button" (click)="toggleCode = !toggleCode">
                     <i class="bi bi-code me-1"></i> CODE
                 </button>
             </div>
@@ -17,7 +17,7 @@ import { NgBsCalendarComponent } from 'ng-bs-calendar';
                 <button class="btn btn-sm btn-outline-primary ms-2 px-3" (click)="next()">»</button>
             </div>
         </div>
-        <div class="collapse" id="bs-calendar-code">
+        <ng-collapse [toggle]="toggleCode">
             <div class="style-code rounded mb-3">
 Typescript:
 <pre><code class="language-js">calendar = [
@@ -32,7 +32,7 @@ log($event: string) &#123;
 Template:
 <pre><code class="language-html">&lt;ng-bs-calendar &#91;data&#93;="calendar" (changeWeek)="log($event)" (clickCell)="log($event)"&gt;&lt;/ng-bs-calendar&gt;</code></pre>
                 </div>
-        </div>
+        </ng-collapse>
         <ng-bs-calendar [data]="calendar" [showButtons]="false" (changeWeek)="log($event)" (clickCell)="log($event)"></ng-bs-calendar>
     `
 })
@@ -41,6 +41,7 @@ export class BsCalendarExampleComponent {
 
     @ViewChild(NgBsCalendarComponent) calendarComp!: NgBsCalendarComponent;
 
+    toggleCode?: boolean;
     yesterday = new Date(new Date().setDate(new Date().getDate()-1)).toISOString().split('T')[0];
     now = new Date().toISOString().split('T')[0];
     tomorrow = new Date(new Date().setDate(new Date().getDate()+1)).toISOString().split('T')[0];

@@ -1,5 +1,6 @@
 import { NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 
 import { AppComponent } from './app.component';
 import { NgGenerateTableModule } from 'ng-generate-table';
@@ -28,6 +29,7 @@ import { BsModalExampleComponent } from './bs-modal-example.component';
     ],
     imports: [
         BrowserModule,
+        BrowserAnimationsModule,
         NgBsCalendarModule,
         NgBsModalServiceModule,
         NgCollapseModule,

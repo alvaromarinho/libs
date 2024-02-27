@@ -1,28 +1,23 @@
-import { Component, OnInit, TemplateRef } from '@angular/core';
-import { NgBsModalService } from 'ng-bs-modal-service';
+import { Component } from '@angular/core';
 
 @Component({
     selector: 'app-root',
-    templateUrl: './app.component.html'
+    templateUrl: './app.component.html',
 })
-export class AppComponent implements OnInit {
+export class AppComponent {
 
-    constructor(private modalService: NgBsModalService) {}
-    
-    ngOnInit() { }
-
-    showModal(modalBody: TemplateRef<any>) {
-        this.modalService.open({
-            body: modalBody,
-            header: 'Modal',
-        }, { 
-            size: 'lg',
-            customClass: { modalHeader: 'bg-danger text-white' }
-        })
+    pages: any = {
+        ngBsModalService: true,
+        ngBsCalendar: false,
+        ngGenerateTable: false,
+        ngDdFile: false,
+        ngCollapse: false
     }
-
-    log($event: any) {
-        console.log($event);
+    
+    changePage(page: string) {
+        Object.keys(this.pages).map((key) => {
+            this.pages[key] = page == key ? true : false;
+        });
     }
 
 }

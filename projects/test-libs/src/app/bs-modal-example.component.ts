@@ -6,18 +6,13 @@ import { NgBsModalService } from 'ng-bs-modal-service';
     template: `
             <div class="d-flex align-items-center border-bottom pb-1 mb-3">
                 <h1 class="fs-3 fw-light me-3 mb-0">Bootstrap Modal</h1>
-                <button class="btn btn-sm btn-secondary py-0" type="button" data-bs-toggle="collapse" data-bs-target="#collapse-code">
+                <button class="btn btn-sm btn-secondary py-0" type="button" (click)="toggleCode = !toggleCode">
                      <i class="bi bi-code me-1"></i> CODE
                 </button>
             </div>
-            <div class="mb-3">
-                <ng-bs-modal-service></ng-bs-modal-service>
-                <button type="button" class="btn btn-primary px-5" (click)="showModal(modalBody)">Show Modal</button>
-                <ng-template #modalBody>
-                    <img src="https://placehold.co/800x400" alt="placeholder">
-                </ng-template>
-            </div>
-            <div class="collapse" id="collapse-code">
+
+            <!-- code -->
+            <ng-collapse [toggle]="toggleCode">
                 <div class="style-code rounded mb-3">
 Typescript:
 <pre><code class="language-js">constructor(private modalService: NgBsModalService) &#123; &#125;
@@ -37,11 +32,20 @@ Template:
     &lt;img src="https://placehold.co/800x400" alt="placeholder"&gt;
 &lt;/ng-template&gt;</code></pre>
                 </div>
-            </div>
+            </ng-collapse>
+
+            <!-- component -->
+            <ng-bs-modal-service></ng-bs-modal-service>
+            <button type="button" class="btn btn-primary px-5" (click)="showModal(modalBody)">Show Modal</button>
+            <ng-template #modalBody>
+                <img src="https://placehold.co/766x400" alt="placeholder">
+            </ng-template>
     `
 })
 
 export class BsModalExampleComponent {
+
+    toggleCode?: boolean;
 
     constructor(private modalService: NgBsModalService) {}
 

@@ -5,7 +5,7 @@ import { Component } from '@angular/core';
     template: `
             <div class="d-flex align-items-center mb-2">
                 <h1 class="fs-3 fw-light me-3 mb-0">Drag and Drop File</h1>
-                <button class="btn btn-sm btn-secondary py-0" type="button" data-bs-toggle="collapse" data-bs-target="#dd-code">
+                <button class="btn btn-sm btn-secondary py-0" type="button" (click)="toggleCode = !toggleCode">
                      <i class="bi bi-code me-1"></i> CODE
                 </button>
             </div>
@@ -24,7 +24,7 @@ import { Component } from '@angular/core';
                     (filesAdd)="filesAdd($event)" 
                 ></ng-dd-file>
             </div>
-            <div class="collapse" id="dd-code">
+            <ng-collapse [toggle]="toggleCode">
                 <div class="style-code rounded mb-3">
 Typescript:
 <pre><code class="language-js">files?: any[]
@@ -53,12 +53,13 @@ Template:
     &#40;filesAdd&#41;="filesAdd&#40;$event&#41;"
 &gt;&lt;/ng-dd-file&gt;</code></pre>
                 </div>
-            </div>
+            </ng-collapse>
     `
 })
 
 export class DdFileExampleComponent {
 
+    toggleCode?: boolean;
     files?: any[]
 
     filesAdd($event: any) {

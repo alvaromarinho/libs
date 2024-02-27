@@ -6,15 +6,13 @@ import { NgGenerateTableColumns } from 'ng-generate-table';
     template: `
             <div class="d-flex align-items-center mb-2">
                 <h1 class="fs-3 fw-light me-3 mb-0">Simple example</h1>
-                <button class="btn btn-sm btn-secondary py-0" type="button" data-bs-toggle="collapse" data-bs-target="#table-simple-code">
+                <button class="btn btn-sm btn-secondary py-0" type="button" (click)="toggleCode = !toggleCode">
                      <i class="bi bi-code me-1"></i> CODE
                 </button>
             </div>
-            <div class="table-responsive">
-                <ng-generate-table [columns]="columns" [data]="data" tableClass="table table-sm table-bordered mb-4"></ng-generate-table>
-            </div>
-            
-            <div class="collapse" id="table-simple-code">
+
+            <!-- code -->
+            <ng-collapse [toggle]="toggleCode">
                 <div class="style-code rounded mb-3">
 Typescript:
 <pre><code class="language-js">columns: NgGenerateTableColumns[] = [
@@ -36,11 +34,18 @@ data: CustomData = [
 Template:
 <pre><code class="language-html">&lt;ng-generate-table [columns]="columns" [data]="data" tableClass="table table-sm table-bordered mb-4"&gt;&lt;/ng-generate-table&gt;</code></pre>
                 </div>
+            </ng-collapse>
+
+            <!-- component -->
+            <div class="table-responsive">
+                <ng-generate-table [columns]="columns" [data]="data" tableClass="table table-sm table-bordered mb-4"></ng-generate-table>
             </div>
     `
 })
 
 export class GTSimpleExampleComponent {
+
+    toggleCode?: boolean;
 
     columns: NgGenerateTableColumns[] = [
         { label: 'Name', field: 'name' },
