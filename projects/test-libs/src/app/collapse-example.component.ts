@@ -3,8 +3,8 @@ import { Component } from '@angular/core';
 @Component({
     selector: 'collapse-example',
     template: `
-            <div class="d-flex align-items-center">
-                <h1 class="fs-3 fw-light me-3">Drag and Drop File</h1>
+            <div class="d-flex align-items-center border-bottom pb-1 mb-3">
+                <h1 class="fs-3 fw-light me-3 mb-0">Collapse</h1>
                 <button class="btn btn-sm btn-secondary py-0" type="button" data-bs-toggle="collapse" data-bs-target="#collapse-code">
                      <i class="bi bi-code me-1"></i> CODE
                 </button>

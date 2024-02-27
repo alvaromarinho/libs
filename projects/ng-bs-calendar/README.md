@@ -41,15 +41,13 @@ calendar: CalendarData[] = [{
     start: '2023-11-21T09:00:00',
     end: '2023-11-21T14:00:00',
     title: 'title 1',
-    description: 'description 1',
-    color: '#ff0000cc'
+    color: '#ff0000'
 }, {
     id: 456,
     start: '2023-11-23T13:00:00',
     end: '2023-11-25T17:00:00',
     title: 'title 2',
-    description: 'description 2',
-    color: '#0000ffcc'
+    color: '#0000ff'
 }]
 
 log($event: any) {

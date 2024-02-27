@@ -6,7 +6,7 @@ import { NgBsCalendarComponent } from 'ng-bs-calendar';
     template: `
         <div class="d-flex align-items-center justify-content-between mb-2">
             <div class="d-flex align-items-center">
-                <h1 class="fs-3 fw-light me-3 mb-0">Drag and Drop File</h1>
+                <h1 class="fs-3 fw-light me-3 mb-0">Bootstrap Calendar</h1>
                 <button class="btn btn-sm btn-secondary py-0" type="button" data-bs-toggle="collapse" data-bs-target="#bs-calendar-code">
                     <i class="bi bi-code me-1"></i> CODE
                 </button>

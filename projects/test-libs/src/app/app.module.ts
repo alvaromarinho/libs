@@ -9,28 +9,30 @@ import { NgBsCalendarModule } from 'ng-bs-calendar';
 import { NgBsModalModule } from 'ng-bs-modal';
 
 import { GTClassPipeExampleComponent, GTManualTagsComponent, GTRowClickExampleComponent, GTSimpleExampleComponent } from './generate-table-example';
-import { DDExampleComponent } from './dd-example.component';
+import { DdFileExampleComponent } from './dd-file-example.component';
 import { CollapseExampleComponent } from './collapse-example.component';
 import { BsCalendarExampleComponent } from './bs-calendar-example.component';
+import { BsModalExampleComponent } from './bs-modal-example.component';
 
 @NgModule({
     declarations: [
         AppComponent,
-        GTSimpleExampleComponent,
+        BsCalendarExampleComponent,
+        BsModalExampleComponent,
+        CollapseExampleComponent,
+        DdFileExampleComponent,
+        GTClassPipeExampleComponent,
         GTManualTagsComponent,
         GTRowClickExampleComponent,
-        GTClassPipeExampleComponent,
-        DDExampleComponent,
-        CollapseExampleComponent,
-        BsCalendarExampleComponent,
+        GTSimpleExampleComponent,
     ],
     imports: [
         BrowserModule,
-        NgCollapseModule,
-        NgGenerateTableModule,
-        NgDdFileModule,
         NgBsCalendarModule,
         NgBsModalModule,
+        NgCollapseModule,
+        NgDdFileModule,
+        NgGenerateTableModule,
     ],
     providers: [],
     bootstrap: [AppComponent]

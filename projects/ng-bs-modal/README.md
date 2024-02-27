@@ -1,24 +1,80 @@
 # NgBsModal
+Modal Service for Angular and Bootstrap 5.
 
-This library was generated with [Angular CLI](https://github.com/angular/angular-cli) version 15.1.0.
+## Getting started
+### Step 1: Install `ng-bs-modal`
 
-## Code scaffolding
+#### NPM
+```shell
+npm install --save ng-bs-modal
+```
+#### YARN
+```shell
+yarn add ng-bs-modal
+```
+### Step 2: Import the NgBsModalModule
+```js
+import { NgBsModalModule } from 'ng-bs-modal';
 
-Run `ng generate component component-name --project ng-bs-modal` to generate a new component. You can also use `ng generate directive|pipe|service|class|guard|interface|enum|module --project ng-bs-modal`.
-> Note: Don't forget to add `--project ng-bs-modal` or else it will be added to the default project in your `angular.json` file. 
+@NgModule({
+  declarations: [...],
+  imports: [NgBsModalModule],
+  bootstrap: [...]
+})
+export class AppModule {}
+```
 
-## Build
+### Step 3: Add ng-bs-modal tag
+Add in `app-component.html`
 
-Run `ng build ng-bs-modal` to build the project. The build artifacts will be stored in the `dist/` directory.
+```html
+<ng-bs-modal></ng-bs-modal>
+```
 
-## Publishing
+### Usage
+Data source:
+```js
+constructor(private modalService: NgBsModalService) {}
 
-After building your library with `ng build ng-bs-modal`, go to the dist folder `cd dist/ng-bs-modal` and run `npm publish`.
+showModal(modalBody: TemplateRef<any>) {
+    this.modalService.open({
+        header: 'Modal',
+        body: modalBody
+    }, { 
+        customClass: { modalHeader: 'bg-danger text-white' }
+    })
+}
+```
 
-## Running unit tests
+In template:
+```html
+<button type="button" class="btn btn-primary" (click)="showModal(modalBody)">Show Modal</button>
 
-Run `ng test ng-bs-modal` to execute the unit tests via [Karma](https://karma-runner.github.io).
+<ng-template #modalBody>
+    <img src="https://placehold.co/800x400" alt="placeholder">
+</ng-template>
+```
 
-## Further help
+## Interfaces
+```js
+ModalService.open(content: NgBsModalContent | TemplateRef<any>, options?: NgBsModalOptions)
 
-To get more help on the Angular CLI use `ng help` or go check out the [Angular CLI Overview and Command Reference](https://angular.io/cli) page.
+NgBsModalContent {
+    body: TemplateRef<any> | string,
+    header?: TemplateRef<any> | string,
+    footer?: TemplateRef<any>
+}
+
+NgBsModalOptions {
+    disabledBodyScroll?: boolean;
+    size?: 'sm' | 'lg' | 'xl',
+    staticBackdrop?: boolean,
+    withoutClose?: boolean,
+    customClass?: {
+        modal?: string;
+        modalHeader?: string,
+        modalBody?: string;
+        modalFooter?: string,
+    }
+}
+```

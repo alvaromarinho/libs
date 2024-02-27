@@ -4,8 +4,8 @@ import { NgGenerateTableColumns } from 'ng-generate-table';
 @Component({
     selector: 'gt-manual-tags',
     template: `
-        <div class="d-flex align-items-center">
-            <h1 class="fs-3 fw-light me-3">Manual <code>&lt;thead&gt;</code>&nbsp;&nbsp;<code>&lt;tbody&gt;</code>&nbsp;&nbsp;<code>&lt;tfoot&gt;</code></h1>
+        <div class="d-flex align-items-center mb-2">
+            <h1 class="fs-3 fw-light me-3 mb-0">Manual <code>&lt;thead&gt;</code>&nbsp;&nbsp;<code>&lt;tbody&gt;</code>&nbsp;&nbsp;<code>&lt;tfoot&gt;</code></h1>
             <button class="btn btn-sm btn-secondary py-0" type="button" data-bs-toggle="collapse" data-bs-target="#table-manual-code">
                     <i class="bi bi-code me-1"></i> CODE
             </button>
