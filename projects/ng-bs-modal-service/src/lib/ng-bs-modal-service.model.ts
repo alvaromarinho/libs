@@ -1,6 +1,6 @@
 import { TemplateRef } from "@angular/core"
 
-export interface NgBsModalOptions {
+export interface NgBsModalServiceOptions {
     disabledBodyScroll?: boolean;
     size?: 'sm' | 'lg' | 'xl',
     staticBackdrop?: boolean,
@@ -13,14 +13,14 @@ export interface NgBsModalOptions {
     }
 }
 
-export interface NgBsModalContent {
+export interface NgBsModalServiceContent {
     header?: TemplateRef<any> | string,
     body: TemplateRef<any> | string,
     footer?: TemplateRef<any>
 }
 
-export interface NgBsModalData {
+export interface NgBsModalServiceData {
     open: boolean,
-    content?: TemplateRef<any> | NgBsModalContent,
-    options?: NgBsModalOptions
+    content?: TemplateRef<any> | NgBsModalServiceContent,
+    options?: NgBsModalServiceOptions
 }

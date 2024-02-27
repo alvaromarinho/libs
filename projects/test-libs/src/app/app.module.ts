@@ -6,7 +6,7 @@ import { NgGenerateTableModule } from 'ng-generate-table';
 import { NgDdFileModule } from 'ng-dd-file';
 import { NgCollapseModule } from 'ng-collapse';
 import { NgBsCalendarModule } from 'ng-bs-calendar';
-import { NgBsModalModule } from 'ng-bs-modal';
+import { NgBsModalServiceModule } from 'ng-bs-modal-service';
 
 import { GTClassPipeExampleComponent, GTManualTagsComponent, GTRowClickExampleComponent, GTSimpleExampleComponent } from './generate-table-example';
 import { DdFileExampleComponent } from './dd-file-example.component';
@@ -29,7 +29,7 @@ import { BsModalExampleComponent } from './bs-modal-example.component';
     imports: [
         BrowserModule,
         NgBsCalendarModule,
-        NgBsModalModule,
+        NgBsModalServiceModule,
         NgCollapseModule,
         NgDdFileModule,
         NgGenerateTableModule,

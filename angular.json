@@ -251,23 +251,23 @@
         }
       }
     },
-    "ng-bs-modal": {
+    "ng-bs-modal-service": {
       "projectType": "library",
-      "root": "projects/ng-bs-modal",
-      "sourceRoot": "projects/ng-bs-modal/src",
+      "root": "projects/ng-bs-modal-service",
+      "sourceRoot": "projects/ng-bs-modal-service/src",
       "prefix": "lib",
       "architect": {
         "build": {
           "builder": "@angular-devkit/build-angular:ng-packagr",
           "options": {
-            "project": "projects/ng-bs-modal/ng-package.json"
+            "project": "projects/ng-bs-modal-service/ng-package.json"
           },
           "configurations": {
             "production": {
-              "tsConfig": "projects/ng-bs-modal/tsconfig.lib.prod.json"
+              "tsConfig": "projects/ng-bs-modal-service/tsconfig.lib.prod.json"
             },
             "development": {
-              "tsConfig": "projects/ng-bs-modal/tsconfig.lib.json"
+              "tsConfig": "projects/ng-bs-modal-service/tsconfig.lib.json"
             }
           },
           "defaultConfiguration": "production"
@@ -275,7 +275,7 @@
         "test": {
           "builder": "@angular-devkit/build-angular:karma",
           "options": {
-            "tsConfig": "projects/ng-bs-modal/tsconfig.spec.json",
+            "tsConfig": "projects/ng-bs-modal-service/tsconfig.spec.json",
             "polyfills": [
               "zone.js",
               "zone.js/testing"

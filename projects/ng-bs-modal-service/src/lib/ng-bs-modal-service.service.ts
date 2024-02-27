@@ -1,19 +1,19 @@
 import { Injectable, TemplateRef } from '@angular/core';
 import { Observable, Subject } from 'rxjs';
-import { NgBsModalContent, NgBsModalData, NgBsModalOptions } from './ng-bs-modal.model';
+import { NgBsModalServiceContent, NgBsModalServiceData, NgBsModalServiceOptions } from './ng-bs-modal-service.model';
 
 @Injectable({
     providedIn: 'root'
 })
 export class NgBsModalService {
 
-    private subject = new Subject<NgBsModalData>()
+    private subject = new Subject<NgBsModalServiceData>()
 
     get(): Observable<any> {
         return this.subject.asObservable();
     }
 
-    open(content: NgBsModalContent | TemplateRef<any>, options?: NgBsModalOptions) {
+    open(content: NgBsModalServiceContent | TemplateRef<any>, options?: NgBsModalServiceOptions) {
         options = options || {}
         this.subject.next({ open: true, content, options });
     }

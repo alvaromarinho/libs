@@ -1,34 +1,34 @@
-# NgBsModal
+# NgBsModalService
 Modal Service for Angular and Bootstrap 5.
 
 ## Getting started
-### Step 1: Install `ng-bs-modal`
+### Step 1: Install `ng-bs-modal-service`
 
 #### NPM
 ```shell
-npm install --save ng-bs-modal
+npm install --save ng-bs-modal-service
 ```
 #### YARN
 ```shell
-yarn add ng-bs-modal
+yarn add ng-bs-modal-service
 ```
-### Step 2: Import the NgBsModalModule
+### Step 2: Import the NgBsModalServiceModule
 ```js
-import { NgBsModalModule } from 'ng-bs-modal';
+import { NgBsModalServiceModule } from 'ng-bs-modal-service';
 
 @NgModule({
   declarations: [...],
-  imports: [NgBsModalModule],
+  imports: [NgBsModalServiceModule],
   bootstrap: [...]
 })
 export class AppModule {}
 ```
 
-### Step 3: Add ng-bs-modal tag
+### Step 3: Add ng-bs-modal-service tag
 Add in `app-component.html`
 
 ```html
-<ng-bs-modal></ng-bs-modal>
+<ng-bs-modal-service></ng-bs-modal-service>
 ```
 
 ### Usage
@@ -57,15 +57,15 @@ In template:
 
 ## Interfaces
 ```js
-ModalService.open(content: NgBsModalContent | TemplateRef<any>, options?: NgBsModalOptions)
+ModalService.open(content: NgBsModalServiceContent | TemplateRef<any>, options?: NgBsModalServiceOptions)
 
-NgBsModalContent {
+NgBsModalServiceContent {
     body: TemplateRef<any> | string,
     header?: TemplateRef<any> | string,
     footer?: TemplateRef<any>
 }
 
-NgBsModalOptions {
+NgBsModalServiceOptions {
     disabledBodyScroll?: boolean;
     size?: 'sm' | 'lg' | 'xl',
     staticBackdrop?: boolean,

@@ -1,8 +1,8 @@
 import { TestBed } from '@angular/core/testing';
 
-import { NgBsModalService } from './ng-bs-modal.service';
+import { NgBsModalService } from './ng-bs-modal-service.service';
 
-describe('NgBsModalService', () => {
+describe('NgBsModalServiceService', () => {
   let service: NgBsModalService;
 
   beforeEach(() => {

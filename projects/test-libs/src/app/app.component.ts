@@ -1,5 +1,5 @@
 import { Component, OnInit, TemplateRef } from '@angular/core';
-import { NgBsModalService } from 'ng-bs-modal';
+import { NgBsModalService } from 'ng-bs-modal-service';
 
 @Component({
     selector: 'app-root',

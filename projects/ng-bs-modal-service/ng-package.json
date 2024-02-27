@@ -1,6 +1,6 @@
 {
   "$schema": "../../node_modules/ng-packagr/ng-package.schema.json",
-  "dest": "../../dist/ng-bs-modal",
+  "dest": "../../dist/ng-bs-modal-service",
   "lib": {
     "entryFile": "src/public-api.ts"
   }

@@ -1,5 +1,5 @@
 import { Component, TemplateRef } from '@angular/core';
-import { NgBsModalService } from 'ng-bs-modal';
+import { NgBsModalService } from 'ng-bs-modal-service';
 
 @Component({
     selector: 'bs-modal-example',
@@ -11,7 +11,7 @@ import { NgBsModalService } from 'ng-bs-modal';
                 </button>
             </div>
             <div class="mb-3">
-                <ng-bs-modal></ng-bs-modal>
+                <ng-bs-modal-service></ng-bs-modal-service>
                 <button type="button" class="btn btn-primary px-5" (click)="showModal(modalBody)">Show Modal</button>
                 <ng-template #modalBody>
                     <img src="https://placehold.co/800x400" alt="placeholder">

@@ -1,13 +1,13 @@
 import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
-import { NgBsModalService } from './ng-bs-modal.service';
-import { NgBsModalData } from './ng-bs-modal.model';
+import { NgBsModalService } from './ng-bs-modal-service.service';
+import { NgBsModalServiceData } from './ng-bs-modal-service.model';
 import { Modal } from 'bootstrap';
 
 @Component({
-    selector: 'ng-bs-modal',
-    templateUrl: './ng-bs-modal.component.html'
+    selector: 'ng-bs-modal-service',
+    templateUrl: './ng-bs-modal-service.component.html'
 })
-export class NgBsModalComponent implements OnInit {
+export class NgBsModalServiceComponent implements OnInit {
 
     modal: Modal | undefined;
     modalData: any;
@@ -20,7 +20,7 @@ export class NgBsModalComponent implements OnInit {
     ) { }
 
     ngOnInit() {
-        this.modalService.get().subscribe((modalData: NgBsModalData) => {
+        this.modalService.get().subscribe((modalData: NgBsModalServiceData) => {
             document.addEventListener('hidden.bs.modal', () => this.modal && this.closeModal());
             if (modalData.open) {
                 this.modalQueue.push(modalData);
@@ -39,7 +39,7 @@ export class NgBsModalComponent implements OnInit {
         return typeof variable === 'string';
     }
 
-    private showModal(modal: NgBsModalData) {
+    private showModal(modal: NgBsModalServiceData) {
         this.modalData = modal;
         this.changeDetectorRef.detectChanges();
         this.modal = this.modal || new Modal('#modal');
