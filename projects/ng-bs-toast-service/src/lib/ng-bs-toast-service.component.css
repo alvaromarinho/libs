@@ -1,0 +1,4 @@
+.toast-container { z-index: 2000; top: .5rem; right: .5rem; }
+.toast { --bs-toast-spacing: 0.5rem; position: relative; width: 360px; }
+.toast .btn-close { position: absolute; top: .5rem; right: .5rem; }
+.toast.text-bg-warning { background-color: #ffa600!important; color: white!important; }

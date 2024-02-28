@@ -8,18 +8,23 @@
     <ng-collapse [toggle]="toggleNav">
         <ul class="navbar-nav px-3">
             <li class="nav-item">
-                <button class="nav-link" (click)="changePage('ngBsModalService')">
-                    ng-bs-modal-service
-                </button>
-            </li>
-            <li class="nav-item">
                 <button class="nav-link" (click)="changePage('ngBsCalendar')">
                     ng-bs-calendar
                 </button>
             </li>
             <li class="nav-item">
-                <button class="nav-link" (click)="changePage('ngGenerateTable')">
-                    ng-generate-table
+                <button class="nav-link" (click)="changePage('ngBsModalService')">
+                    ng-bs-modal-service
+                </button>
+            </li>
+            <li class="nav-item">
+                <button class="nav-link" (click)="changePage('ngBsToastService')">
+                    ng-bs-toast-service
+                </button>
+            </li>
+            <li class="nav-item">
+                <button class="nav-link" (click)="changePage('ngCollapse')">
+                    ng-collapse
                 </button>
             </li>
             <li class="nav-item">
@@ -28,8 +33,8 @@
                 </button>
             </li>
             <li class="nav-item">
-                <button class="nav-link" (click)="changePage('ngCollapse')">
-                    ng-collapse
+                <button class="nav-link" (click)="changePage('ngGenerateTable')">
+                    ng-generate-table
                 </button>
             </li>
         </ul>
@@ -39,34 +44,45 @@
 <div class="row g-0 h-100">
     <div class="d-none d-md-block col-md-3 col-xxl-2 border-end">
         <div class="list-group list-group-flush" id="list-tab" role="tablist">
-            <button class="list-group-item list-group-item-action" [ngClass]="{'active': pages.ngBsModalService}" (click)="changePage('ngBsModalService')">
-                ng-bs-modal-service
-            </button>
             <button class="list-group-item list-group-item-action" [ngClass]="{'active': pages.ngBsCalendar}" (click)="changePage('ngBsCalendar')">
                 ng-bs-calendar
             </button>
-            <button class="list-group-item list-group-item-action" [ngClass]="{'active': pages.ngGenerateTable}" (click)="changePage('ngGenerateTable')">
-                ng-generate-table
+            <button class="list-group-item list-group-item-action" [ngClass]="{'active': pages.ngBsModalService}" (click)="changePage('ngBsModalService')">
+                ng-bs-modal-service
             </button>
-            <button class="list-group-item list-group-item-action" [ngClass]="{'active': pages.ngDdFile}" (click)="changePage('ngDdFile')">
-                ng-dd-file
+            <button class="list-group-item list-group-item-action" [ngClass]="{'active': pages.ngBsToastService}" (click)="changePage('ngBsToastService')">
+                ng-bs-toast-service
             </button>
             <button class="list-group-item list-group-item-action" [ngClass]="{'active': pages.ngCollapse}" (click)="changePage('ngCollapse')">
                 ng-collapse
             </button>
+            <button class="list-group-item list-group-item-action" [ngClass]="{'active': pages.ngDdFile}" (click)="changePage('ngDdFile')">
+                ng-dd-file
+            </button>
+            <button class="list-group-item list-group-item-action" [ngClass]="{'active': pages.ngGenerateTable}" (click)="changePage('ngGenerateTable')">
+                ng-generate-table
+            </button>
         </div>
     </div>
     <div class="col-12 col-md-9 col-xxl-10 h-100 overflow-auto">
+        <div class="p-3" [ngClass]="{'d-none': !pages.ngBsCalendar}">
+            <bs-calendar-example></bs-calendar-example>
+        </div>
         <div class="p-3" [ngClass]="{'d-none': !pages.ngBsModalService}">
             <bs-modal-example></bs-modal-example>
         </div>
-        <div class="p-3" [ngClass]="{'d-none': !pages.ngBsCalendar}">
-            <bs-calendar-example></bs-calendar-example>
+        <div class="p-3" [ngClass]="{'d-none': !pages.ngBsToastService}">
+            <bs-toast-example></bs-toast-example>
+        </div>
+        <div class="p-3" [ngClass]="{'d-none': !pages.ngCollapse}">
+            <collapse-example></collapse-example>
+        </div>
+        <div class="p-3" [ngClass]="{'d-none': !pages.ngDdFile}">
+            <dd-file-example></dd-file-example>
         </div>
 
         <!-- NG-GENERATE-TABLE -->
         <div class="p-3" [ngClass]="{'d-none': !pages.ngGenerateTable}">
-
             <ul class="nav nav-tabs" role="tablist">
                 <li class="nav-item" role="presentation">
                     <button class="nav-link active" id="gtse-tab" data-bs-toggle="tab" data-bs-target="#gtse" type="button" role="tab">Simple Example</button>
@@ -96,11 +112,5 @@
                 </div>
             </div>
         </div>
-
-        <div class="p-3" [ngClass]="{'d-none': !pages.ngDdFile}">
-            <dd-file-example></dd-file-example>
-        </div>
-        <div class="p-3" [ngClass]="{'d-none': !pages.ngCollapse}">
-            <collapse-example></collapse-example>
-        </div>
     </div>
+</div>

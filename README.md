@@ -6,3 +6,4 @@
 ## Projects Angular + Bootstrap 5
 * [ng-bs-calendar](https://github.com/alvaromarinho/libs/tree/master/projects/ng-bs-calendar): Calendar with weekly view
 * [ng-bs-modal-service](https://github.com/alvaromarinho/libs/tree/master/projects/ng-bs-modal-service): Bootstrap modal service
+* [ng-bs-toast-service](https://github.com/alvaromarinho/libs/tree/master/projects/ng-bs-toast-service): Bootstrap toast service

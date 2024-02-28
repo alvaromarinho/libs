@@ -3,23 +3,26 @@ import { BrowserModule } from '@angular/platform-browser';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 
 import { AppComponent } from './app.component';
-import { NgGenerateTableModule } from 'ng-generate-table';
-import { NgDdFileModule } from 'ng-dd-file';
-import { NgCollapseModule } from 'ng-collapse';
 import { NgBsCalendarModule } from 'ng-bs-calendar';
 import { NgBsModalServiceModule } from 'ng-bs-modal-service';
+import { NgCollapseModule } from 'ng-collapse';
+import { NgDdFileModule } from 'ng-dd-file';
+import { NgGenerateTableModule } from 'ng-generate-table';
 
-import { GTClassPipeExampleComponent, GTManualTagsComponent, GTRowClickExampleComponent, GTSimpleExampleComponent } from './generate-table-example';
-import { DdFileExampleComponent } from './dd-file-example.component';
-import { CollapseExampleComponent } from './collapse-example.component';
 import { BsCalendarExampleComponent } from './bs-calendar-example.component';
 import { BsModalExampleComponent } from './bs-modal-example.component';
+import { BsToastExampleComponent } from './bs-toast-example.component';
+import { CollapseExampleComponent } from './collapse-example.component';
+import { DdFileExampleComponent } from './dd-file-example.component';
+import { GTClassPipeExampleComponent, GTManualTagsComponent, GTRowClickExampleComponent, GTSimpleExampleComponent } from './generate-table-example';
+import { NgBsToastServiceModule } from 'ng-bs-toast-service';
 
 @NgModule({
     declarations: [
         AppComponent,
         BsCalendarExampleComponent,
         BsModalExampleComponent,
+        BsToastExampleComponent,
         CollapseExampleComponent,
         DdFileExampleComponent,
         GTClassPipeExampleComponent,
@@ -32,6 +35,7 @@ import { BsModalExampleComponent } from './bs-modal-example.component';
         BrowserAnimationsModule,
         NgBsCalendarModule,
         NgBsModalServiceModule,
+        NgBsToastServiceModule,
         NgCollapseModule,
         NgDdFileModule,
         NgGenerateTableModule,

@@ -283,6 +283,39 @@
           }
         }
       }
+    },
+    "ng-bs-toast-service": {
+      "projectType": "library",
+      "root": "projects/ng-bs-toast-service",
+      "sourceRoot": "projects/ng-bs-toast-service/src",
+      "prefix": "lib",
+      "architect": {
+        "build": {
+          "builder": "@angular-devkit/build-angular:ng-packagr",
+          "options": {
+            "project": "projects/ng-bs-toast-service/ng-package.json"
+          },
+          "configurations": {
+            "production": {
+              "tsConfig": "projects/ng-bs-toast-service/tsconfig.lib.prod.json"
+            },
+            "development": {
+              "tsConfig": "projects/ng-bs-toast-service/tsconfig.lib.json"
+            }
+          },
+          "defaultConfiguration": "production"
+        },
+        "test": {
+          "builder": "@angular-devkit/build-angular:karma",
+          "options": {
+            "tsConfig": "projects/ng-bs-toast-service/tsconfig.spec.json",
+            "polyfills": [
+              "zone.js",
+              "zone.js/testing"
+            ]
+          }
+        }
+      }
     }
   }
 }

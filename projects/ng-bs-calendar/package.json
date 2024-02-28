@@ -1,6 +1,10 @@
 {
   "name": "ng-bs-calendar",
-  "version": "0.0.4",
+  "version": "0.0.5",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/alvaromarinho/libs/tree/master/projects/ng-bs-calendar"
+  },
   "peerDependencies": {
     "@angular/common": "^15.1.0",
     "@angular/core": "^15.1.0",

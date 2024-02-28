@@ -55,7 +55,7 @@ In template:
 </ng-template>
 ```
 
-## Interfaces
+### Interfaces
 ```js
 ModalService.open(content: NgBsModalServiceContent | TemplateRef<any>, options?: NgBsModalServiceOptions)
 

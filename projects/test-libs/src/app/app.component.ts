@@ -9,11 +9,12 @@ export class AppComponent {
     toggleNav?: boolean;
 
     pages: any = {
-        ngBsModalService: true,
-        ngBsCalendar: false,
-        ngGenerateTable: false,
+        ngBsCalendar: true,
+        ngBsModalService: false,
+        ngBsToastService: false,
+        ngCollapse: false,
         ngDdFile: false,
-        ngCollapse: false
+        ngGenerateTable: false,
     }
     
     changePage(page: string) {

@@ -14,6 +14,8 @@ import { NgBsModalService } from 'ng-bs-modal-service';
             <!-- code -->
             <ng-collapse [toggle]="toggleCode">
                 <div class="style-code rounded mb-3">
+Instalation (app.component.html):
+<pre><code class="language-html">&lt;ng-bs-modal-service&gt;&lt;/ng-bs-modal-service&gt;</code></pre>
 Typescript:
 <pre><code class="language-js">constructor(private modalService: NgBsModalService) &#123; &#125;
 

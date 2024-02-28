@@ -1,0 +1,19 @@
+<div class="toast-container position-fixed">
+    <div class="toast text-bg-{{ toast.style }}" [id]="'toast_'+toast.id" role="alert" *ngFor="let toast of toastData">
+        <div class="toast-body d-flex">
+            <button type="button" class="btn-close btn-close-white btn-sm p-2" data-bs-dismiss="toast" aria-label="Close"></button>
+            <div class="flex-shrink-0 h-100">
+                <i class="bi fs-3 lh-sm" [ngClass]="{
+                        'bi-check-circle-fill': toast.style == 'success', 
+                        'bi-chat-text-fill': toast.style == 'primary', 
+                        'bi-exclamation-circle-fill': toast.style == 'warning', 
+                        'bi-x-circle-fill': toast.style == 'danger'
+                    }"></i>
+            </div>
+            <div class="flex-grow-1 ms-2 ps-1 me-3">
+                <div class="lh-sm fw-bold">{{ toast.title }}</div>
+                <div class="lh-sm mt-1" *ngIf="toast.message">{{ toast.message }}</div>
+            </div>
+        </div>
+    </div>
+</div>

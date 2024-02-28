@@ -18,6 +18,9 @@
       "ng-bs-modal-service": [
         "dist/ng-bs-modal-service"
       ],
+      "ng-bs-toast-service": [
+        "dist/ng-bs-toast-service"
+      ],
       "ng-collapse": [
         "dist/ng-collapse"
       ],
