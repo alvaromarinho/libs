@@ -9,7 +9,7 @@ import { Component } from '@angular/core';
                     <i class="bi bi-code me-1"></i> CODE
             </button>
         </div>
-        <button class="btn px-5 mb-3" [ngClass]="toggle ? 'btn-danger' : 'btn-success'" (click)="toggle = !toggle">
+        <button class="btn px-5 mb-3" [ngClass]="toggle ? 'btn-danger' : 'btn-primary'" (click)="toggle = !toggle">
             {{ toggle ? 'Hide Collapse' : 'Show Collapse' }}
         </button>
         <ng-collapse [toggle]="toggle">
