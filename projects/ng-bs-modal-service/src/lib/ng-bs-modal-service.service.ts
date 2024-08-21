@@ -14,7 +14,7 @@ export class NgBsModalService {
     }
 
     open(content: NgBsModalServiceContent | TemplateRef<any>, options?: NgBsModalServiceOptions) {
-        options = options || {}
+        options = options || {} as any;
         this.subject.next({ open: true, content, options });
     }
 

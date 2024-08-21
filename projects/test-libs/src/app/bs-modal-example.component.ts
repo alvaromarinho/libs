@@ -38,7 +38,10 @@ Template:
 
             <!-- component -->
             <ng-bs-modal-service></ng-bs-modal-service>
-            <button type="button" class="btn btn-primary px-5" (click)="showModal(modalBody)">Show Modal</button>
+            <div class="d-flex justify-content-between">
+                <button type="button" class="btn btn-primary px-5" (click)="showModal(modalBody)">Show Modal</button>
+                <button type="button" class="btn btn-primary px-5" (click)="showModal(modalBody, element)" #element>Show Modal like Popover</button>
+            </div>
             <ng-template #modalBody>
                 <img src="https://placehold.co/766x400" alt="placeholder">
             </ng-template>
@@ -51,14 +54,20 @@ export class BsModalExampleComponent {
 
     constructor(private modalService: NgBsModalService) {}
 
-    showModal(modalBody: TemplateRef<any>) {
+    showModal(modalBody: TemplateRef<any>, element?: HTMLElement) {
+        const options: any = element ?  { 
+            size: 'lg',
+            popoverTo: element,
+            customClass: { modalHeader: 'bg-danger text-white' }
+        } : { 
+            size: 'lg',
+            customClass: { modalHeader: 'bg-danger text-white' }
+        }
+
         this.modalService.open({
             body: modalBody,
             header: 'Modal',
-        }, { 
-            size: 'lg',
-            customClass: { modalHeader: 'bg-danger text-white' }
-        })
+        }, options)
     }
 
 }

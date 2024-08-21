@@ -5,6 +5,7 @@ export interface NgBsModalServiceOptions {
     size?: 'sm' | 'lg' | 'xl',
     staticBackdrop?: boolean,
     withoutClose?: boolean,
+    popoverTo?: HTMLElement,
     customClass?: {
         modal?: string;
         modalHeader?: string,
