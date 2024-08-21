@@ -52,22 +52,12 @@ export class BsModalExampleComponent {
 
     toggleCode?: boolean;
 
-    constructor(private modalService: NgBsModalService) {}
+    constructor(private modalService: NgBsModalService) { }
 
-    showModal(modalBody: TemplateRef<any>, element?: HTMLElement) {
-        const options: any = element ?  { 
-            size: 'lg',
-            popoverTo: element,
-            customClass: { modalHeader: 'bg-danger text-white' }
-        } : { 
-            size: 'lg',
-            customClass: { modalHeader: 'bg-danger text-white' }
-        }
-
-        this.modalService.open({
-            body: modalBody,
-            header: 'Modal',
-        }, options)
+    showModal(body: TemplateRef<any>, element?: HTMLElement) {
+        let options: any = { size: 'lg', customClass: { modalHeader: 'bg-danger text-white' } }
+        options = element ? { ...options, popoverTo: element } : options;
+        this.modalService.open({ header: 'Modal', body }, options);
     }
 
 }

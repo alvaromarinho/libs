@@ -76,10 +76,11 @@ export class NgBsModalServiceComponent implements OnInit {
         const spaceToBottom = window.innerHeight - position.bottom;
         const modalHeight = window.innerHeight/2.5;
         
-        modalDialogEl!.style.position = 'fixed';
-        modalDialogEl!.classList.remove('modal-dialog-centered');
-        modalDialogEl!.style.maxHeight = modalHeight + 'px';
         modalContentEl!.classList.add('shadow');
+        modalDialogEl!.classList.remove('modal-dialog-centered');
+        modalDialogEl!.style.position = 'fixed';
+        modalDialogEl!.style.maxHeight = modalHeight + 'px';
+        modalDialogEl!.style.width = '100%';
 
         // align modal to the right if there is enough space
         if (spaceToRight > modalWidth) { 
