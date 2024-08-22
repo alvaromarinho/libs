@@ -13,7 +13,7 @@ export class NgBsModalServiceComponent implements OnInit {
     modal: Modal | undefined;
     modalData: any;
     modalQueue: any[] = [];
-    currentModalIndex?: number;
+    keepInQueue?: boolean;
 
     constructor(
         private changeDetectorRef: ChangeDetectorRef,
@@ -21,15 +21,10 @@ export class NgBsModalServiceComponent implements OnInit {
     ) { }
 
     ngOnInit() {
-        this.modalService.get().subscribe((modalData: NgBsModalServiceData) => {
-            document.addEventListener('hidden.bs.modal', () => this.modal && this.closeModal());
-            if (modalData.open) {
-                this.modalQueue.push(modalData);
-                !this.modal && this.showModal(modalData)
-            } else {
-                this.modal?.hide();
-            }
-        })
+        document.addEventListener('hidden.bs.modal', () => this.closeModal());
+        this.modalService.get().subscribe((modalData: NgBsModalServiceData) =>
+            modalData.open ? this.handleModalQueue(modalData) : this.modal?.hide()
+        )
     }
 
     isModalContent(variable: any) {
@@ -40,22 +35,41 @@ export class NgBsModalServiceComponent implements OnInit {
         return typeof variable === 'string';
     }
 
+    private handleModalQueue(modal: NgBsModalServiceData) {
+        if (this.modalQueue.length > 0) {
+            this.keepInQueue = true;
+            const lastModal = this.modalQueue[this.modalQueue.length - 1];
+            this.setModalData(lastModal);
+            this.modal?.hide();
+            this.modalQueue.map((modal) => modal.open = false);
+            setTimeout(() => this.showModal(modal), 350); // wait modal close animation
+        } else {
+            this.showModal(modal);
+        }
+    }
+
     private showModal(modal: NgBsModalServiceData) {
-        this.modalData = modal;
-        this.changeDetectorRef.detectChanges();
-        this.modal = this.modal || new Modal('#modal');
-
-        // popover
-        this.modalData.options.popoverTo ? this.createPopoverStyle() : this.removePopoverStyle();
-
+        this.modalQueue.push(modal);
+        this.setModalData(modal);
         this.modal!.show();
-        this.currentModalIndex = this.modalQueue.findIndex((modal) => modal == this.modalData)
     }
 
     private closeModal() {
-        this.modal = undefined;
-        this.modalQueue.splice(this.currentModalIndex!, 1);
-        this.modalQueue.length && this.showModal(this.modalQueue[0]);
+        !this.keepInQueue && this.modalQueue.splice(this.modalQueue.length - 1, 1);
+        this.keepInQueue = false;
+
+        if (this.modalQueue.length > 0) {
+            const lastModal = this.modalQueue[this.modalQueue.length - 1];
+            this.setModalData(lastModal);
+            this.modal?.show();
+        }
+    }
+
+    private setModalData(modal: NgBsModalServiceData) {
+        this.modalData = modal;
+        this.changeDetectorRef.detectChanges();
+        this.modalData.options.popoverTo ? this.createPopoverStyle() : this.removePopoverStyle();
+        this.modal = this.modal || new Modal('#modal');
     }
 
     private createPopoverStyle() {
@@ -69,13 +83,13 @@ export class NgBsModalServiceComponent implements OnInit {
             const modalBackDropEl = document.querySelector('.modal-backdrop') as HTMLElement;
             modalBackDropEl!.style.setProperty('--bs-backdrop-opacity', '0');
         }, 1);
-        
+
         const modalWidth = +window.getComputedStyle(modalDialogEl!).getPropertyValue('--bs-modal-width').slice(0, -2);
         const spaceToRight = (window.innerWidth - position.right + popoverTo.offsetWidth);
         const spaceToTop = position.top;
         const spaceToBottom = window.innerHeight - position.bottom;
-        const modalHeight = window.innerHeight/2.5;
-        
+        const modalHeight = window.innerHeight / 2.5;
+
         modalContentEl!.classList.add('shadow');
         modalDialogEl!.classList.remove('modal-dialog-centered');
         modalDialogEl!.style.position = 'fixed';
@@ -83,14 +97,14 @@ export class NgBsModalServiceComponent implements OnInit {
         modalDialogEl!.style.width = '100%';
 
         // align modal to the right if there is enough space
-        if (spaceToRight > modalWidth) { 
+        if (spaceToRight > modalWidth) {
             modalDialogEl!.style.left = position.left + 'px';
-            modalDialogEl!.style.setProperty('--arrow-left', `${popoverTo.offsetWidth/2 - 5}px`)
+            modalDialogEl!.style.setProperty('--arrow-left', `${popoverTo.offsetWidth / 2 - 5}px`)
         } else {
             modalDialogEl!.style.left = position.right - modalWidth + 'px';
-            modalDialogEl!.style.setProperty('--arrow-left', `${modalWidth - popoverTo.offsetWidth/2 - 5}px`)
+            modalDialogEl!.style.setProperty('--arrow-left', `${modalWidth - popoverTo.offsetWidth / 2 - 5}px`)
         }
-        
+
         // align modal to the top if there is enough space
         if (spaceToBottom < modalHeight) {
             modalEl!.classList.add('fade-down');
@@ -116,6 +130,11 @@ export class NgBsModalServiceComponent implements OnInit {
         const modalContentEl = document.getElementById('modal-content');
         modalContentEl!.removeAttribute('style');
         modalContentEl!.classList.remove('shadow');
+
+        setTimeout(() => {
+            const modalBackDropEl = document.querySelector('.modal-backdrop') as HTMLElement;
+            modalBackDropEl!.style.setProperty('--bs-backdrop-opacity', '0.5');
+        }, 1);
     }
 
 }
