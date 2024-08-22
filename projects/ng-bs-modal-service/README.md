@@ -58,6 +58,8 @@ In template:
 ### Interfaces
 ```js
 ModalService.open(content: NgBsModalServiceContent | TemplateRef<any>, options?: NgBsModalServiceOptions)
+ModalService.close() // close current modal
+ModalService.closeAll() // close all modal queue
 
 NgBsModalServiceContent {
     body: TemplateRef<any> | string,
@@ -70,6 +72,7 @@ NgBsModalServiceOptions {
     size?: 'sm' | 'lg' | 'xl',
     staticBackdrop?: boolean,
     withoutClose?: boolean,
+    popoverTo?: HTMLElement,
     customClass?: {
         modal?: string;
         modalHeader?: string,

@@ -14,6 +14,7 @@ export class NgBsModalServiceComponent implements OnInit {
     modalData: any;
     modalQueue: any[] = [];
     keepInQueue?: boolean;
+    action: 'open' | 'close' | 'closeAll' = 'close';
 
     constructor(
         private changeDetectorRef: ChangeDetectorRef,
@@ -22,9 +23,10 @@ export class NgBsModalServiceComponent implements OnInit {
 
     ngOnInit() {
         document.addEventListener('hidden.bs.modal', () => this.closeModal());
-        this.modalService.get().subscribe((modalData: NgBsModalServiceData) =>
-            modalData.open ? this.handleModalQueue(modalData) : this.modal?.hide()
-        )
+        this.modalService.get().subscribe((modalData: NgBsModalServiceData) => {
+            this.action = modalData.action;
+            this.action === 'open' ? this.handleModalQueue(modalData) : this.modal?.hide();
+        })
     }
 
     isModalContent(variable: any) {
@@ -55,7 +57,12 @@ export class NgBsModalServiceComponent implements OnInit {
     }
 
     private closeModal() {
-        !this.keepInQueue && this.modalQueue.splice(this.modalQueue.length - 1, 1);
+        if (this.action == 'closeAll') {
+            this.modalQueue = [];
+        } else if (!this.keepInQueue) {
+            this.modalQueue.splice(this.modalQueue.length - 1, 1);
+        }
+
         this.keepInQueue = false;
 
         if (this.modalQueue.length > 0) {

@@ -15,10 +15,14 @@ export class NgBsModalService {
 
     open(content: NgBsModalServiceContent | TemplateRef<any>, options?: NgBsModalServiceOptions) {
         options = options || {} as any;
-        this.subject.next({ open: true, content, options });
+        this.subject.next({ action: 'open', content, options });
     }
 
     close() {
-        this.subject.next({ open: false });
+        this.subject.next({ action: 'close' });
+    }
+
+    closeAll() {
+        this.subject.next({ action: 'closeAll' });
     }
 }
