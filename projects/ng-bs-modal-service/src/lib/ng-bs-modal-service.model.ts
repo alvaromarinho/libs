@@ -20,7 +20,7 @@ export interface NgBsModalServiceOptions {
     popoverTo?: HTMLElement,
     carousel?: {
         index: number,
-        images: { url: string, fileName: string }[]
+        images: { url: string, name: string }[]
     },
     customClass?: {
         modal?: string;

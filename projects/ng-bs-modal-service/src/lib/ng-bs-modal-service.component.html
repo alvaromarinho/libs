@@ -27,8 +27,8 @@
                         <div class="carousel-inner">
                             <div class="carousel-item h-100" *ngFor="let img of modalData.options.carousel.images; index as index"
                                 [ngClass]="{'active': index == currentImgIndex}">
-                                <img class="carousel-image" [src]="img.url" [alt]="img.fileName">
-                                <div class="carousel-caption d-none d-md-block" tabindex="-1">{{ img.fileName }}</div>
+                                <img class="carousel-image" [src]="img.url" [alt]="img.name">
+                                <div class="carousel-caption d-none d-md-block" tabindex="-1">{{ img.name }}</div>
                             </div>
                         </div>
                         <button class="carousel-control-prev" type="button" *ngIf="modalData.options.carousel.images.length > 1"
