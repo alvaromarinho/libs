@@ -4,20 +4,44 @@
     <div class="modal-dialog modal-dialog-centered modal-{{ modalData.options.size }}" id="modal-dialog"
         [ngClass]="{'modal-dialog-scrollable':!modalData.options.disabledBodyScroll}">
         <div class="modal-content" id="modal-content">
-            <ng-container [ngTemplateOutlet]="modalData.content" *ngIf="!isModalContent(modalData.content)"></ng-container>
-            <ng-container *ngIf="isModalContent(modalData.content)">
-                <ng-container *ngIf="modalData.content.header">
-                    <div class="modal-header py-2" [ngClass]="modalData.options.customClass && modalData.options.customClass.modalHeader ? modalData.options.customClass.modalHeader : ''">
-                        <ng-container [ngTemplateOutlet]="modalData.content.header" *ngIf="!isString(modalData.content.header)"></ng-container>
-                        <h5 class="modal-title" *ngIf="isString(modalData.content.header)">{{ modalData.content.header }}</h5>
-                        <button type="button" class="btn-close" data-bs-dismiss="modal" *ngIf="!modalData.options.withoutClose"
-                            [ngClass]="{'btn-close-white': modalData.options.headerColor && !['warning'].includes(modalData.options.headerColor)}">
-                        </button>
-                    </div>
-                </ng-container>
+            <ng-container [ngTemplateOutlet]="modalData.content" *ngIf="isModalContent(modalData.content)"></ng-container>
+            <ng-container *ngIf="!isModalContent(modalData.content)">
+                <div class="modal-header py-2" *ngIf="modalData.content.header"
+                    [ngClass]="modalData.options.customClass && modalData.options.customClass.modalHeader ? modalData.options.customClass.modalHeader : ''">
+                    <ng-container [ngTemplateOutlet]="modalData.content.header" *ngIf="!isString(modalData.content.header)"></ng-container>
+                    <h5 class="modal-title" *ngIf="isString(modalData.content.header)">{{ modalData.content.header }}</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" *ngIf="!modalData.options.withoutClose"
+                        [ngClass]="{'btn-close-white': modalData.options.headerColor && !['warning'].includes(modalData.options.headerColor)}">
+                    </button>
+                </div>
                 <div class="modal-body" [ngClass]="modalData.options.customClass && modalData.options.customClass.modalBody ? modalData.options.customClass.modalBody : ''">
                     <ng-container [ngTemplateOutlet]="modalData.content.body" *ngIf="!isString(modalData.content.body)"></ng-container>
                     <div *ngIf="isString(modalData.content.body)" [innerHtml]="modalData.content.body"></div>
+
+                    <!-- carousel -->
+                    <div id="carousel-{{carouselId}}" class="carousel slide" *ngIf="modalData.options.carousel">
+                        <div class="carousel-indicators">
+                            <button type="button" [attr.data-bs-target]="'#carousel-'+carouselId" [attr.data-bs-slide-to]="index"
+                                *ngFor="let img of modalData.options.carousel.images; index as index" [ngClass]="{'active': index == currentImgIndex}"></button>
+                        </div>
+                        <div class="carousel-inner">
+                            <div class="carousel-item h-100" *ngFor="let img of modalData.options.carousel.images; index as index"
+                                [ngClass]="{'active': index == currentImgIndex}">
+                                <img class="carousel-image" [src]="img.url" [alt]="img.fileName">
+                                <div class="carousel-caption d-none d-md-block" tabindex="-1">{{ img.fileName }}</div>
+                            </div>
+                        </div>
+                        <button class="carousel-control-prev" type="button" *ngIf="modalData.options.carousel.images.length > 1"
+                            [attr.data-bs-target]="'#carousel-'+carouselId" data-bs-slide="prev">
+                            <span class="carousel-control-prev-icon"></span>
+                            <span class="visually-hidden">Previous</span>
+                        </button>
+                        <button class="carousel-control-next" type="button" *ngIf="modalData.options.carousel.images.length > 1"
+                            [attr.data-bs-target]="'#carousel-'+carouselId" data-bs-slide="next">
+                            <span class="carousel-control-next-icon"></span>
+                            <span class="visually-hidden">Next</span>
+                        </button>
+                    </div>
                 </div>
                 <div class="modal-footer" *ngIf="modalData.content.footer"
                     [ngClass]="modalData.options.customClass && modalData.options.customClass.modalFooter ? modalData.options.customClass.modalFooter : ''">

@@ -3,6 +3,7 @@ import { NgBsModalService } from 'ng-bs-modal-service';
 
 @Component({
     selector: 'bs-modal-example',
+    styles: [`:host { --modal-image-height: 50vh; }`],
     template: `
             <div class="d-flex align-items-center border-bottom pb-1 mb-3">
                 <h1 class="fs-3 fw-light me-3 mb-0">Bootstrap Modal</h1>
@@ -38,12 +39,26 @@ Template:
 
             <!-- component -->
             <ng-bs-modal-service></ng-bs-modal-service>
-            <div class="d-flex justify-content-between">
+            <div class="d-flex align-items-end justify-content-between">
+                <button type="button" class="btn btn-success px-5" (click)="showPopover(modalBody, element)" #element>Show Modal like Popover</button>
                 <button type="button" class="btn btn-primary px-5" (click)="showModal(modalBody)">Show Modal</button>
-                <button type="button" class="btn btn-primary px-5" (click)="showModal(modalBody, element)" #element>Show Modal like Popover</button>
+                <button type="button" class="btn btn-secondary px-5" (click)="showModalContent(modalContent)">Show Modal Content</button>
             </div>
+            
+            <div class="d-flex overflow-auto mt-4">
+                <div [ngClass]="{'me-3': !last}" (click)="showModalImg(index)" *ngFor="let img of images; last as last; index as index">
+                    <img class="rounded" [src]="img.url" [alt]="img.fileName" height="100" width="100">
+                </div>
+            </div>
+            
             <ng-template #modalBody>
                 <img src="https://placehold.co/766x400" alt="placeholder">
+            </ng-template>
+
+            <ng-template #modalContent>
+                <div class="modal-header">Header</div>
+                <div class="modal-body">Body</div>
+                <div class="modal-footer">Footer</div>
             </ng-template>
     `
 })
@@ -51,13 +66,35 @@ Template:
 export class BsModalExampleComponent {
 
     toggleCode?: boolean;
+    images = [
+        { url: 'https://placehold.co/410x1210', fileName: 'Image 1' },
+        { url: 'https://placehold.co/420x220', fileName: 'Image 2' },
+        { url: 'https://placehold.co/830x830', fileName: 'Image 3' }
+    ];
 
     constructor(private modalService: NgBsModalService) { }
 
-    showModal(body: TemplateRef<any>, element?: HTMLElement) {
-        let options: any = { size: 'lg', customClass: { modalHeader: 'bg-danger text-white' } }
-        options = element ? { ...options, popoverTo: element } : options;
-        this.modalService.open({ header: 'Modal', body }, options);
+    showModal(body: TemplateRef<any>) {
+        this.modalService.open({ header: 'Modal', body });
+    }
+
+    showModalContent(content: TemplateRef<any>) {
+        this.modalService.open(content);
+    }
+
+    showModalImg(index: number) {
+        this.modalService.open(
+            { header: 'Carousel' },
+            { carousel: { index, images: this.images } }
+        );
+    }
+
+    showPopover(body: TemplateRef<any>, element: HTMLElement) {
+        this.modalService.open({ header: 'Modal', body }, {
+            size: 'lg',
+            popoverTo: element,
+            customClass: { modalHeader: 'bg-danger text-white' }
+        });
     }
 
 }

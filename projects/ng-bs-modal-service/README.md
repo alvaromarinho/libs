@@ -73,11 +73,22 @@ NgBsModalServiceOptions {
     staticBackdrop?: boolean,
     withoutClose?: boolean,
     popoverTo?: HTMLElement,
+    carousel?: {
+        index: number,
+        images: { url: string, fileName: string }[]
+    },
     customClass?: {
         modal?: string;
         modalHeader?: string,
         modalBody?: string;
         modalFooter?: string,
     }
+}
+```
+## CSS Variables
+
+```css
+:host {
+    --modal-image-height: 80vh;
 }
 ```

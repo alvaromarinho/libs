@@ -8,7 +8,7 @@ export interface NgBsModalServiceData {
 
 export interface NgBsModalServiceContent {
     header?: TemplateRef<any> | string,
-    body: TemplateRef<any> | string,
+    body?: TemplateRef<any> | string,
     footer?: TemplateRef<any>
 }
 
@@ -18,6 +18,10 @@ export interface NgBsModalServiceOptions {
     staticBackdrop?: boolean,
     withoutClose?: boolean,
     popoverTo?: HTMLElement,
+    carousel?: {
+        index: number,
+        images: { url: string, fileName: string }[]
+    },
     customClass?: {
         modal?: string;
         modalHeader?: string,
