@@ -1,6 +1,7 @@
-<div class="modal fade {{ modalData.options.modalClass }}" id="modal" tabindex="-1" *ngIf="modalData && modalData.options"
+<div class="modal fade" id="modal" tabindex="-1" *ngIf="modalData && modalData.options"
     [attr.data-bs-backdrop]="modalData.options.staticBackdrop ? 'static' : null"
-    [attr.data-bs-keyboard]="modalData.options.staticBackdrop ? 'false' : 'true'">
+    [attr.data-bs-keyboard]="modalData.options.staticBackdrop ? 'false' : 'true'"
+    [ngClass]="modalData.options.customClass && modalData.options.customClass.modal ? modalData.options.customClass.modal : ''">
     <div class="modal-dialog modal-dialog-centered modal-{{ modalData.options.size }}" id="modal-dialog"
         [ngClass]="{'modal-dialog-scrollable':!modalData.options.disabledBodyScroll}">
         <div class="modal-content" id="modal-content">
