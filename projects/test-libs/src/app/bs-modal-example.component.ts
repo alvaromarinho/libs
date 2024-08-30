@@ -47,11 +47,12 @@ Template:
             
             <div class="d-flex overflow-auto mt-4">
                 <div [ngClass]="{'me-3': !last}" (click)="showModalImg(index)" *ngFor="let img of images; last as last; index as index">
-                    <img class="rounded" [src]="img.url" [alt]="img.fileName" height="100" width="100">
+                    <img class="rounded" [src]="img.url" [alt]="img.name" height="100" width="100">
                 </div>
             </div>
             
             <ng-template #modalBody>
+                <input type="text">
                 <img src="https://placehold.co/766x400" alt="placeholder">
             </ng-template>
 
@@ -67,9 +68,9 @@ export class BsModalExampleComponent {
 
     toggleCode?: boolean;
     images = [
-        { url: 'https://placehold.co/410x1210', fileName: 'Image 1' },
-        { url: 'https://placehold.co/420x220', fileName: 'Image 2' },
-        { url: 'https://placehold.co/830x830', fileName: 'Image 3' }
+        { url: 'https://placehold.co/410x1210', name: 'Image 1' },
+        { url: 'https://placehold.co/420x220', name: 'Image 2' },
+        { url: 'https://placehold.co/830x830', name: 'Image 3' }
     ];
 
     constructor(private modalService: NgBsModalService) { }

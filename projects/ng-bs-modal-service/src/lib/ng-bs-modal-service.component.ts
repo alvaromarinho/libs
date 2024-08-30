@@ -31,7 +31,10 @@ export class NgBsModalServiceComponent implements OnInit {
     ) { }
 
     ngOnInit() {
-        document.addEventListener('shown.bs.modal', () => this.setCarouselEvents());
+        document.addEventListener('shown.bs.modal', () => {
+            if (!!document.getElementById(`carousel-${this.carouselId}`)) 
+                this.setCarouselEvents()
+        });
         document.addEventListener('hidden.bs.modal', () => {
             this.closeModal();
             this.cleanCarouselIndicator();
@@ -159,8 +162,8 @@ export class NgBsModalServiceComponent implements OnInit {
     private setCarouselEvents() {
         this.html.modal!.addEventListener('keydown', (e) => {
             const carousel = new Carousel(`#carousel-${this.carouselId}`);
-            if (carousel && e.keyCode == 37) carousel.prev();
-            if (carousel && e.keyCode == 39) carousel.next();
+            if (e.keyCode == 37) carousel.prev();
+            if (e.keyCode == 39) carousel.next();
         });
     }
 
