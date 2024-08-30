@@ -98,7 +98,6 @@ export class NgBsModalServiceComponent implements OnInit {
 
         if (this.modalData.options.carousel) {
             this.currentImgIndex = this.modalData.options.carousel.index;
-            console.log(this.modalData.options.carousel.images)
         }
     }
 
@@ -160,8 +159,8 @@ export class NgBsModalServiceComponent implements OnInit {
     private setCarouselEvents() {
         this.html.modal!.addEventListener('keydown', (e) => {
             const carousel = new Carousel(`#carousel-${this.carouselId}`);
-            if (e.keyCode == 37) carousel.prev();
-            if (e.keyCode == 39) carousel.next();
+            if (carousel && e.keyCode == 37) carousel.prev();
+            if (carousel && e.keyCode == 39) carousel.next();
         });
     }
 
