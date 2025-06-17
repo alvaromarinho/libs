@@ -38,7 +38,7 @@ Template:
 
             <!-- component -->
             <div class="table-responsive">
-                <ng-generate-table [columns]="columns" [data]="data" tableClass="table table-sm table-bordered mb-4"></ng-generate-table>
+                <ng-generate-table [mobileView]="mobileView" [columns]="columns" [data]="data" tableClass="table table-sm table-bordered mb-4"></ng-generate-table>
             </div>
     `
 })
@@ -47,11 +47,14 @@ export class GTSimpleExampleComponent {
 
     toggleCode?: boolean;
 
+    mobileView = window.innerWidth < 768;
+
     columns: NgGenerateTableColumns[] = [
         { label: 'Name', field: 'name' },
         { label: 'Email', field: 'email' },
         { label: 'Data', field: 'date' },
         {
+            isAction: true,
             template: (rowData: any) => `<button class="btn btn-sm btn-success" type="button">Click to show ${rowData.name}'s email</button>`,
             click: (rowData: any) => alert(rowData.email)
         }

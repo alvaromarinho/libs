@@ -26,20 +26,28 @@ export class AppModule {}
 
 ## Usage
 
+@Inputs and @Outputs
+```js
+@Input() data: any[];
+@Input() columns: NgGenerateTableColumns[];
+@Input() tableClass?: string;
+@Input() loading?: boolean;
+@Input() mobileView?: boolean;
+@Input() rowClickable?: boolean;
+@Output() rowClick = new EventEmitter();
+```
 Columns Interface:
 ```js
 NgGenerateTableColumns {
-    label?: string,
-    field?: string,
-
-    thClass?: string,
-    tdClass?: string,
-
-    pipe?: any,
-    pipeArgs?: any[],
-
-    template?: Function,
-    click?: Function
+    label?: string;
+    field?: string;
+    thClass?: string;
+    tdClass?: string;
+    pipe?: any;
+    pipeArgs?: any[];
+    template?: Function;
+    click?: Function;
+    isAction?: boolean;
 }
 ```
 
@@ -73,7 +81,7 @@ columns: NgGenerateTableColumns[] = [
     { label: 'Data', field: 'date' },
     {
         template: (rowData: CustomData) => `<button type="button">Click to show ${rowData.name}'s email</button>`,
-        click: (rowData: CustomData) => alert(rowData.email)
+        click: (rowData: CustomData, event?: MouseEvent) => alert(rowData.email)
     }
 ]
 ```
@@ -91,6 +99,22 @@ columnsClassAndPipe: NgGenerateTableColumns[] = [
 ### Loading and TableClass
 ```html
 <ng-generate-table [columns]="columns" [data]="data" [loading]="true" [tableClass]="custom-table"></ng-generate-table>
+```
+
+### Card Mobile View
+#### default view
+```html
+<ng-generate-table [mobileView]="mobileView" [columns]="columns" [data]="data">
+</ng-generate-table>
+```
+
+#### custom view
+```html
+<ng-generate-table [mobileView]="mobileView" [columns]="columns" [data]="data">
+    <ng-template #cardMobile let-rowData>
+        ...
+    </ng-template>
+</ng-generate-table>
 ```
 
 ### Clickable row

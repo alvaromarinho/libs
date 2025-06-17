@@ -36,7 +36,7 @@ Template:
 
             <!-- component -->
             <div class="table-responsive">
-                <ng-generate-table [columns]="columns" [data]="data" tableClass="table table-sm table-bordered mb-4"></ng-generate-table>
+                <ng-generate-table [mobileView]="mobileView" [columns]="columns" [data]="data" tableClass="table table-sm table-bordered mb-4"></ng-generate-table>
             </div>
     `
 })
@@ -44,6 +44,8 @@ Template:
 export class GTClassPipeExampleComponent {
 
     toggleCode?: boolean;
+
+    mobileView = window.innerWidth < 768;
 
     columns: NgGenerateTableColumns[] = [
         { label: 'Name', field: 'name', thClass: 'bg-secondary text-white', tdClass: 'text-danger' },

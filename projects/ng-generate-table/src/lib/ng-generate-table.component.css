@@ -1,6 +1,75 @@
-table { position: relative; table-layout: auto; width: 100%; border-collapse: collapse; }
-.table-spinner { position: absolute; top: 0; bottom: 0; display: flex; align-items: center; justify-content: center; width: 100%; background-color: rgba(255,255,255,.75); z-index: 1; }
-.spinner-border { display: inline-block; width: 2rem; height: 2rem; vertical-align: -0.125em; border: 0.25em solid currentcolor; border-right-color: transparent; border-radius: 50%; animation: 0.75s linear infinite spinner-border; }
-.no-data { text-align: center }
-.pointer { cursor: pointer; }
-@keyframes spinner-border { to { transform: rotate(360deg); } }
+.nggt {
+    position: relative;
+    table-layout: auto;
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.nggt .table-spinner {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    background-color: rgba(255, 255, 255, .75);
+    z-index: 1;
+}
+
+.nggt .spinner-border {
+    display: inline-block;
+    width: 2rem;
+    height: 2rem;
+    vertical-align: -0.125em;
+    border: 0.25em solid currentcolor;
+    border-right-color: transparent;
+    border-radius: 50%;
+    animation: 0.75s linear infinite spinner-border;
+}
+
+.nggt .no-data {
+    text-align: center
+}
+
+.nggt .pointer {
+    cursor: pointer;
+}
+
+@keyframes spinner-border {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+.nggt-card {
+    border: 1px solid #eee;
+    border-radius: 8px;
+    padding: 12px;
+    background: #fff;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+    box-sizing: border-box;
+}
+
+.nggt-row {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+}
+
+.nggt-card:not(:last-child) {
+    margin-bottom: 16px;
+}
+
+.nggt-row:not(:last-child) {
+    margin-bottom: 16px;
+}
+
+.nggt-card-label {
+    font-weight: 600;
+}
+
+.nggt-card-value {
+    font-size: 1rem;
+    word-break: break-word;
+}

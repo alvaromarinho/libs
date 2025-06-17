@@ -38,7 +38,7 @@ Template:
 
             <!-- component -->
             <div class="table-responsive">
-                <ng-generate-table [columns]="columns" [data]="data" [rowClickable]="true" (rowClick)="rowClick($event)" tableClass="table table-sm table-bordered mb-4 table-hover"></ng-generate-table>
+                <ng-generate-table [mobileView]="mobileView" [columns]="columns" [data]="data" [rowClickable]="true" (rowClick)="rowClick($event)" tableClass="table table-sm table-bordered mb-4 table-hover"></ng-generate-table>
             </div>
     `
 })
@@ -46,6 +46,8 @@ Template:
 export class GTRowClickExampleComponent {
 
     toggleCode?: boolean;
+
+    mobileView = window.innerWidth < 768;
 
     columns: NgGenerateTableColumns[] = [
         { label: 'Name', field: 'name' },
