@@ -138,7 +138,7 @@
                                 (click)="onCellClick(d, column, $event)"
                                 (keydown.enter)="column.click && onCellClick(d, column, $event)"
                                 (keydown.space)="column.click && onCellClick(d, column, $event)"
-                                [innerHTML]="column.template(d) | safeHtml">
+                                [innerHTML]="column.template(d) | safeHtml:'html':true">
                             </div>
                         </td>
                     </tr>
