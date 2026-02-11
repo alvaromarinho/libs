@@ -75,7 +75,7 @@ data: CustomData = [
 
 export class GTManualTagsComponent {
 
-    toggleCode?: boolean;
+    toggleCode: boolean = false
 
     mobileView = window.innerWidth < 768;
 

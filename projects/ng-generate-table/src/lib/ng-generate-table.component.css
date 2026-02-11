@@ -1,3 +1,10 @@
+/* ===== Table Container ===== */
+.nggt-table-wrapper {
+    position: relative;
+    width: 100%;
+    overflow-x: auto;
+}
+
 .nggt {
     position: relative;
     table-layout: auto;
@@ -5,19 +12,23 @@
     border-collapse: collapse;
 }
 
+/* ===== Loading Spinner ===== */
 .nggt .table-spinner {
     position: absolute;
     top: 0;
+    left: 0;
+    right: 0;
     bottom: 0;
     display: flex;
     align-items: center;
     justify-content: center;
-    width: 100%;
-    background-color: rgba(255, 255, 255, .75);
-    z-index: 1;
+    background-color: rgba(255, 255, 255, 0.85);
+    backdrop-filter: blur(2px);
+    z-index: 10;
+    pointer-events: none;
 }
 
-.nggt .spinner-border {
+.spinner-border {
     display: inline-block;
     width: 2rem;
     height: 2rem;
@@ -28,48 +39,258 @@
     animation: 0.75s linear infinite spinner-border;
 }
 
-.nggt .no-data {
-    text-align: center
-}
-
-.nggt .pointer {
-    cursor: pointer;
-}
-
 @keyframes spinner-border {
     to {
         transform: rotate(360deg);
     }
 }
 
+/* ===== Empty State ===== */
+.nggt-empty-cell {
+    text-align: center;
+    padding: 2rem 1rem !important;
+}
+
+.nggt-empty-state {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1rem;
+    padding: 2rem 1rem;
+    color: #6c757d;
+}
+
+.nggt-empty-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.nggt-empty-message {
+    font-size: 1rem;
+    font-weight: 500;
+}
+
+/* ===== Table Header - Sortable ===== */
+.nggt thead th {
+    position: relative;
+    user-select: none;
+}
+
+.nggt-th-content {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.nggt-th-label {
+    flex: 1;
+}
+
+/* Coluna sortable - CURSOR POINTER */
+.nggt-sortable {
+    cursor: pointer !important;
+    transition: background-color 0.15s ease-in-out;
+}
+
+.nggt-sortable:hover {
+    background-color: rgba(0, 0, 0, 0.03);
+}
+
+.nggt-sortable:active {
+    background-color: rgba(0, 0, 0, 0.05);
+}
+
+.nggt-sortable:focus-visible {
+    outline: 2px solid #0066cc;
+    outline-offset: -2px;
+}
+
+/* ===== Sort Icons ===== */
+.nggt-sort-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    min-width: 16px;
+    min-height: 16px;
+    transition: opacity 0.2s ease-in-out, transform 0.2s ease-in-out;
+}
+
+/* Ícone padrão (não ordenado) - OPACO para indicar que é sortable */
+.nggt-icon-sort-default {
+    color: #6c757d;
+    opacity: 0.3;
+    transition: opacity 0.2s ease-in-out;
+}
+
+/* Hover no header sortable - torna o ícone mais visível */
+.nggt-sortable:hover .nggt-icon-sort-default {
+    opacity: 0.6;
+}
+
+/* Ícone ASC (seta para cima) - TOTALMENTE VISÍVEL */
+.nggt-icon-sort-asc {
+    color: #0066cc;
+    opacity: 1;
+    animation: sortIconAppear 0.2s ease-in-out;
+}
+
+/* Ícone DESC (seta para baixo) - TOTALMENTE VISÍVEL */
+.nggt-icon-sort-desc {
+    color: #0066cc;
+    opacity: 1;
+    animation: sortIconAppear 0.2s ease-in-out;
+}
+
+@keyframes sortIconAppear {
+    from {
+        opacity: 0;
+        transform: scale(0.8);
+    }
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+/* Estado sorted - mantém o ícone visível */
+.nggt-sorted .nggt-sort-icon {
+    opacity: 1;
+}
+
+/* ===== Row Interactions ===== */
+.nggt-row-clickable {
+    cursor: pointer;
+    transition: background-color 0.15s ease-in-out;
+}
+
+.nggt-row-clickable:hover {
+    background-color: rgba(0, 0, 0, 0.02);
+}
+
+.nggt-row-clickable:active {
+    background-color: rgba(0, 0, 0, 0.03);
+}
+
+.nggt-row-clickable:focus-visible {
+    outline: 2px solid #0066cc;
+    outline-offset: -2px;
+}
+
+/* ===== Cell with Template ===== */
+.nggt-template-cell {
+    display: inline-block;
+}
+
+.nggt-clickable {
+    cursor: pointer;
+    transition: opacity 0.15s ease-in-out;
+}
+
+.nggt-clickable:hover {
+    opacity: 0.8;
+}
+
+.nggt-clickable:focus-visible {
+    outline: 1px solid #0066cc;
+    outline-offset: 2px;
+    border-radius: 2px;
+}
+
+/* ===== Mobile Cards ===== */
+.nggt-mobile-container {
+    width: 100%;
+}
+
 .nggt-card {
-    border: 1px solid #eee;
+    border: 1px solid #e9ecef;
     border-radius: 8px;
-    padding: 12px;
+    padding: 16px;
     background: #fff;
     box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
     box-sizing: border-box;
+    transition: box-shadow 0.2s ease-in-out, transform 0.2s ease-in-out;
+}
+
+.nggt-card:not(:last-child) {
+    margin-bottom: 12px;
+}
+
+.nggt-card-clickable {
+    cursor: pointer;
+}
+
+.nggt-card-clickable:hover {
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+    transform: translateY(-1px);
+}
+
+.nggt-card-clickable:active {
+    transform: translateY(0);
 }
 
 .nggt-row {
     display: flex;
     flex-direction: column;
     width: 100%;
-}
-
-.nggt-card:not(:last-child) {
-    margin-bottom: 16px;
+    gap: 4px;
 }
 
 .nggt-row:not(:last-child) {
-    margin-bottom: 16px;
+    margin-bottom: 12px;
+    padding-bottom: 12px;
+    border-bottom: 1px solid #f1f3f5;
 }
 
 .nggt-card-label {
     font-weight: 600;
+    font-size: 0.875rem;
+    color: #495057;
+    margin-bottom: 2px;
 }
 
 .nggt-card-value {
     font-size: 1rem;
+    color: #212529;
     word-break: break-word;
+}
+
+/* ===== Responsive ===== */
+@media (max-width: 768px) {
+    .nggt-table-wrapper {
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+    }
+}
+
+/* ===== Accessibility ===== */
+@media (prefers-reduced-motion: reduce) {
+    .nggt-row-clickable,
+    .nggt-card,
+    .nggt-clickable,
+    .nggt-sortable,
+    .nggt-sort-icon,
+    .spinner-border {
+        transition: none;
+        animation: none;
+    }
+}
+
+/* ===== Utilities ===== */
+.nggt .text-left {
+    text-align: left;
+}
+
+.nggt .text-center {
+    text-align: center;
+}
+
+.nggt .text-right {
+    text-align: right;
+}
+
+.nggt-table-loading {
+    pointer-events: none;
+    opacity: 0.6;
 }

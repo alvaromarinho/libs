@@ -1,13 +1,31 @@
 {
   "name": "ng-collapse",
-  "version": "0.0.3",
+  "version": "1.0.0",
+  "description": "Simple and smooth collapse/expand component for Angular with CSS transitions",
+  "author": "Alvaro Marinho",
+  "license": "MIT",
+  "keywords": [
+    "angular",
+    "collapse",
+    "expand",
+    "accordion",
+    "toggle",
+    "animation",
+    "ng",
+    "component",
+    "transition"
+  ],
+  "homepage": "https://github.com/alvaromarinho/libs/tree/master/projects/ng-collapse#readme",
+  "bugs": {
+    "url": "https://github.com/alvaromarinho/libs/issues"
+  },
   "repository": {
     "type": "git",
     "url": "https://github.com/alvaromarinho/libs/tree/master/projects/ng-collapse"
   },
   "peerDependencies": {
-    "@angular/common": "^15.1.0",
-    "@angular/core": "^15.1.0"
+    "@angular/common": ">=14.0.0 <19.0.0",
+    "@angular/core": ">=14.0.0 <19.0.0"
   },
   "dependencies": {
     "tslib": "^2.3.0"

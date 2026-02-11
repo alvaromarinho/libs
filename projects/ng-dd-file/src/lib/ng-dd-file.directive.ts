@@ -1,7 +1,8 @@
 import { Directive, EventEmitter, HostBinding, HostListener, Output } from '@angular/core';
 
 @Directive({
-    selector: '[ddFile]'
+    selector: '[ddFile]',
+    standalone: true
 })
 export class NgDdFileDirective {
 

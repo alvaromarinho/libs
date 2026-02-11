@@ -3,7 +3,8 @@ import { TemplateRef } from "@angular/core"
 export interface NgBsModalServiceData {
     action: 'open' | 'close' | 'closeAll',
     content?: TemplateRef<any> | NgBsModalServiceContent,
-    options?: NgBsModalServiceOptions
+    options?: NgBsModalServiceOptions,
+    open?: boolean
 }
 
 export interface NgBsModalServiceContent {

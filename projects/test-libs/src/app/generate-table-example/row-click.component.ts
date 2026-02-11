@@ -45,7 +45,7 @@ Template:
 
 export class GTRowClickExampleComponent {
 
-    toggleCode?: boolean;
+    toggleCode: boolean = false
 
     mobileView = window.innerWidth < 768;
 
@@ -60,8 +60,8 @@ export class GTRowClickExampleComponent {
         { name: 'Marinho', email: 'marinho@email.com', date: '2023-08-23' },
     ]
 
-    rowClick(rowData : any) {
-        alert(rowData.email)
+    rowClick($event: any) {
+        alert($event.row.email)
     }
 
 }

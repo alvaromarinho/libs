@@ -1,15 +1,33 @@
 {
   "name": "ng-bs-toast-service",
-  "version": "0.0.1",
+  "version": "1.0.0",
+  "description": "Toast notification service for Angular and Bootstrap 5 with Bootstrap Icons support",
+  "author": "Alvaro Marinho",
+  "license": "MIT",
+  "keywords": [
+    "angular",
+    "bootstrap",
+    "toast",
+    "notification",
+    "service",
+    "bootstrap5",
+    "bootstrap-icons",
+    "ng",
+    "alert"
+  ],
+  "homepage": "https://github.com/alvaromarinho/libs/tree/master/projects/ng-bs-toast-service#readme",
+  "bugs": {
+    "url": "https://github.com/alvaromarinho/libs/issues"
+  },
   "repository": {
     "type": "git",
     "url": "https://github.com/alvaromarinho/libs/tree/master/projects/ng-bs-toast-service"
   },
   "peerDependencies": {
-    "@angular/common": "^15.1.0",
-    "@angular/core": "^15.1.0",
-    "bootstrap": "^5.3.2",
-    "bootstrap-icons": "^1.11.1"
+    "@angular/common": ">=14.0.0 <19.0.0",
+    "@angular/core": ">=14.0.0 <19.0.0",
+    "bootstrap": "^5.0.0",
+    "bootstrap-icons": "^1.0.0"
   },
   "dependencies": {
     "tslib": "^2.3.0"

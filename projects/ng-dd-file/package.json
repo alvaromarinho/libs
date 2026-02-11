@@ -1,13 +1,32 @@
 {
   "name": "ng-dd-file",
-  "version": "0.1.1",
+  "version": "1.0.0",
+  "description": "Drag and drop file upload component for Angular with multiple files support, file size validation, and image preview",
+  "author": "Alvaro Marinho",
+  "license": "MIT",
+  "keywords": [
+    "angular",
+    "drag-and-drop",
+    "file-upload",
+    "upload",
+    "file",
+    "drop",
+    "ng",
+    "component",
+    "image-preview",
+    "file-validation"
+  ],
+  "homepage": "https://github.com/alvaromarinho/libs/tree/master/projects/ng-dd-file#readme",
+  "bugs": {
+    "url": "https://github.com/alvaromarinho/libs/issues"
+  },
   "repository": {
     "type": "git",
     "url": "https://github.com/alvaromarinho/libs/tree/master/projects/ng-dd-file"
   },
   "peerDependencies": {
-    "@angular/common": "^15.1.0",
-    "@angular/core": "^15.1.0"
+    "@angular/common": ">=14.0.0 <19.0.0",
+    "@angular/core": ">=14.0.0 <19.0.0"
   },
   "dependencies": {
     "tslib": "^2.3.0"

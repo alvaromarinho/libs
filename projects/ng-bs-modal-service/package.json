@@ -1,14 +1,32 @@
 {
   "name": "ng-bs-modal-service",
-  "version": "0.1.4",
+  "version": "1.0.0",
+  "description": "Modal service for Angular and Bootstrap 5 with queue support, carousel, and popover positioning",
+  "author": "Alvaro Marinho",
+  "license": "MIT",
+  "keywords": [
+    "angular",
+    "bootstrap",
+    "modal",
+    "service",
+    "bootstrap5",
+    "ng",
+    "dialog",
+    "popup",
+    "carousel"
+  ],
+  "homepage": "https://github.com/alvaromarinho/libs/tree/master/projects/ng-bs-modal-service#readme",
+  "bugs": {
+    "url": "https://github.com/alvaromarinho/libs/issues"
+  },
   "repository": {
     "type": "git",
     "url": "https://github.com/alvaromarinho/libs/tree/master/projects/ng-bs-modal-service"
   },
   "peerDependencies": {
-    "@angular/common": "^15.1.0",
-    "@angular/core": "^15.1.0",
-    "bootstrap": "^5.3.2"
+    "@angular/common": ">=14.0.0 <19.0.0",
+    "@angular/core": ">=14.0.0 <19.0.0",
+    "bootstrap": "^5.0.0"
   },
   "dependencies": {
     "tslib": "^2.3.0"

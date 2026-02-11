@@ -38,19 +38,19 @@ Template:
 
             <!-- component -->
             <div class="table-responsive">
-                <ng-generate-table [mobileView]="mobileView" [columns]="columns" [data]="data" tableClass="table table-sm table-bordered mb-4"></ng-generate-table>
+                <ng-generate-table [mobileView]="mobileView" [columns]="columns" [data]="data" tableClass="table table-sm table-bordered mb-4" (sortChange)="onSortChange($event)"></ng-generate-table>
             </div>
     `
 })
 
 export class GTSimpleExampleComponent {
 
-    toggleCode?: boolean;
+    toggleCode: boolean = false;
 
     mobileView = window.innerWidth < 768;
 
     columns: NgGenerateTableColumns[] = [
-        { label: 'Name', field: 'name' },
+        { label: 'Name', field: 'name', sortable: true },
         { label: 'Email', field: 'email' },
         { label: 'Data', field: 'date' },
         {
@@ -64,5 +64,9 @@ export class GTSimpleExampleComponent {
         { name: 'Álvaro', email: 'alvaro@email.com', date: '2023-08-23' },
         { name: 'Marinho', email: 'marinho@email.com', date: '2023-08-23' },
     ]
+
+    onSortChange($event: any) {
+        console.log('Sort changed:', $event);
+    }
 
 }

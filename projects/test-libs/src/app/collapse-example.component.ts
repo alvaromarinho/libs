@@ -40,7 +40,7 @@ Template:
 
 export class CollapseExampleComponent {
 
-    toggle?: boolean;
-    toggleCode?: boolean;
+    toggle: boolean = false;
+    toggleCode: boolean = false
 
 }

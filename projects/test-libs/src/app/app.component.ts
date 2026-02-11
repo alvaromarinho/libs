@@ -6,7 +6,7 @@ import { Component } from '@angular/core';
 })
 export class AppComponent {
 
-    toggleNav?: boolean;
+    toggleNav: boolean = false;
 
     pages: any = {
         ngBsCalendar: true,

@@ -43,7 +43,7 @@ Template:
 
 export class GTClassPipeExampleComponent {
 
-    toggleCode?: boolean;
+    toggleCode: boolean = false
 
     mobileView = window.innerWidth < 768;
 

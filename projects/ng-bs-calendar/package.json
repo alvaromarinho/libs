@@ -1,15 +1,32 @@
 {
   "name": "ng-bs-calendar",
-  "version": "0.0.5",
+  "version": "1.0.0",
+  "description": "Calendar component for Angular and Bootstrap 5 with scheduling support",
+  "author": "Alvaro Marinho",
+  "license": "MIT",
+  "keywords": [
+    "angular",
+    "bootstrap",
+    "calendar",
+    "scheduler",
+    "luxon",
+    "ng",
+    "component",
+    "bootstrap5"
+  ],
+  "homepage": "https://github.com/alvaromarinho/libs/tree/master/projects/ng-bs-calendar#readme",
+  "bugs": {
+    "url": "https://github.com/alvaromarinho/libs/issues"
+  },
   "repository": {
     "type": "git",
     "url": "https://github.com/alvaromarinho/libs/tree/master/projects/ng-bs-calendar"
   },
   "peerDependencies": {
-    "@angular/common": "^15.1.0",
-    "@angular/core": "^15.1.0",
-    "bootstrap": "^5.3.2",
-    "luxon": "^3.4.4"
+    "@angular/common": ">=14.0.0 <19.0.0",
+    "@angular/core": ">=14.0.0 <19.0.0",
+    "bootstrap": "^5.0.0",
+    "luxon": "^3.0.0"
   },
   "dependencies": {
     "tslib": "^2.3.0"

@@ -37,7 +37,7 @@ Template:
 
 export class BsToastExampleComponent {
 
-    toggleCode?: boolean;
+    toggleCode: boolean = false
 
     constructor(private toastService: NgBsToastService) {}
 

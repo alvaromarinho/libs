@@ -41,7 +41,7 @@ export class BsCalendarExampleComponent {
 
     @ViewChild(NgBsCalendarComponent) calendarComp!: NgBsCalendarComponent;
 
-    toggleCode?: boolean;
+    toggleCode: boolean = false
     yesterday = new Date(new Date().setDate(new Date().getDate()-1)).toISOString().split('T')[0];
     now = new Date().toISOString().split('T')[0];
     tomorrow = new Date(new Date().setDate(new Date().getDate()+1)).toISOString().split('T')[0];

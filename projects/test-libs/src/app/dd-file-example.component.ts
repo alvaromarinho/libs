@@ -9,21 +9,6 @@ import { Component } from '@angular/core';
                      <i class="bi bi-code me-1"></i> CODE
                 </button>
             </div>
-            <div class="mb-3">
-                <ng-dd-file 
-                    [btnClass]="{ file: 'btn btn-primary', remove: 'btn btn-sm btn-danger' }"
-                    [filesList]="files" 
-                    [labels]="{ text: 'Arraste e solte os arquivos', btn: 'SELECIONE O ARQUIVO' }"
-                    [maxFiles]="3"
-                    [maxFileSize]="200"
-                    [maxTotalSize]="300"
-                    typeFileAccept="*"
-    
-                    (fileError)="error($event)"
-                    (fileRemove)="files = []" 
-                    (filesAdd)="filesAdd($event)" 
-                ></ng-dd-file>
-            </div>
             <ng-collapse [toggle]="toggleCode">
                 <div class="style-code rounded mb-3">
 Typescript:
@@ -54,20 +39,33 @@ Template:
 &gt;&lt;/ng-dd-file&gt;</code></pre>
                 </div>
             </ng-collapse>
+            <ng-dd-file 
+                [btnClass]="{ file: 'btn btn-primary', remove: 'btn btn-sm btn-danger' }"
+                [filesList]="files" 
+                [labels]="{ text: 'Arraste e solte os arquivos', btn: 'SELECIONE O ARQUIVO' }"
+                [maxFiles]="3"
+                [maxFileSize]="200"
+                [maxTotalSize]="300"
+                typeFileAccept="*"
+
+                (fileError)="error($event)"
+                (fileRemove)="files = []" 
+                (filesAdd)="filesAdd($event)" 
+            ></ng-dd-file>
     `
 })
 
 export class DdFileExampleComponent {
 
-    toggleCode?: boolean;
+    toggleCode: boolean = false
     files?: any[]
 
     filesAdd($event: any) {
         this.files = this.files ? [...this.files, ...$event] : $event
     }
 
-    error($event: string) {
-        alert($event)
+    error($event: any) {
+        alert($event.message)
     }
 
 }

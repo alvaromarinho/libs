@@ -1,71 +1,155 @@
-<!-- mobile -->
-<div *ngIf="mobileView; else tableView">
-    <ng-container *ngFor="let d of data">
-        <ng-container *ngIf="cardMobile; else defaultCard">
-            <ng-container *ngTemplateOutlet="cardMobile; context: {$implicit: d, rowData: d}"></ng-container>
-        </ng-container>
-        <ng-template #defaultCard>
-            <div class="nggt-card">
-                <div class="nggt-row" *ngFor="let column of columns">
-                    <div class="nggt-card-label" *ngIf="!column.isAction">{{ column.label }}</div>
-                    <div class="nggt-card-value">
-                        <span *ngIf="column.field">
-                            {{ (d[column.field] | dynamicPipe:column.pipe:column.pipeArgs) || '---' }}
-                        </span>
-                        <div (click)="column.click && column.click(d, $event)"
-                            [innerHTML]="column.template(d) | safeHtml" *ngIf="column.template"></div>
+<!-- mobile view -->
+<div *ngIf="mobileView; else tableView" class="nggt-mobile-container" role="list">
+    <ng-container *ngIf="hasData">
+        <ng-container *ngFor="let d of data; trackBy: trackByData">
+            <!-- Custom card template -->
+            <ng-container *ngIf="cardMobile; else defaultCard">
+                <ng-container *ngTemplateOutlet="cardMobile; context: {$implicit: d, rowData: d}"></ng-container>
+            </ng-container>
+
+            <!-- Default card template -->
+            <ng-template #defaultCard>
+                <div class="nggt-card" role="listitem" [class.nggt-card-clickable]="rowClickable"
+                    (click)="onRowClick(d, $event)">
+                    <div class="nggt-row" *ngFor="let column of columns; trackBy: trackByIndex">
+                        <div class="nggt-card-label" *ngIf="!column.isAction && column.label">
+                            {{ column.label }}
+                        </div>
+                        <div class="nggt-card-value" [ngClass]="column.tdClass">
+                            <!-- Field with pipe -->
+                            <span *ngIf="column.field && !column.template">
+                                {{ getCellValue(d, column) | dynamicPipe:column.pipe:column.pipeArgs }}
+                            </span>
+
+                            <!-- Template -->
+                            <div *ngIf="column.template" class="nggt-template-cell"
+                                [class.nggt-clickable]="!!column.click" (click)="onCellClick(d, column, $event)"
+                                [innerHTML]="column.template(d) | safeHtml">
+                            </div>
+                        </div>
                     </div>
                 </div>
-            </div>
-        </ng-template>
+            </ng-template>
+        </ng-container>
     </ng-container>
-    <div *ngIf="!data || !data.length" class="no-data">
-        <span *ngIf="!loading">Nenhum dado encontrado</span>
-        <span *ngIf="loading">Carregando</span>
+
+    <!-- Empty state for mobile -->
+    <div *ngIf="!hasData" class="nggt-empty-state" role="status">
+        <div class="nggt-empty-icon" *ngIf="loading">
+            <div class="spinner-border" role="progressbar"></div>
+        </div>
+        <span class="nggt-empty-message">{{ emptyStateMessage }}</span>
     </div>
 </div>
 
-<!-- desktop -->
+<!-- desktop view -->
 <ng-template #tableView>
-    <table class="nggt" [ngClass]="tableClass">
-        <div class="table-spinner" *ngIf="loading">
-            <div class="spinner-border"></div>
-        </div>
-        <ng-content select="thead[position=top]"></ng-content>
-        <thead>
-            <tr>
-                <th align="left" [ngClass]="column.thClass" *ngFor="let column of columns">{{ column.label || '' }}</th>
-            </tr>
-        </thead>
-        <ng-content select="thead[position=bottom]"></ng-content>
-        <ng-content select="tbody[position=top]"></ng-content>
-        <tbody>
-            <tr *ngIf="!data || !data.length">
-                <td [attr.colspan]="columns.length+1" class="no-data" *ngIf="!loading">
-                    <span>Nenhum dado encontrado</span>
-                </td>
-                <td [attr.colspan]="columns.length+1" *ngIf="loading">
-                    <span>Carregando</span>
-                </td>
-            </tr>
-            <ng-container *ngIf="data && data.length">
-                <tr [ngClass]="{'pointer': rowClickable}" *ngFor="let d of data"
-                    (click)="rowClickable && rowClick.emit(d)">
-                    <ng-container *ngFor="let column of columns; last as last">
-                        <td [ngClass]="column.tdClass">
-                            <!-- COLUMN DATA -->
-                            <span *ngIf="column.field">{{ (d[column.field] | dynamicPipe:column.pipe:column.pipeArgs) ||
-                                '---' }}</span>
+    <div class="nggt-table-wrapper" [class.nggt-table-loading]="loading">
+        <table class="nggt" [ngClass]="tableClass" role="table">
 
-                            <!-- TEMPLATE -->
-                            <div (click)="column.click && column.click(d, $event)"
-                                [innerHTML]="column.template(d) | safeHtml" *ngIf="column.template"></div>
-                        </td>
-                    </ng-container>
+            <!-- Loading overlay -->
+            <div class="table-spinner" *ngIf="loading" role="status">
+                <div class="spinner-border" role="progressbar"></div>
+            </div>
+
+            <!-- Content projection: thead top -->
+            <ng-content select="thead[position='top']"></ng-content>
+
+            <!-- Main header -->
+            <thead>
+                <tr role="row">
+                    <th *ngFor="let column of columns; trackBy: trackByIndex" role="columnheader" [attr.scope]="'col'"
+                        [ngClass]="column.thClass" 
+                        [ngStyle]="getColumnStyles(column)"
+                        [class.nggt-sortable]="column.sortable" 
+                        [class.nggt-sorted]="isSorted(column)"
+                        [class.nggt-sorted-asc]="getSortDirection(column) === 'ASC'"
+                        [class.nggt-sorted-desc]="getSortDirection(column) === 'DESC'"
+                        [attr.tabindex]="column.sortable ? 0 : null">
+                        
+                        <div class="nggt-th-content"
+                            (click)="onSortClick(column, $event)"
+                            (keydown.enter)="onSortClick(column, $event)"
+                            (keydown.space)="onSortClick(column, $event)">
+                            <span class="nggt-th-label">{{ column.label || '' }}</span>
+                            <span class="nggt-sort-icon" *ngIf="column.sortable">
+                                <!-- Ícone quando não está ordenado -->
+                                <svg *ngIf="!isSorted(column)" class="nggt-icon-sort-default" width="16" height="16"
+                                    viewBox="0 0 16 16" fill="currentColor">
+                                    <path d="M8 3l3 4H5l3-4zm0 10l-3-4h6l-3 4z" />
+                                </svg>
+
+                                <!-- Ícone ASC (seta para cima) -->
+                                <svg *ngIf="getSortDirection(column) === 'ASC'" class="nggt-icon-sort-asc" width="16"
+                                    height="16" viewBox="0 0 16 16" fill="currentColor" aria-label="Ordenado crescente">
+                                    <path d="M8 3l5 6H3l5-6z" />
+                                </svg>
+
+                                <!-- Ícone DESC (seta para baixo) -->
+                                <svg *ngIf="getSortDirection(column) === 'DESC'" class="nggt-icon-sort-desc" width="16"
+                                    height="16" viewBox="0 0 16 16" fill="currentColor"
+                                    aria-label="Ordenado decrescente">
+                                    <path d="M8 13L3 7h10l-5 6z" />
+                                </svg>
+                            </span>
+                        </div>
+                    </th>
                 </tr>
-            </ng-container>
-        </tbody>
-        <ng-content select="tbody[position=bottom]"></ng-content>
-        <ng-content select="tfoot"></ng-content>
-    </table>
+            </thead>
+
+            <!-- Content projection: thead bottom -->
+            <ng-content select="thead[position='bottom']"></ng-content>
+
+            <!-- Content projection: tbody top -->
+            <ng-content select="tbody[position='top']"></ng-content>
+
+            <tbody>
+                <!-- Empty state row -->
+                <tr *ngIf="!hasData" role="row">
+                    <td [attr.colspan]="columns.length" class="nggt-empty-cell" role="cell">
+                        <div class="nggt-empty-state">
+                            <div class="nggt-empty-icon" *ngIf="loading">
+                                <div class="spinner-border" role="progressbar"></div>
+                            </div>
+                            <span class="nggt-empty-message">{{ emptyStateMessage }}</span>
+                        </div>
+                    </td>
+                </tr>
+
+                <!-- Data rows -->
+                <ng-container *ngIf="hasData">
+                    <tr *ngFor="let d of data; trackBy: trackByData" role="row"
+                        [class.nggt-row-clickable]="rowClickable" [attr.tabindex]="rowClickable ? 0 : null"
+                        [attr.role]="rowClickable ? 'button' : 'row'" (click)="onRowClick(d, $event)"
+                        (keydown.enter)="rowClickable && onRowClick(d, $event)"
+                        (keydown.space)="rowClickable && onRowClick(d, $event)">
+
+                        <td *ngFor="let column of columns; trackBy: trackByIndex" role="cell" [ngClass]="column.tdClass"
+                            [ngStyle]="getColumnStyles(column)">
+
+                            <!-- Field with pipe -->
+                            <span *ngIf="column.field && !column.template">
+                                {{ getCellValue(d, column) | dynamicPipe:column.pipe:column.pipeArgs }}
+                            </span>
+
+                            <!-- Template -->
+                            <div *ngIf="column.template" class="nggt-template-cell"
+                                [class.nggt-clickable]="!!column.click" [attr.tabindex]="column.click ? 0 : null"
+                                (click)="onCellClick(d, column, $event)"
+                                (keydown.enter)="column.click && onCellClick(d, column, $event)"
+                                (keydown.space)="column.click && onCellClick(d, column, $event)"
+                                [innerHTML]="column.template(d) | safeHtml">
+                            </div>
+                        </td>
+                    </tr>
+                </ng-container>
+            </tbody>
+
+            <!-- Content projection: tbody bottom -->
+            <ng-content select="tbody[position='bottom']"></ng-content>
+
+            <!-- Content projection: tfoot -->
+            <ng-content select="tfoot"></ng-content>
+        </table>
+    </div>
 </ng-template>

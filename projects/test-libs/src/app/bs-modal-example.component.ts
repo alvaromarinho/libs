@@ -66,7 +66,7 @@ Template:
 
 export class BsModalExampleComponent {
 
-    toggleCode?: boolean;
+    toggleCode: boolean = false
     images = [
         { url: 'https://placehold.co/410x1210', name: 'Image 1' },
         { url: 'https://placehold.co/420x220', name: 'Image 2' },

@@ -1,23 +1,21 @@
-<div class="modal fade" id="modal" tabindex="-1" *ngIf="modalData && modalData.options"
+<div class="modal fade" [id]="modalId" tabindex="-1" *ngIf="modalData && modalData.options"
     [attr.data-bs-backdrop]="modalData.options.staticBackdrop ? 'static' : null"
     [attr.data-bs-keyboard]="modalData.options.staticBackdrop ? 'false' : 'true'"
-    [ngClass]="modalData.options.customClass && modalData.options.customClass.modal ? modalData.options.customClass.modal : ''">
-    <div class="modal-dialog modal-dialog-centered modal-{{ modalData.options.size }}" id="modal-dialog"
+    [ngClass]="modalClass">
+    <div class="modal-dialog modal-dialog-centered modal-{{ modalData.options.size }}" [id]="modalId + '-dialog'"
         [ngClass]="{'modal-dialog-scrollable':!modalData.options.disabledBodyScroll}">
-        <div class="modal-content" id="modal-content">
-            <ng-container [ngTemplateOutlet]="modalData.content" *ngIf="isModalContent(modalData.content)"></ng-container>
+        <div class="modal-content" [id]="modalId + '-content'">
+            <ng-container [ngTemplateOutlet]="$any(modalData.content)" *ngIf="isModalContent(modalData.content)"></ng-container>
             <ng-container *ngIf="!isModalContent(modalData.content)">
-                <div class="modal-header py-2" *ngIf="modalData.content.header"
-                    [ngClass]="modalData.options.customClass && modalData.options.customClass.modalHeader ? modalData.options.customClass.modalHeader : ''">
-                    <ng-container [ngTemplateOutlet]="modalData.content.header" *ngIf="!isString(modalData.content.header)"></ng-container>
-                    <h5 class="modal-title" *ngIf="isString(modalData.content.header)">{{ modalData.content.header }}</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" *ngIf="!modalData.options.withoutClose"
-                        [ngClass]="{'btn-close-white': modalData.options.headerColor && !['warning'].includes(modalData.options.headerColor)}">
+                <div class="modal-header py-2" *ngIf="$any(modalData.content).header" [ngClass]="modalHeaderClass">
+                    <ng-container [ngTemplateOutlet]="$any(modalData.content).header" *ngIf="!isString($any(modalData.content).header)"></ng-container>
+                    <h5 class="modal-title" *ngIf="isString($any(modalData.content).header)">{{ $any(modalData.content).header }}</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" *ngIf="showCloseButton">
                     </button>
                 </div>
-                <div class="modal-body" [ngClass]="modalData.options.customClass && modalData.options.customClass.modalBody ? modalData.options.customClass.modalBody : ''">
-                    <ng-container [ngTemplateOutlet]="modalData.content.body" *ngIf="!isString(modalData.content.body)"></ng-container>
-                    <div *ngIf="isString(modalData.content.body)" [innerHtml]="modalData.content.body"></div>
+                <div class="modal-body" [ngClass]="modalBodyClass">
+                    <ng-container [ngTemplateOutlet]="$any(modalData.content).body" *ngIf="!isString($any(modalData.content).body)"></ng-container>
+                    <div *ngIf="isString($any(modalData.content).body)" [innerHtml]="$any(modalData.content).body"></div>
 
                     <!-- carousel -->
                     <div id="carousel-{{carouselId}}" class="carousel slide" *ngIf="modalData.options.carousel">
@@ -44,9 +42,8 @@
                         </button>
                     </div>
                 </div>
-                <div class="modal-footer" *ngIf="modalData.content.footer"
-                    [ngClass]="modalData.options.customClass && modalData.options.customClass.modalFooter ? modalData.options.customClass.modalFooter : ''">
-                    <ng-container [ngTemplateOutlet]="modalData.content.footer"></ng-container>
+                <div class="modal-footer" *ngIf="$any(modalData.content).footer" [ngClass]="modalFooterClass">
+                    <ng-container [ngTemplateOutlet]="$any(modalData.content).footer"></ng-container>
                 </div>
             </ng-container>
         </div>

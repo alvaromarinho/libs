@@ -1,6 +1,7 @@
-import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, EventEmitter, Input, OnDestroy, OnInit, Output } from '@angular/core';
 import { DateTime } from "luxon";
 import { Tooltip } from 'bootstrap';
+import { CommonModule } from '@angular/common';
 
 export interface CalendarData {
     id: any;
@@ -35,15 +36,21 @@ const hours30min = Array(24 * 2).fill(0).map((_, i) => (`${~~(i / 2)}`.padStart(
 
 @Component({
     selector: 'ng-bs-calendar',
+    standalone: true,
+    imports: [CommonModule],
     templateUrl: './ng-bs-calendar.component.html',
-    styleUrls: ['./ng-bs-calendar.component.css']
+    styleUrls: ['./ng-bs-calendar.component.css'],
+    changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class NgBsCalendarComponent implements OnInit {
+export class NgBsCalendarComponent implements OnInit, OnDestroy {
 
     today = DateTime.now().toFormat('yyyy-MM-dd');
     protected schedule = {} as Schedule;
     protected scheduleFlat: any[] = [];
     protected hours = [null, null, ...hours30min]
+
+    private positionCache = new Map<any, number>();
+    private tooltip?: Tooltip;
 
     @Input() loading = false;
     @Input() data!: CalendarDataFull[];
@@ -52,8 +59,8 @@ export class NgBsCalendarComponent implements OnInit {
     @Output() clickCell = new EventEmitter<any>();
     @Output() changeWeek = new EventEmitter<any>();
 
-    constructor() {
-        new Tooltip(document.body, {
+    constructor(private cdr: ChangeDetectorRef) {
+        this.tooltip = new Tooltip(document.body, {
             selector: '[data-bs-toggle="tooltip"]',
             container: 'body',
             placement: 'top',
@@ -61,13 +68,23 @@ export class NgBsCalendarComponent implements OnInit {
     }
 
     ngOnInit() {
+        if (!this.data || !Array.isArray(this.data)) {
+            this.data = [];
+            return;
+        }
+
         // verificando overlap para setar o tamanho
-        this.data = this.data.sort((a, b) => date(a.start).diff(date(a.end)).toMillis() == date(b.start).diff(date(b.end)).toMillis() ? -1 : date(a.start).toMillis() - date(b.start).toMillis());
+        this.data = [...this.data].sort((a, b) => date(a.start).diff(date(a.end)).toMillis() == date(b.start).diff(date(b.end)).toMillis() ? -1 : date(a.start).toMillis() - date(b.start).toMillis());
         this.data.map((d1: CalendarDataFull) => {
             d1._size = 0;
             this.data.map((d2: CalendarDataFull) => this.overlaps(d1, d2) ? d1._size!++ : d1._size)
         })
         this.setSchedule();
+        this.cdr.markForCheck();
+    }
+
+    ngOnDestroy() {
+        this.tooltip?.dispose();
     }
 
     prevWeek() {
@@ -76,6 +93,7 @@ export class NgBsCalendarComponent implements OnInit {
             end: date(this.schedule.prev).endOf('week').minus({ day: 1 }).toFormat('yyyy-MM-dd')
         })
         this.setSchedule(this.schedule.prev);
+        this.cdr.markForCheck();
     }
 
     todayWeek() {
@@ -84,6 +102,7 @@ export class NgBsCalendarComponent implements OnInit {
             end: date(this.today).endOf('week').minus({ day: 1 }).toFormat('yyyy-MM-dd')
         })
         this.setSchedule(this.today);
+        this.cdr.markForCheck();
     }
 
     nextWeek() {
@@ -92,11 +111,14 @@ export class NgBsCalendarComponent implements OnInit {
             end: date(this.schedule.next).endOf('week').minus({ day: 1 }).toFormat('yyyy-MM-dd')
         })
         this.setSchedule(this.schedule.next);
+        this.cdr.markForCheck();
     }
 
     protected getIndexPosition(obj: CalendarDataFull, index: number) {
-        obj._index = this.scheduleFlat.find((d: CalendarDataFull) => d.id == obj.id)._index || index;
-        return obj._index!;
+        if (!this.positionCache.has(obj.id)) {
+            this.positionCache.set(obj.id, index);
+        }
+        return this.positionCache.get(obj.id)!;
     }
 
     protected setSchedule(start = this.start) {
@@ -115,10 +137,12 @@ export class NgBsCalendarComponent implements OnInit {
 
         this.schedule.week.map((day: ScheduleDay) => {
             this.data.map((d: CalendarData) => {
-                const isStartDay = day.label == date(d.start).toFormat('yyyy-MM-dd') && date(d.start).toFormat('HH:mm:ss') != '00:00:00';
-                const isEndDay = day.label == date(d.end).toFormat('yyyy-MM-dd');
+                const startDate = date(d.start).toFormat('yyyy-MM-dd');
+                const endDate = date(d.end).toFormat('yyyy-MM-dd');
+                const isStartDay = day.label == startDate && date(d.start).toFormat('HH:mm:ss') != '00:00:00';
+                const isEndDay = day.label == endDate;
                 const isBetweenStartEnd = date(day.label).toMillis() >= date(d.start).toMillis() && date(day.label).toMillis() < date(d.end).toMillis();
-                const isStartEqualsEnd = date(d.start).toFormat('yyyy-MM-dd') == date(d.end).toFormat('yyyy-MM-dd');
+                const isStartEqualsEnd = startDate == endDate;
 
                 if (isStartDay && isStartEqualsEnd) { // começa e termina no mesmo dia
                     this.setInDay(day, d, (hour: number) => +hour >= +date(d.start).toFormat('HHmm') && +hour < +date(d.end).toFormat('HHmm'));
