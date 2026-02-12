@@ -83,25 +83,20 @@
     gap: 0.5rem;
 }
 
-.nggt-th-label {
-    flex: 1;
-}
-
-/* Coluna sortable - CURSOR POINTER */
-.nggt-sortable {
+.nggt-th-sortable {
     cursor: pointer !important;
     transition: background-color 0.15s ease-in-out;
 }
 
-.nggt-sortable:hover {
+.nggt-th-sortable:hover {
     background-color: rgba(0, 0, 0, 0.03);
 }
 
-.nggt-sortable:active {
+.nggt-th-sortable:active {
     background-color: rgba(0, 0, 0, 0.05);
 }
 
-.nggt-sortable:focus-visible {
+.nggt-th-sortable:focus-visible {
     outline: 2px solid #0066cc;
     outline-offset: -2px;
 }
@@ -117,26 +112,26 @@
     transition: opacity 0.2s ease-in-out, transform 0.2s ease-in-out;
 }
 
-/* Ícone padrão (não ordenado) - OPACO para indicar que é sortable */
+/* Ícone padrão (não ordenado) */
 .nggt-icon-sort-default {
     color: #6c757d;
     opacity: 0.3;
     transition: opacity 0.2s ease-in-out;
 }
 
-/* Hover no header sortable - torna o ícone mais visível */
-.nggt-sortable:hover .nggt-icon-sort-default {
+/* Hover no header sortable */
+.nggt-th-sortable:hover .nggt-icon-sort-default {
     opacity: 0.6;
 }
 
-/* Ícone ASC (seta para cima) - TOTALMENTE VISÍVEL */
+/* Ícone ASC (seta para cima) */
 .nggt-icon-sort-asc {
     color: #0066cc;
     opacity: 1;
     animation: sortIconAppear 0.2s ease-in-out;
 }
 
-/* Ícone DESC (seta para baixo) - TOTALMENTE VISÍVEL */
+/* Ícone DESC (seta para baixo) */
 .nggt-icon-sort-desc {
     color: #0066cc;
     opacity: 1;
@@ -154,8 +149,8 @@
     }
 }
 
-/* Estado sorted - mantém o ícone visível */
-.nggt-sorted .nggt-sort-icon {
+/* Estado sorted */
+.nggt-th-sorted .nggt-sort-icon {
     opacity: 1;
 }
 
@@ -269,7 +264,7 @@
     .nggt-row-clickable,
     .nggt-card,
     .nggt-clickable,
-    .nggt-sortable,
+    .nggt-th-sortable,
     .nggt-sort-icon,
     .spinner-border {
         transition: none;

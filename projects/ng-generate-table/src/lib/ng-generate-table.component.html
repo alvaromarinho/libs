@@ -63,12 +63,7 @@
                         class="{{ column.thClass }}" 
                         [attr.scope]="'col'" [attr.tabindex]="column.sortable ? 0 : null"
                         [ngStyle]="getColumnStyles(column)"
-                        [ngClass]="{
-                            'nggt-th-sortable': column.sortable,
-                            'nggt-th-sorted': isSorted(column),
-                            'nggt-th-sorted-asc': getSortDirection(column) === 'ASC',
-                            'nggt-th-sorted-desc': getSortDirection(column) === 'DESC'
-                        }">
+                        [ngClass]="{ 'nggt-th-sortable': column.sortable, 'nggt-th-sorted': isSorted(column) }">
                         
                         <div class="nggt-th-content"
                             (click)="onSortClick(column, $event)"

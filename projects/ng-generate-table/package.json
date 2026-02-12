@@ -1,6 +1,6 @@
 {
   "name": "ng-generate-table",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "Dynamic table generator for Angular with custom templates, pipes, mobile view, and advanced features",
   "author": "Alvaro Marinho",
   "license": "MIT",
