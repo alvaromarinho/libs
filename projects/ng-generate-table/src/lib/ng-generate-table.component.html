@@ -9,8 +9,8 @@
 
             <!-- Default card template -->
             <ng-template #defaultCard>
-                <div class="nggt-card" role="listitem" [class.nggt-card-clickable]="rowClickable"
-                    (click)="onRowClick(d, $event)">
+                <div role="listitem" class="nggt-card" [ngClass]="{'nggt-card-clickable': rowClickable}"
+                    (click)="rowClickable ? onRowClick(d, $event) : null">
                     <div class="nggt-row" *ngFor="let column of columns; trackBy: trackByIndex">
                         <div class="nggt-card-label" *ngIf="!column.isAction && column.label">
                             {{ column.label }}
@@ -23,7 +23,8 @@
 
                             <!-- Template -->
                             <div *ngIf="column.template" class="nggt-template-cell"
-                                [class.nggt-clickable]="!!column.click" (click)="onCellClick(d, column, $event)"
+                                [ngClass]="{'nggt-clickable': !!column.click}" 
+                                (click)="column.click ? onCellClick(d, column, $event) : null"
                                 [innerHTML]="column.template(d) | safeHtml">
                             </div>
                         </div>
@@ -44,7 +45,7 @@
 
 <!-- desktop view -->
 <ng-template #tableView>
-    <div class="nggt-table-wrapper" [class.nggt-table-loading]="loading">
+    <div class="nggt-table-wrapper" [ngClass]="{'nggt-table-loading': loading}">
         <table class="nggt" [ngClass]="tableClass" role="table">
 
             <!-- Loading overlay -->
@@ -58,14 +59,16 @@
             <!-- Main header -->
             <thead>
                 <tr role="row">
-                    <th *ngFor="let column of columns; trackBy: trackByIndex" role="columnheader" [attr.scope]="'col'"
-                        [ngClass]="column.thClass" 
+                    <th *ngFor="let column of columns; trackBy: trackByIndex" role="columnheader" 
+                        class="{{ column.thClass }}" 
+                        [attr.scope]="'col'" [attr.tabindex]="column.sortable ? 0 : null"
                         [ngStyle]="getColumnStyles(column)"
-                        [class.nggt-sortable]="column.sortable" 
-                        [class.nggt-sorted]="isSorted(column)"
-                        [class.nggt-sorted-asc]="getSortDirection(column) === 'ASC'"
-                        [class.nggt-sorted-desc]="getSortDirection(column) === 'DESC'"
-                        [attr.tabindex]="column.sortable ? 0 : null">
+                        [ngClass]="{
+                            'nggt-th-sortable': column.sortable,
+                            'nggt-th-sorted': isSorted(column),
+                            'nggt-th-sorted-asc': getSortDirection(column) === 'ASC',
+                            'nggt-th-sorted-desc': getSortDirection(column) === 'DESC'
+                        }">
                         
                         <div class="nggt-th-content"
                             (click)="onSortClick(column, $event)"
@@ -119,10 +122,12 @@
                 <!-- Data rows -->
                 <ng-container *ngIf="hasData">
                     <tr *ngFor="let d of data; trackBy: trackByData" role="row"
-                        [class.nggt-row-clickable]="rowClickable" [attr.tabindex]="rowClickable ? 0 : null"
-                        [attr.role]="rowClickable ? 'button' : 'row'" (click)="onRowClick(d, $event)"
-                        (keydown.enter)="rowClickable && onRowClick(d, $event)"
-                        (keydown.space)="rowClickable && onRowClick(d, $event)">
+                        [ngClass]="{'nggt-row-clickable': rowClickable}"
+                        [attr.tabindex]="rowClickable ? 0 : null"
+                        [attr.role]="rowClickable ? 'button' : 'row'" 
+                        (click)="rowClickable ? onRowClick(d, $event) : null"
+                        (keydown.enter)="rowClickable ? onRowClick(d, $event) : null"
+                        (keydown.space)="rowClickable ? onRowClick(d, $event) : null">
 
                         <td *ngFor="let column of columns; trackBy: trackByIndex" role="cell" [ngClass]="column.tdClass"
                             [ngStyle]="getColumnStyles(column)">
@@ -134,11 +139,12 @@
 
                             <!-- Template -->
                             <div *ngIf="column.template" class="nggt-template-cell"
-                                [class.nggt-clickable]="!!column.click" [attr.tabindex]="column.click ? 0 : null"
-                                (click)="onCellClick(d, column, $event)"
-                                (keydown.enter)="column.click && onCellClick(d, column, $event)"
-                                (keydown.space)="column.click && onCellClick(d, column, $event)"
-                                [innerHTML]="column.template(d) | safeHtml:'html':true">
+                                [ngClass]="{'nggt-clickable': !!column.click}"
+                                [attr.tabindex]="column.click ? 0 : null"
+                                [innerHTML]="column.template(d) | safeHtml:'html':true"
+                                (click)="column.click ? onCellClick(d, column, $event) : null"
+                                (keydown.enter)="column.click ? onCellClick(d, column, $event) : null"
+                                (keydown.space)="column.click ? onCellClick(d, column, $event) : null">
                             </div>
                         </td>
                     </tr>
