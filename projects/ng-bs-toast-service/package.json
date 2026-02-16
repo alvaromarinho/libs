@@ -1,6 +1,6 @@
 {
   "name": "ng-bs-toast-service",
-  "version": "1.0.0",
+  "version": "1.0.2",
   "description": "Toast notification service for Angular and Bootstrap 5 with Bootstrap Icons support",
   "author": "Alvaro Marinho",
   "license": "MIT",
