@@ -1,9 +1,9 @@
-import { CommonModule } from '@angular/common';
+
 import { Component, Input, OnChanges, OnDestroy, SimpleChanges, ChangeDetectionStrategy, ElementRef, ViewChild, AfterViewInit, ChangeDetectorRef } from '@angular/core';
 
 @Component({
     selector: 'ng-collapse',
-    imports: [CommonModule],
+    imports: [],
     changeDetection: ChangeDetectionStrategy.OnPush,
     template: `
         <div #collapseContainer class="ng-collapse" [class.show]="isExpanded"[class.overflow]="showOverflow"[style.max-height.px]="maxHeightValue">
