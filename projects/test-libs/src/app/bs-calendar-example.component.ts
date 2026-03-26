@@ -10,14 +10,14 @@ declare const Prism: any;
     standalone: true,
     imports: [NgBsCalendarComponent, NgCollapseComponent, JsonPipe],
     template: `
-        <div class="d-flex align-items-center justify-content-between mb-2">
-            <div class="d-flex align-items-center">
+        <div class="row align-items-center justify-content-between mb-2">
+            <div class="col-12 col-md d-flex align-items-center mb-2 mb-md-0">
                 <h1 class="fs-3 fw-light me-3 mb-0">Bootstrap Calendar</h1>
                 <button class="btn btn-sm btn-secondary py-0" type="button" (click)="toggleCode.set(!toggleCode())">
                     <i class="bi bi-code me-1"></i> CODE
                 </button>
             </div>
-            <div>
+            <div class="col-12 col-md-auto">
                 <button class="btn btn-sm btn-outline-primary px-3" (click)="prev()">«</button>
                 <button class="btn btn-sm btn-outline-primary ms-2" (click)="today()">HOJE</button>
                 <button class="btn btn-sm btn-outline-primary ms-2 px-3" (click)="next()">»</button>
