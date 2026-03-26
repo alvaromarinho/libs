@@ -3,11 +3,7 @@ name: Deploy Test Libs
 on:
   push:
     branches: [master]
-    paths:
-      - 'projects/test-libs/'
-      - 'projects/ng-*/src/'
-      - 'angular.json'
-      - 'package.json'
+    paths: ['projects/**']
 
 jobs:
   deploy:

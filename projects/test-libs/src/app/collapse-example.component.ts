@@ -27,14 +27,14 @@ Template:
             </div>
         </ng-collapse>
 
-        <div class="d-flex align-items-center gap-3 mb-3">
+        <div class="d-flex flex-column flex-md-row align-items-md-center mb-3">
             <button class="btn px-5" [ngClass]="toggle() ? 'btn-danger' : 'btn-primary'"
                 (click)="toggle.set(!toggle())">
                 {{ toggle() ? 'Hide Collapse' : 'Show Collapse' }}
             </button>
 
             <!-- demo do input transitionDuration -->
-            <label class="small mb-0">Duração:</label>
+            <label class="small ms-md-3 mt-3 mt-md-0 mb-0">Duração:</label>
             <select class="form-select form-select-sm w-auto"
                 (change)="duration.set(+$any($event.target).value)">
                 <option value="200">200ms</option>
