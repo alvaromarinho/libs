@@ -11,7 +11,6 @@ interface ToastData extends ToastMessage {
 
 @Component({
     selector: 'ng-bs-toast-service',
-    standalone: true,
     imports: [CommonModule],
     templateUrl: './ng-bs-toast-service.component.html',
     styleUrls: ['./ng-bs-toast-service.component.css']

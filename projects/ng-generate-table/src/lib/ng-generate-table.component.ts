@@ -32,7 +32,6 @@ export interface NgGenerateTextConfig {
 
 @Component({
     selector: 'ng-generate-table',
-    standalone: true,
     imports: [CommonModule, DynamicPipe, SafeHtmlPipe],
     templateUrl: './ng-generate-table.component.html',
     styleUrls: ['./ng-generate-table.component.css'],

@@ -70,7 +70,8 @@ data: CustomData = [
                 </tfoot>
             </ng-generate-table>
         </div>
-    `
+    `,
+    standalone: false
 })
 
 export class GTManualTagsComponent {

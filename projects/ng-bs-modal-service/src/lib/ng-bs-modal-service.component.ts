@@ -7,7 +7,6 @@ import { Subscription } from 'rxjs';
 
 @Component({
     selector: 'ng-bs-modal-service',
-    standalone: true,
     imports: [CommonModule],
     templateUrl: './ng-bs-modal-service.component.html',
     styleUrls: [`./ng-bs-modal-service.component.css`]

@@ -36,7 +36,6 @@ const hours30min = Array(24 * 2).fill(0).map((_, i) => (`${~~(i / 2)}`.padStart(
 
 @Component({
     selector: 'ng-bs-calendar',
-    standalone: true,
     imports: [CommonModule],
     templateUrl: './ng-bs-calendar.component.html',
     styleUrls: ['./ng-bs-calendar.component.css'],

@@ -40,7 +40,8 @@ Template:
             <div class="table-responsive">
                 <ng-generate-table [mobileView]="mobileView" [columns]="columns" [data]="data" tableClass="table table-sm table-bordered mb-4" (sortChange)="onSortChange($event)"></ng-generate-table>
             </div>
-    `
+    `,
+    standalone: false
 })
 
 export class GTSimpleExampleComponent {

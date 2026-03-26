@@ -61,7 +61,8 @@ Template:
                 <div class="modal-body">Body</div>
                 <div class="modal-footer">Footer</div>
             </ng-template>
-    `
+    `,
+    standalone: false
 })
 
 export class BsModalExampleComponent {

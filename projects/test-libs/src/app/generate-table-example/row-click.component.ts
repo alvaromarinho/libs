@@ -40,7 +40,8 @@ Template:
             <div class="table-responsive">
                 <ng-generate-table [mobileView]="mobileView" [columns]="columns" [data]="data" [rowClickable]="true" (rowClick)="rowClick($event)" tableClass="table table-sm table-bordered mb-4 table-hover"></ng-generate-table>
             </div>
-    `
+    `,
+    standalone: false
 })
 
 export class GTRowClickExampleComponent {

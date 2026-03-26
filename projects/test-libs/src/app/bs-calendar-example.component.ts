@@ -34,7 +34,8 @@ Template:
                 </div>
         </ng-collapse>
         <ng-bs-calendar [data]="calendar" [showButtons]="false" (changeWeek)="log($event)" (clickCell)="log($event)"></ng-bs-calendar>
-    `
+    `,
+    standalone: false
 })
 
 export class BsCalendarExampleComponent {

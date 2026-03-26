@@ -35,7 +35,8 @@ Template:
 &lt;/ng-collapse&gt;</code></pre>
             </div>
         </ng-collapse>
-    `
+    `,
+    standalone: false
 })
 
 export class CollapseExampleComponent {

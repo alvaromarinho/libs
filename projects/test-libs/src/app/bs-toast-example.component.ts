@@ -32,7 +32,8 @@ Template:
             <!-- component -->
             <ng-bs-toast-service></ng-bs-toast-service>
             <button type="button" class="btn btn-primary px-5" (click)="showToast()">Show Toast</button>
-    `
+    `,
+    standalone: false
 })
 
 export class BsToastExampleComponent {

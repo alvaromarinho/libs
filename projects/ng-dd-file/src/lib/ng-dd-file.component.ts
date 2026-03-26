@@ -15,7 +15,6 @@ interface FileError {
 
 @Component({
     selector: 'ng-dd-file',
-    standalone: true,
     imports: [CommonModule, NgDdFileDirective],
     templateUrl: './ng-dd-file.component.html',
     styleUrls: ['./ng-dd-file.component.css']

@@ -3,7 +3,6 @@ import { Component, Input, OnChanges, OnDestroy, SimpleChanges, ChangeDetectionS
 
 @Component({
     selector: 'ng-collapse',
-    standalone: true,
     imports: [CommonModule],
     changeDetection: ChangeDetectionStrategy.OnPush,
     template: `

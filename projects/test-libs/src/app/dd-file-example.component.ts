@@ -52,7 +52,8 @@ Template:
                 (fileRemove)="files = []" 
                 (filesAdd)="filesAdd($event)" 
             ></ng-dd-file>
-    `
+    `,
+    standalone: false
 })
 
 export class DdFileExampleComponent {
