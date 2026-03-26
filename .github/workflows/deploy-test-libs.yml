@@ -28,5 +28,5 @@ jobs:
             npx ng build ng-dd-file --configuration production
             npx ng build ng-generate-table --configuration production
             npx ng build test-libs --configuration production
-            rm -rf node_modules src
+            rm -rf node_modules projects
             systemctl reload nginx

@@ -1,5 +1,4 @@
 .toast-container { z-index: 2000; top: .5rem; right: .5rem; }
 .toast { --bs-toast-spacing: 0.5rem; position: relative; width: 360px; }
-.toast .btn-close { position: absolute; top: .5rem; right: .5rem; }
-/* .toast.text-bg-warning { background-color: #fd7e14!important; color: white!important; } */
-/* .toast.text-bg-warning { background-color: #cc9a06!important; color: white!important; } */
+.toast .btn-close { position: absolute; top: 0.4rem; right: .5rem; transform: scale(0.9); }
+.toast.text-bg-warning { background-color: #e99b00!important; color: white!important; }

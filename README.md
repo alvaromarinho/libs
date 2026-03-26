@@ -41,6 +41,17 @@ ng build ng-dd-file
 ng build ng-generate-table
 ```
 
+### Watch mode
+
+```bash
+ng build ng-bs-calendar --watch
+ng build ng-bs-modal-service --watch
+ng build ng-bs-toast-service --watch
+ng build ng-collapse --watch
+ng build ng-dd-file --watch
+ng build ng-generate-table --watch
+```
+
 ### Run demo app
 ```bash
 cd projects/test-libs && ng serve
