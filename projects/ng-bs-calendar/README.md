@@ -21,7 +21,7 @@ Calendar component for Angular and Bootstrap 5 with scheduling support using Lux
 
 | ng-bs-calendar | Angular       | Bootstrap | Luxon | Standalone |
 |----------------|---------------|-----------|-------|------------|
-| 1.0.x          | 14.x - 18.x   | 5.x       | 3.x   | ✅ Yes     |
+| 1.0.x          | 14.x - 21.x   | 5.x       | 3.x   | ✅ Yes     |
 | 0.0.x          | 15.x          | 5.x       | 3.x   | ❌ No      |
 
 ## 📦 Installation

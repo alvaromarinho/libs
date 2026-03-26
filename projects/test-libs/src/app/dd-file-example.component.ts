@@ -1,72 +1,90 @@
-import { Component } from '@angular/core';
+import { AfterViewInit, Component, signal } from '@angular/core';
+import { NgDdFileComponent } from 'ng-dd-file';
+import { NgCollapseComponent } from 'ng-collapse';
+
+declare const Prism: any;
 
 @Component({
     selector: 'dd-file-example',
+    standalone: true,
+    imports: [NgDdFileComponent, NgCollapseComponent],
     template: `
-            <div class="d-flex align-items-center mb-2">
-                <h1 class="fs-3 fw-light me-3 mb-0">Drag and Drop File</h1>
-                <button class="btn btn-sm btn-secondary py-0" type="button" (click)="toggleCode = !toggleCode">
-                     <i class="bi bi-code me-1"></i> CODE
-                </button>
-            </div>
-            <ng-collapse [toggle]="toggleCode">
-                <div class="style-code rounded mb-3">
+        <div class="d-flex align-items-center mb-2">
+            <h1 class="fs-3 fw-light me-3 mb-0">Drag and Drop File</h1>
+            <button class="btn btn-sm btn-secondary py-0" type="button" (click)="toggleCode.set(!toggleCode())">
+                <i class="bi bi-code me-1"></i> CODE
+            </button>
+        </div>
+
+        <ng-collapse [toggle]="toggleCode()">
+            <div class="style-code rounded mb-3">
 Typescript:
-<pre><code class="language-js">files?: any[]
+<pre><code class="language-js">files = signal&lt;File[]&gt;([]);
 
-filesAdd($event: any) &#123;
-    this.files = this.files ? [...this.files, ...$event] : $event
-&#125;
-
-error($event: string) &#123;
-    alert($event)
+onFilesAdd(newFiles: File[]) &#123;
+    this.files.update(existing => [...existing, ...newFiles]);
 &#125;</code></pre>
-                </div>
-                <div class="style-code rounded mb-3">
+            </div>
+            <div class="style-code rounded mb-3">
 Template:
-<pre><code class="language-html">&lt;ng-dd-file 
-    &#91;btnClass&#93;="&#123; file: 'btn btn-primary', remove: 'btn btn-sm btn-danger' &#125;"
-    &#91;filesList&#93;="files" 
-    &#91;labels&#93;="&#123; text: 'Arraste e solte os arquivos', btn: 'SELECIONE O ARQUIVO' &#125;"
-    &#91;maxFiles&#93;="3"
-    &#91;maxFileSize&#93;="200"
-    &#91;maxTotalSize&#93;="300"
-    typeFileAccept="*"
+<pre><code class="language-html">&lt;ng-dd-file
+    [btnClass]="&#123; file: 'btn btn-primary', remove: 'btn btn-sm btn-danger' &#125;"
+    [filesList]="files()"
+    [maxFiles]="3"
+    [maxFileSize]="200"
+    [maxTotalSize]="300"
+    (fileError)="lastError.set($event.message)"
+    (fileRemove)="files.set([])"
+    (filesAdd)="onFilesAdd($event)"
+/&gt;</code></pre>
+            </div>
+        </ng-collapse>
 
-    &#40;fileError&#41;="error&#40;$event&#41;"
-    &#40;fileRemove&#41;="files = &#91;&#93;"
-    &#40;filesAdd&#41;="filesAdd&#40;$event&#41;"
-&gt;&lt;/ng-dd-file&gt;</code></pre>
-                </div>
-            </ng-collapse>
-            <ng-dd-file 
-                [btnClass]="{ file: 'btn btn-primary', remove: 'btn btn-sm btn-danger' }"
-                [filesList]="files" 
-                [labels]="{ text: 'Arraste e solte os arquivos', btn: 'SELECIONE O ARQUIVO' }"
-                [maxFiles]="3"
-                [maxFileSize]="200"
-                [maxTotalSize]="300"
-                typeFileAccept="*"
+        @if (files().length) {
+            <div class="alert alert-success py-1 mt-2 small">
+                <strong>{{ files().length }} arquivo(s) adicionado(s):</strong>
+                @for (f of files(); track f.name) {
+                    <span class="badge bg-secondary ms-1">{{ f.name }}</span>
+                }
+            </div>
+        }
+        @if (lastError()) {
+            <div class="alert alert-danger py-1 mt-2 small">
+                <strong>Erro:</strong> {{ lastError() }}
+            </div>
+        }
 
-                (fileError)="error($event)"
-                (fileRemove)="files = []" 
-                (filesAdd)="filesAdd($event)" 
-            ></ng-dd-file>
-    `,
-    standalone: false
+        <ng-dd-file
+            [btnClass]="{ file: 'btn btn-primary', remove: 'btn btn-sm btn-danger' }"
+            [filesList]="files()"
+            [labels]="{ text: 'Arraste e solte os arquivos', btn: 'SELECIONE O ARQUIVO' }"
+            [maxFiles]="3"
+            [maxFileSize]="200"
+            [maxTotalSize]="300"
+            typeFileAccept="*"
+            (fileError)="lastError.set($event.message)"
+            (fileRemove)="onFilesRemove($event)"
+            (filesAdd)="onFilesAdd($event)">
+        </ng-dd-file>
+    `
 })
+export class DdFileExampleComponent implements AfterViewInit {
 
-export class DdFileExampleComponent {
+    toggleCode = signal(false);
+    files = signal<any[]>([]);
+    lastError = signal<string | null>(null);
 
-    toggleCode: boolean = false
-    files?: any[]
-
-    filesAdd($event: any) {
-        this.files = this.files ? [...this.files, ...$event] : $event
+    ngAfterViewInit() {
+        Prism.highlightAll();
     }
 
-    error($event: any) {
-        alert($event.message)
+    onFilesAdd(newFiles: any[]) {
+        this.lastError.set(null);
+        this.files.update(existing => [...existing, ...newFiles]);
     }
 
+    onFilesRemove(fileRemoved: { file: any; index: number; }) {
+        this.lastError.set(null);
+        this.files.update(existing => existing.filter((_, i) => i !== fileRemoved.index));
+    }
 }

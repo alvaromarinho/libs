@@ -24,13 +24,13 @@
         @for (hour of hours; track hour; let indexHour = $index; let firstRow = $first) {
           <div class="row border-inside-top" [ngClass]="{'position-sticky bg-white': firstRow || indexHour == 1, 'top-0': firstRow, 'top-day': indexHour == 1}"
             [id]="hour">
-            @for (day of [].constructor(8); track day; let indexDay = $index; let firstCol = $first) {
+            @for (day of [].constructor(8); track $index; let indexDay = $index; let firstCol = $first) {
               <div [ngClass]="{'col-day border-inside-start': !firstCol, 'col-1': firstCol, 'px-0': !firstRow && !firstCol}"
                 >
                 <!-- MONTH CELL -->
                 @if (firstRow && firstCol) {
                   <div class="py-2">
-                    <div class="opacity-50">{{ schedule.startWeek | date:'YYYY' }}</div>
+                    <div class="opacity-50">{{ schedule.startWeek | date:'yyyy' }}</div>
                     <div class="fs-5 fw-lighter lh-sm">{{ schedule.startWeek | date:'MMM' | uppercase }}</div>
                   </div>
                 }

@@ -19,7 +19,7 @@ Toast notification service for Angular and Bootstrap 5 with Bootstrap Icons supp
 
 | ng-bs-toast-service | Angular       | Bootstrap | Bootstrap Icons | Standalone |
 |---------------------|---------------|-----------|-----------------|------------|
-| 1.0.x               | 14.x - 18.x   | 5.x       | 1.x             | ✅ Yes     |
+| 1.0.x               | 14.x - 21.x   | 5.x       | 1.x             | ✅ Yes     |
 | 0.0.x               | 15.x          | 5.x       | 1.x             | ❌ No      |
 
 ## 📦 Installation

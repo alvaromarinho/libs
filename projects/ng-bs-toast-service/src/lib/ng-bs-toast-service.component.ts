@@ -1,4 +1,4 @@
-import { OnInit, OnDestroy, Component, AfterViewInit, ViewChildren, QueryList, ElementRef } from '@angular/core';
+import { OnInit, OnDestroy, Component, ViewChildren, QueryList, ElementRef, ChangeDetectorRef } from '@angular/core';
 import { NgBsToastService, ToastMessage } from './ng-bs-toast-service.service';
 import { Toast } from 'bootstrap';
 import { CommonModule } from '@angular/common';
@@ -23,7 +23,10 @@ export class NgBsToastServiceComponent implements OnInit, OnDestroy {
     private destroy$ = new Subject<void>();
     private toastCounter = 0;
 
-    constructor(private toastService: NgBsToastService) { }
+    constructor(
+        private toastService: NgBsToastService,
+        private cdr: ChangeDetectorRef
+    ) { }
 
     ngOnInit() {
         this.toastService.listen().pipe(takeUntil(this.destroy$)).subscribe((data) => this.addToast(data));
@@ -55,6 +58,7 @@ export class NgBsToastServiceComponent implements OnInit, OnDestroy {
         };
         
         this.toastData.push(toastData);
+        this.cdr.detectChanges();
         this.initializeToast(id, toastData, 0);
     }
 

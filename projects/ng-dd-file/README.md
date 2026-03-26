@@ -21,7 +21,7 @@ Drag and drop file upload component for Angular with multiple files support, fil
 
 | ng-dd-file | Angular       | Standalone |
 |------------|---------------|------------|
-| 1.0.x      | 14.x - 18.x   | ✅ Yes     |
+| 1.0.x      | 14.x - 21.x   | ✅ Yes     |
 | 0.1.x      | 15.x          | ❌ No      |
 
 ## 📦 Installation

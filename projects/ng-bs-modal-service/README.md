@@ -21,7 +21,7 @@ Modal service for Angular and Bootstrap 5 with advanced features like queue mana
 
 | ng-bs-modal-service | Angular       | Bootstrap | Standalone |
 |---------------------|---------------|-----------|------------|
-| 1.0.x               | 14.x - 18.x   | 5.x       | ✅ Yes     |
+| 1.0.x               | 14.x - 21.x   | 5.x       | ✅ Yes     |
 | 0.1.x               | 15.x          | 5.x       | ❌ No      |
 
 ## 📦 Installation

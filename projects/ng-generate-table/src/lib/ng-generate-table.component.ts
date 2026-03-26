@@ -87,10 +87,6 @@ export class NgGenerateTableComponent<T = any> implements OnInit {
         });
     }
 
-    trackByIndex(index: number): number {
-        return index;
-    }
-
     trackByData(index: number, item: T): any {
         return (item as any)['id'] ?? index;
     }
@@ -102,11 +98,15 @@ export class NgGenerateTableComponent<T = any> implements OnInit {
     }
 
     onCellClick(row: T, column: NgGenerateTableColumns<T>, event: Event) {
+        event.stopPropagation(); // Evita conflito com rowClick
+        this.cellClick.emit({ row, column, event });
+    }
+
+    onColumnClick(row: T, column: NgGenerateTableColumns<T>, event: Event) {
         if (column.click) {
             event.stopPropagation(); // Evita conflito com rowClick
             column.click(row, event);
         }
-        this.cellClick.emit({ row, column, event });
     }
 
     getCellValue(row: T, column: NgGenerateTableColumns<T>): any {

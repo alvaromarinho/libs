@@ -19,7 +19,7 @@ Simple and smooth collapse/expand component for Angular with CSS transitions.
 
 | ng-collapse | Angular       | Standalone |
 |-------------|---------------|------------|
-| 1.0.x       | 14.x - 18.x   | ✅ Yes     |
+| 1.0.x       | 14.x - 21.x   | ✅ Yes     |
 | 0.0.x       | 15.x          | ❌ No      |
 
 ## 📦 Installation
