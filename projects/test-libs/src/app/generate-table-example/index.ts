@@ -1,4 +1,5 @@
 export * from './class-pipe.component';
+export * from './expandable-rows.component';
 export * from './loading-empty.component';
 export * from './manual-tags.component';
 export * from './mobile-card.component';

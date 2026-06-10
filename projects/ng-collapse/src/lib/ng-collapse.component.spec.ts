@@ -8,7 +8,7 @@ describe('NgCollapseComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ NgCollapseComponent ]
+      imports: [ NgCollapseComponent ]
     })
     .compileComponents();
 

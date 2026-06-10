@@ -8,12 +8,13 @@ describe('NgBsCalendarComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ NgBsCalendarComponent ]
+      imports: [ NgBsCalendarComponent ]
     })
     .compileComponents();
 
     fixture = TestBed.createComponent(NgBsCalendarComponent);
     component = fixture.componentInstance;
+    fixture.componentRef.setInput('data', []);
     fixture.detectChanges();
   });
 

@@ -8,7 +8,7 @@ describe('NgBsModalServiceComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ NgBsModalServiceComponent ]
+      imports: [ NgBsModalServiceComponent ]
     })
     .compileComponents();
 

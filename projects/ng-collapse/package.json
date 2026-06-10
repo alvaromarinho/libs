@@ -1,6 +1,6 @@
 {
   "name": "ng-collapse",
-  "version": "1.1.0",
+  "version": "1.1.1",
   "description": "Simple and smooth collapse/expand component for Angular with CSS transitions",
   "author": "Alvaro Marinho",
   "license": "MIT",

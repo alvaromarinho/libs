@@ -8,7 +8,7 @@ describe('NgBsToastServiceComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ NgBsToastServiceComponent ]
+      imports: [ NgBsToastServiceComponent ]
     })
     .compileComponents();
 

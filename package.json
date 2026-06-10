@@ -6,7 +6,8 @@
     "start": "ng serve",
     "build": "ng build",
     "watch": "ng build --watch --configuration development",
-    "test": "ng test"
+    "test": "ng test",
+    "publish:all": "bash scripts/publish-all.sh"
   },
   "private": true,
   "dependencies": {

@@ -45,16 +45,28 @@ ng build ng-generate-table
 
 ```bash
 ng build ng-bs-calendar --watch
-ng build ng-bs-modal-service --watch
-ng build ng-bs-toast-service --watch
-ng build ng-collapse --watch
-ng build ng-dd-file --watch
-ng build ng-generate-table --watch
 ```
 
 ### Run demo app
 ```bash
 cd projects/test-libs && ng serve
+```
+
+## Publishing to npm
+
+### Before publishing
+- Update version in `package.json`
+- Build the library: `ng build <library-name>`
+
+### Publish a single library
+```bash
+cd dist/<library-name>
+npm publish
+```
+
+### Publish all libraries
+```bash
+npm run publish:all
 ```
 
 ## License

@@ -8,7 +8,7 @@ describe('NgGenerateTableComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ NgGenerateTableComponent ]
+      imports: [ NgGenerateTableComponent ]
     })
     .compileComponents();
 

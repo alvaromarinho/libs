@@ -23,6 +23,7 @@ export interface NgGenerateTableColumns<T = any> {
     template?: (row: T) => string;
     click?: (row: T, event: Event) => void;
 
+    isExpand?: boolean;
 }
 
 export interface NgGenerateTextConfig {
@@ -46,6 +47,9 @@ export class NgGenerateTableComponent<T = any> implements OnInit {
     @Input() mobileView = false;
     @Input() rowClickable = false;
 
+    /** Keys (row.id ?? index) of rows currently expanded. Controlled by the consumer. */
+    @Input() expandedRows = new Set<any>();
+
     @Input() config: NgGenerateTextConfig = {
         emptyMessage: 'Nenhum dado encontrado',
         loadingMessage: 'Carregando...'
@@ -62,8 +66,10 @@ export class NgGenerateTableComponent<T = any> implements OnInit {
     @Output() rowClick = new EventEmitter<{ row: T; event: Event }>();
     @Output() cellClick = new EventEmitter<{ row: T; column: NgGenerateTableColumns<T>; event: Event }>();
     @Output() sortChange = new EventEmitter<{ field: string; direction: SortDirection }>();
+    @Output() expandedRowsChange = new EventEmitter<Set<any>>();
 
     @ContentChild('cardMobile', { static: false }) cardMobile?: TemplateRef<any>;
+    @ContentChild('rowDetail', { static: false }) rowDetail?: TemplateRef<any>;
 
     private currentSort: { field: string; direction: SortDirection } | null = null;
 
@@ -78,7 +84,7 @@ export class NgGenerateTableComponent<T = any> implements OnInit {
             console.warn('[ng-generate-table] Nenhuma coluna foi fornecida. O componente não será renderizado corretamente.');
         }
         this.columns.forEach((col, index) => {
-            if (!col.field && !col.template && !col.isAction) {
+            if (!col.field && !col.template && !col.isAction && !col.isExpand) {
                 console.warn(`[ng-generate-table] Coluna ${index} não possui 'field' nem 'template'.`);
             }
             if (col.sortable && !col.field) {
@@ -89,6 +95,25 @@ export class NgGenerateTableComponent<T = any> implements OnInit {
 
     trackByData(index: number, item: T): any {
         return (item as any)['id'] ?? index;
+    }
+
+    isRowExpanded(row: T, index: number): boolean {
+        return this.expandedRows.has(this.trackByData(index, row));
+    }
+
+    hasExpandToggle(): boolean {
+        return !!this.rowDetail;
+    }
+
+    toggleRowExpand(row: T, index: number, event: Event) {
+        event.stopPropagation();
+
+        const key = this.trackByData(index, row);
+        const expandedRows = new Set(this.expandedRows);
+
+        expandedRows.has(key) ? expandedRows.delete(key) : expandedRows.add(key);
+
+        this.expandedRowsChange.emit(expandedRows);
     }
 
     onRowClick(row: T, event: Event) {
@@ -110,9 +135,8 @@ export class NgGenerateTableComponent<T = any> implements OnInit {
     }
 
     getCellValue(row: T, column: NgGenerateTableColumns<T>): any {
-        if (!column.field) return '---';
-        const value = (row as any)[column.field];
-        return value ?? '---';
+        if (!column.field) return null;
+        return (row as any)[column.field] ?? null;
     }
 
     get hasData(): boolean {

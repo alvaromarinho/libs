@@ -150,6 +150,7 @@ export class AppComponent {
 | `emptyMessage`   | `string`                    | `Nenhum dado encontrado` | Message when no data        |
 | `loadingMessage` | `string`                    | `Carregando...`          | Loading message             |
 | `rowClickable`   | `boolean`                   | `false`                  | Make rows clickable         |
+| `expandedRows`   | `Set<any>`                  | `new Set()`              | Keys (`row.id ?? index`) of currently expanded rows. Controlled by the consumer. |
 
 ### Outputs
 
@@ -158,6 +159,7 @@ export class AppComponent {
 | `rowClick`   | `EventEmitter<{ row: T; event: Event }>`  | Emitted when row is clicked (requires `rowClickable=true`) |
 | `cellClick`  | `EventEmitter<{ row: T; column: NgGenerateTableColumns<T>; event: Event }>` | Emitted when a cell is clicked |
 | `sortChange` | `EventEmitter<{ field: string; direction: SortDirection }>` | Emitted when sort changes |
+| `expandedRowsChange` | `EventEmitter<Set<any>>` | Emitted with the next `expandedRows` set when the user clicks an expand/collapse toggle |
 
 ### NgGenerateTableColumns Interface (adicionar propriedades)
 
@@ -183,6 +185,7 @@ interface NgGenerateTableColumns {
   align?: 'left' | 'center' | 'right';    // Align text
   sortable?: boolean;                     // Column sortable
   isAction?: boolean;                     // Mark column as action column
+  isExpand?: boolean;                     // Renders an expand/collapse toggle button
 }
 ```
 
@@ -426,6 +429,46 @@ export class MobileTableComponent {
     { label: 'Name', field: 'name' },
     { label: 'Email', field: 'email' },
     { label: 'Date', field: 'date' }
+  ];
+}
+```
+
+### Expandable Detail Row
+
+Add a column with `isExpand: true` to render a toggle button. When expanded, the row defined by the `#rowDetail` template is shown below it. `expandedRows`/`expandedRowsChange` are controlled by the consumer.
+
+```typescript
+import { Component } from '@angular/core';
+import { NgGenerateTableComponent, NgGenerateTableColumns } from 'ng-generate-table';
+
+@Component({
+  selector: 'app-expandable-table',
+  standalone: true,
+  imports: [NgGenerateTableComponent],
+  template: `
+    <ng-generate-table
+      [columns]="columns"
+      [data]="orders"
+      [(expandedRows)]="expandedRows">
+
+      <ng-template #rowDetail let-order>
+        <p><strong>Endereço:</strong> {{ order.address }}</p>
+        <p><strong>Itens:</strong> {{ order.items.join(', ') }}</p>
+      </ng-template>
+    </ng-generate-table>
+  `
+})
+export class ExpandableTableComponent {
+  expandedRows = new Set<any>();
+
+  orders = [
+    { id: 1, customer: 'John Doe', address: 'Rua A, 123', items: ['Item 1', 'Item 2'] },
+    { id: 2, customer: 'Jane Smith', address: 'Rua B, 456', items: ['Item 3'] }
+  ];
+
+  columns: NgGenerateTableColumns[] = [
+    { isExpand: true },
+    { label: 'Customer', field: 'customer' }
   ];
 }
 ```

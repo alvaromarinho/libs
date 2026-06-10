@@ -8,7 +8,7 @@ describe('NgDdFileComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ NgDdFileComponent ]
+      imports: [ NgDdFileComponent ]
     })
     .compileComponents();
 

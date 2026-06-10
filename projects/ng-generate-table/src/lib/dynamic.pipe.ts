@@ -11,6 +11,7 @@ export class DynamicPipe implements PipeTransform {
 
     transform(value: any, pipeToken?: Type<PipeTransform>, pipeArgs?: any[]): any {
 
+        if (value == null) return value;
         if (!pipeToken) return value;
 
         try {

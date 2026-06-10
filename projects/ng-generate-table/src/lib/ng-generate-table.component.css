@@ -174,7 +174,8 @@
 
 /* ===== Cell with Template ===== */
 .nggt-template-cell {
-    display: inline-block;
+    display: inline-flex;
+    align-items: center;
 }
 
 .nggt-clickable {
@@ -192,12 +193,84 @@
     border-radius: 2px;
 }
 
+/* ===== Expandable Rows ===== */
+.nggt-th-expand,
+.nggt-td-expand {
+    width: 1%;
+    white-space: nowrap;
+    text-align: center;
+}
+
+.nggt-expand-toggle {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 28px;
+    height: 28px;
+    padding: 0;
+    border: none;
+    background: transparent;
+    color: #6c757d;
+    cursor: pointer;
+    border-radius: 4px;
+    transition: background-color 0.15s ease-in-out, color 0.15s ease-in-out;
+}
+
+.nggt-expand-toggle:hover {
+    background-color: rgba(0, 0, 0, 0.05);
+    color: #212529;
+}
+
+.nggt-expand-toggle:focus-visible {
+    outline: 2px solid #0066cc;
+    outline-offset: -2px;
+}
+
+.nggt-icon-expand {
+    transition: transform 0.2s ease-in-out;
+}
+
+.nggt-expand-toggle.nggt-expanded .nggt-icon-expand {
+    transform: rotate(90deg);
+}
+
+.nggt-row-detail td {
+    padding: 0 !important;
+    border-top: none;
+}
+
+/* CSS-only collapse animation via grid-template-rows (0fr <-> 1fr) */
+.nggt-detail-content {
+    display: grid;
+    grid-template-rows: 0fr;
+    transition: grid-template-rows 0.25s ease-in-out;
+}
+
+.nggt-detail-content.nggt-show {
+    grid-template-rows: 1fr;
+}
+
+.nggt-detail-inner {
+    overflow: hidden;
+}
+
+.nggt-detail-padding {
+    padding: 1rem;
+}
+
+.nggt-card-expand-toggle {
+    position: absolute;
+    top: 12px;
+    right: 12px;
+}
+
 /* ===== Mobile Cards ===== */
 .nggt-mobile-container {
     width: 100%;
 }
 
 .nggt-card {
+    position: relative;
     border: 1px solid #e9ecef;
     border-radius: 8px;
     padding: 16px;
@@ -265,6 +338,8 @@
     .nggt-clickable,
     .nggt-th-sortable,
     .nggt-sort-icon,
+    .nggt-detail-content,
+    .nggt-icon-expand,
     .spinner-border {
         transition: none;
         animation: none;

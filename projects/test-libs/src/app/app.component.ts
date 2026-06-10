@@ -8,7 +8,7 @@ import { BsModalExampleComponent } from './bs-modal-example.component';
 import { BsToastExampleComponent } from './bs-toast-example.component';
 import { CollapseExampleComponent } from './collapse-example.component';
 import { DdFileExampleComponent } from './dd-file-example.component';
-import { GTSimpleExampleComponent, GTManualTagsComponent, GTRowClickExampleComponent, GTClassPipeExampleComponent, GTLoadingEmptyExampleComponent, GTMobileCardExampleComponent } from './generate-table-example';
+import { GTSimpleExampleComponent, GTManualTagsComponent, GTRowClickExampleComponent, GTClassPipeExampleComponent, GTLoadingEmptyExampleComponent, GTMobileCardExampleComponent, GTExpandableRowsExampleComponent } from './generate-table-example';
 
 type PageKey = 'ngBsCalendar' | 'ngBsModalService' | 'ngBsToastService' | 'ngCollapse' | 'ngDdFile' | 'ngGenerateTable';
 
@@ -32,6 +32,7 @@ type PageKey = 'ngBsCalendar' | 'ngBsModalService' | 'ngBsToastService' | 'ngCol
         GTClassPipeExampleComponent,
         GTLoadingEmptyExampleComponent,
         GTMobileCardExampleComponent,
+        GTExpandableRowsExampleComponent,
     ]
 })
 export class AppComponent {
