@@ -185,7 +185,6 @@ interface NgGenerateTableColumns {
   align?: 'left' | 'center' | 'right';    // Align text
   sortable?: boolean;                     // Column sortable
   isAction?: boolean;                     // Mark column as action column
-  isExpand?: boolean;                     // Renders an expand/collapse toggle button
 }
 ```
 
@@ -435,7 +434,7 @@ export class MobileTableComponent {
 
 ### Expandable Detail Row
 
-Add a column with `isExpand: true` to render a toggle button. When expanded, the row defined by the `#rowDetail` template is shown below it. `expandedRows`/`expandedRowsChange` are controlled by the consumer.
+Project a `#rowDetail` template to enable expand/collapse: the first column automatically gets a toggle button next to its content (rows that can't expand get an invisible spacer of the same size, so columns stay aligned). When expanded, the row defined by `#rowDetail` is shown below it. `expandedRows`/`expandedRowsChange` are controlled by the consumer, and `expandableRow?: (row, index) => boolean` lets you restrict which rows show the toggle at all.
 
 ```typescript
 import { Component } from '@angular/core';
@@ -467,7 +466,6 @@ export class ExpandableTableComponent {
   ];
 
   columns: NgGenerateTableColumns[] = [
-    { isExpand: true },
     { label: 'Customer', field: 'customer' }
   ];
 }

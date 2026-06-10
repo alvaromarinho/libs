@@ -11,7 +11,7 @@
                     <div role="listitem" class="nggt-card" [ngClass]="{'nggt-card-clickable': rowClickable}"
                         (click)="rowClickable ? onRowClick(d, $event) : null">
                         <!-- Expand/collapse toggle -->
-                        @if (hasExpandToggle()) {
+                        @if (canExpandRow(d, $index)) {
                             <button type="button" class="nggt-expand-toggle nggt-card-expand-toggle" [class.nggt-expanded]="isRowExpanded(d, $index)"
                                 [attr.aria-expanded]="isRowExpanded(d, $index)"
                                 [attr.aria-label]="isRowExpanded(d, $index) ? 'Recolher' : 'Expandir'"
@@ -22,33 +22,31 @@
                             </button>
                         }
                         @for (column of columns; track $index) {
-                            @if (!column.isExpand) {
-                                <div class="nggt-row">
-                                    @if (!column.isAction && column.label) {
-                                        <div class="nggt-card-label">
-                                            {{ column.label }}
+                            <div class="nggt-row">
+                                @if (!column.isAction && column.label) {
+                                    <div class="nggt-card-label">
+                                        {{ column.label }}
+                                    </div>
+                                }
+                                <div class="nggt-card-value" [ngClass]="column.tdClass">
+                                    <!-- Field with pipe -->
+                                    @if (column.field && !column.template) {
+                                        <span>
+                                            {{ (getCellValue(d, column) | dynamicPipe:column.pipe:column.pipeArgs) ?? '---' }}
+                                        </span>
+                                    }
+                                    <!-- Template -->
+                                    @if (column.template) {
+                                        <div class="nggt-template-cell" [ngClass]="{'nggt-clickable': !!column.click}"
+                                            (click)="!rowClickable && column.click ? onColumnClick(d, column, $event) : null"
+                                            [innerHTML]="column.template(d) | safeHtml">
                                         </div>
                                     }
-                                    <div class="nggt-card-value" [ngClass]="column.tdClass">
-                                        <!-- Field with pipe -->
-                                        @if (column.field && !column.template) {
-                                            <span>
-                                                {{ (getCellValue(d, column) | dynamicPipe:column.pipe:column.pipeArgs) ?? '---' }}
-                                            </span>
-                                        }
-                                        <!-- Template -->
-                                        @if (column.template) {
-                                            <div class="nggt-template-cell" [ngClass]="{'nggt-clickable': !!column.click}"
-                                                (click)="!rowClickable && column.click ? onColumnClick(d, column, $event) : null"
-                                                [innerHTML]="column.template(d) | safeHtml">
-                                            </div>
-                                        }
-                                    </div>
                                 </div>
-                            }
+                            </div>
                         }
                         <!-- Expandable detail content -->
-                        @if (rowDetail) {
+                        @if (canExpandRow(d, $index)) {
                             <div class="nggt-detail-content" [class.nggt-show]="isRowExpanded(d, $index)">
                                 <div class="nggt-detail-inner">
                                     <div class="nggt-detail-padding">
@@ -91,7 +89,7 @@
                     @for (column of columns; track $index) {
                         <th role="columnheader" class="{{ column.thClass }}" [attr.scope]="'col'"
                             [attr.tabindex]="column.sortable ? 0 : null" [ngStyle]="getColumnStyles(column)"
-                            [ngClass]="{ 'nggt-th-sortable': column.sortable, 'nggt-th-sorted': isSorted(column), 'nggt-th-expand': column.isExpand }">
+                            [ngClass]="{ 'nggt-th-sortable': column.sortable, 'nggt-th-sorted': isSorted(column) }">
                             <div class="nggt-th-content" (click)="onSortClick(column, $event)"
                                 (keydown.enter)="onSortClick(column, $event)" (keydown.space)="onSortClick(column, $event)">
                                 <span class="nggt-th-label">{{ column.label || '' }}</span>
@@ -147,25 +145,27 @@
                 }
                 <!-- Data rows -->
                 @if (hasData) {
-                    @for (d of data; track trackByData($index, d)) {
+                    @for (d of data; track trackByData($index, d); let rowIndex = $index) {
                         <tr role="row" [ngClass]="{'nggt-row-clickable': rowClickable}" [attr.tabindex]="rowClickable ? 0 : null"
                             [attr.role]="rowClickable ? 'button' : 'row'" (click)="rowClickable ? onRowClick(d, $event) : null"
                             (keydown.enter)="rowClickable ? onRowClick(d, $event) : null"
                             (keydown.space)="rowClickable ? onRowClick(d, $event) : null">
-                            @for (column of columns; track $index) {
-                                <td role="cell" [ngClass]="column.tdClass" [class.nggt-td-expand]="column.isExpand" [ngStyle]="getColumnStyles(column)"
-                                    (click)="!rowClickable && !column.isExpand ? onCellClick(d, column, $event) : null">
-                                    <!-- Expand/collapse toggle -->
-                                    @if (column.isExpand) {
-                                        @if (hasExpandToggle()) {
-                                            <button type="button" class="nggt-expand-toggle" [class.nggt-expanded]="isRowExpanded(d, $index)"
-                                                [attr.aria-expanded]="isRowExpanded(d, $index)"
-                                                [attr.aria-label]="isRowExpanded(d, $index) ? 'Recolher' : 'Expandir'"
-                                                (click)="toggleRowExpand(d, $index, $event)">
+                            @for (column of columns; track $index; let colIndex = $index) {
+                                <td role="cell" [ngClass]="column.tdClass" [ngStyle]="getColumnStyles(column)"
+                                    (click)="!rowClickable ? onCellClick(d, column, $event) : null">
+                                    <!-- Expand/collapse toggle (always in the first column) -->
+                                    @if (colIndex === 0 && hasExpandToggle()) {
+                                        @if (canExpandRow(d, rowIndex)) {
+                                            <button type="button" class="nggt-expand-toggle" [class.nggt-expanded]="isRowExpanded(d, rowIndex)"
+                                                [attr.aria-expanded]="isRowExpanded(d, rowIndex)"
+                                                [attr.aria-label]="isRowExpanded(d, rowIndex) ? 'Recolher' : 'Expandir'"
+                                                (click)="toggleRowExpand(d, rowIndex, $event)">
                                                 <svg class="nggt-icon-expand" width="16" height="16" viewBox="0 0 16 16" fill="currentColor">
                                                     <path d="M6 4l4 4-4 4V4z" />
                                                 </svg>
                                             </button>
+                                        } @else {
+                                            <span class="nggt-expand-toggle nggt-expand-spacer" aria-hidden="true"></span>
                                         }
                                     }
                                     <!-- Field with pipe -->
@@ -188,14 +188,14 @@
                             }
                         </tr>
                         <!-- Expandable detail row -->
-                        @if (rowDetail) {
+                        @if (canExpandRow(d, rowIndex)) {
                             <tr class="nggt-row-detail" role="row">
                                 <td [attr.colspan]="columns.length" role="cell">
-                                    <div class="nggt-detail-content" [class.nggt-show]="isRowExpanded(d, $index)">
+                                    <div class="nggt-detail-content" [class.nggt-show]="isRowExpanded(d, rowIndex)">
                                         <div class="nggt-detail-inner">
                                             <div class="nggt-detail-padding">
                                                 <ng-container [ngTemplateOutlet]="rowDetail"
-                                                    [ngTemplateOutletContext]="{$implicit: d, rowData: d, index: $index}"></ng-container>
+                                                    [ngTemplateOutletContext]="{$implicit: d, rowData: d, index: rowIndex}"></ng-container>
                                             </div>
                                         </div>
                                     </div>

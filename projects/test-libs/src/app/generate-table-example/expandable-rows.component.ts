@@ -16,21 +16,26 @@ declare const Prism: any;
             </button>
         </div>
         <p class="text-muted small mb-3">
-            Coluna com <code>isExpand: true</code> renderiza um botão de toggle. O estado fica em <code>expandedRows</code>,
-            controlado pelo consumidor via <code>[(expandedRows)]</code>. Ao expandir, o conteúdo do <code>#rowDetail</code>
-            aparece abaixo da linha.
+            Quando o <code>#rowDetail</code> é projetado, a primeira coluna ganha automaticamente um botão de toggle. O estado
+            fica em <code>expandedRows</code>, controlado pelo consumidor via <code>[(expandedRows)]</code>. Ao expandir, o
+            conteúdo do <code>#rowDetail</code> aparece abaixo da linha. Use <code>expandableRow</code> para decidir quais linhas
+            podem ser expandidas — neste exemplo, apenas os pedidos do <strong>Marinho</strong> e do <strong>Álvaro</strong> têm
+            o toggle.
         </p>
 
         <ng-collapse [toggle]="toggleCode()">
             <div class="style-code rounded mb-3">
 Typescript:
 <pre><code class="language-js">columns: NgGenerateTableColumns[] = [
-    &#123; isExpand: true &#125;,
     &#123; label: 'Cliente', field: 'customer' &#125;,
     &#123; label: 'Total', field: 'total' &#125;,
 ];
 
-expandedRows = new Set&lt;any&gt;();</code></pre>
+// Controla quais linhas estão expandidas
+expandedRows = new Set&lt;any&gt;([this.orders.find(o => o.customer === 'Marinho')?.id]);
+
+// Apenas linhas para as quais essa função retorna true terão o toggle de expand
+expandableRow = (order: any) => order.customer === 'Marinho' || order.customer === 'Álvaro';</code></pre>
             </div>
             <div class="style-code rounded mb-3">
 Template:
@@ -43,6 +48,7 @@ Template:
                 [columns]="detailColumns"
                 [data]="orders"
                 [(expandedRows)]="expandedRows"
+                [expandableRow]="expandableRow"
                 tableClass="table table-sm table-bordered">
 
                 <ng-template #rowDetail let-order>
@@ -57,7 +63,14 @@ export class GTExpandableRowsExampleComponent implements AfterViewInit {
 
     toggleCode = signal(false);
 
-    expandedRows = new Set<any>();
+    orders = [
+        { id: 1, customer: 'Álvaro',   total: 'R$ 150,00', address: 'Rua A, 123 — São Paulo/SP',     items: ['Teclado', 'Mouse'] },
+        { id: 2, customer: 'Marinho',  total: 'R$ 89,90',  address: 'Rua B, 456 — Rio de Janeiro/RJ', items: ['Monitor'] },
+        { id: 3, customer: 'Fernanda', total: 'R$ 320,00', address: 'Rua C, 789 — Belo Horizonte/MG', items: ['Notebook', 'Mochila', 'Mouse'] },
+    ];
+
+    // Pedido do Marinho já começa expandido
+    expandedRows = new Set<any>([this.orders.find(o => o.customer === 'Marinho')?.id]);
 
     detailRowSnippet = `&lt;ng-generate-table
     [columns]="columns" [data]="orders"
@@ -70,16 +83,11 @@ export class GTExpandableRowsExampleComponent implements AfterViewInit {
 &lt;/ng-generate-table&gt;`;
 
     detailColumns: NgGenerateTableColumns[] = [
-        { isExpand: true },
         { label: 'Cliente', field: 'customer' },
         { label: 'Total', field: 'total' },
     ];
 
-    orders = [
-        { id: 1, customer: 'Álvaro',   total: 'R$ 150,00', address: 'Rua A, 123 — São Paulo/SP',     items: ['Teclado', 'Mouse'] },
-        { id: 2, customer: 'Marinho',  total: 'R$ 89,90',  address: 'Rua B, 456 — Rio de Janeiro/RJ', items: ['Monitor'] },
-        { id: 3, customer: 'Fernanda', total: 'R$ 320,00', address: 'Rua C, 789 — Belo Horizonte/MG', items: ['Notebook', 'Mochila', 'Mouse'] },
-    ];
+    expandableRow = (order: any) => order.customer === 'Marinho' || order.customer === 'Álvaro';
 
     ngAfterViewInit() {
         Prism.highlightAll();

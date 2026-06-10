@@ -22,8 +22,6 @@ export interface NgGenerateTableColumns<T = any> {
 
     template?: (row: T) => string;
     click?: (row: T, event: Event) => void;
-
-    isExpand?: boolean;
 }
 
 export interface NgGenerateTextConfig {
@@ -49,6 +47,9 @@ export class NgGenerateTableComponent<T = any> implements OnInit {
 
     /** Keys (row.id ?? index) of rows currently expanded. Controlled by the consumer. */
     @Input() expandedRows = new Set<any>();
+
+    /** Optional: decides whether a given row can be expanded. If omitted, all rows are expandable. */
+    @Input() expandableRow?: (row: T, index: number) => boolean;
 
     @Input() config: NgGenerateTextConfig = {
         emptyMessage: 'Nenhum dado encontrado',
@@ -84,7 +85,7 @@ export class NgGenerateTableComponent<T = any> implements OnInit {
             console.warn('[ng-generate-table] Nenhuma coluna foi fornecida. O componente não será renderizado corretamente.');
         }
         this.columns.forEach((col, index) => {
-            if (!col.field && !col.template && !col.isAction && !col.isExpand) {
+            if (!col.field && !col.template && !col.isAction) {
                 console.warn(`[ng-generate-table] Coluna ${index} não possui 'field' nem 'template'.`);
             }
             if (col.sortable && !col.field) {
@@ -103,6 +104,10 @@ export class NgGenerateTableComponent<T = any> implements OnInit {
 
     hasExpandToggle(): boolean {
         return !!this.rowDetail;
+    }
+
+    canExpandRow(row: T, index: number): boolean {
+        return this.hasExpandToggle() && (!this.expandableRow || this.expandableRow(row, index));
     }
 
     toggleRowExpand(row: T, index: number, event: Event) {
