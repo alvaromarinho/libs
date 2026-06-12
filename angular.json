@@ -94,8 +94,8 @@
               "budgets": [
                 {
                   "type": "initial",
-                  "maximumWarning": "500kb",
-                  "maximumError": "1mb"
+                  "maximumWarning": "1mb",
+                  "maximumError": "2mb"
                 },
                 {
                   "type": "anyComponentStyle",
@@ -317,20 +317,20 @@
         }
       }
     },
-    "ng-month-picker": {
+    "ng-month-year-picker": {
       "projectType": "library",
-      "root": "projects/ng-month-picker",
-      "sourceRoot": "projects/ng-month-picker/src",
+      "root": "projects/ng-month-year-picker",
+      "sourceRoot": "projects/ng-month-year-picker/src",
       "prefix": "lib",
       "architect": {
         "build": {
           "builder": "@angular/build:ng-packagr",
           "configurations": {
             "production": {
-              "tsConfig": "projects/ng-month-picker/tsconfig.lib.prod.json"
+              "tsConfig": "projects/ng-month-year-picker/tsconfig.lib.prod.json"
             },
             "development": {
-              "tsConfig": "projects/ng-month-picker/tsconfig.lib.json"
+              "tsConfig": "projects/ng-month-year-picker/tsconfig.lib.json"
             }
           },
           "defaultConfiguration": "production"
@@ -338,7 +338,7 @@
         "test": {
           "builder": "@angular/build:unit-test",
           "options": {
-            "tsConfig": "projects/ng-month-picker/tsconfig.spec.json"
+            "tsConfig": "projects/ng-month-year-picker/tsconfig.spec.json"
           }
         }
       }

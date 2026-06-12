@@ -3,10 +3,10 @@
   "version": "0.0.0",
   "scripts": {
     "ng": "ng",
-    "start": "ng serve",
-    "build": "ng build",
+    "start": "ng serve test-libs",
     "watch": "ng build --watch --configuration development",
-    "test": "ng test",
+    "test:all": "bash scripts/test-all.sh",
+    "build:all": "bash scripts/build-all.sh",
     "publish:all": "bash scripts/publish-all.sh"
   },
   "private": true,

@@ -1,0 +1,71 @@
+<p class="text-muted small mb-3">
+    Tabela gerada a partir de <code>columns</code> + <code>data</code>: a coluna "Name" é ordenável
+    (<code>sortable: true</code>, dispara <code>sortChange</code>), e a última coluna é uma ação
+    (<code>isAction: true</code>) com <code>template</code> e <code>click</code> próprios. Clique em
+    qualquer célula para ver o evento <code>cellClick</code>.
+</p>
+
+@if (lastSort() && lastSort() !== 'name — null') {
+    <div class="alert alert-info py-1 mb-2 small">
+        <strong>sortChange:</strong> {{ lastSort() }}
+    </div>
+}
+@if (lastColumnClick()) {
+    <div class="alert alert-success py-1 mb-2 small">
+        <strong>column.click (callback):</strong> {{ lastColumnClick() }}
+    </div>
+}
+@if (lastCellClick()) {
+    <div class="alert alert-warning py-1 mb-2 small">
+        <strong>cellClick (output):</strong> {{ lastCellClick() }}
+    </div>
+}
+
+<ng-collapse [toggle]="toggleCode()">
+    <div class="card mb-3">
+        <div class="card-header">
+            <i class="bi bi-code-slash me-1"></i> Código
+        </div>
+        <div class="card-body style-code">
+Typescript:
+<pre><code class="language-js">columns: NgGenerateTableColumns[] = [
+    &#123; label: 'Name', field: 'name', sortable: true &#125;,
+    &#123; label: 'Email', field: 'email' &#125;,
+    &#123; label: 'Data', field: 'date' &#125;,
+    &#123;
+        isAction: true,
+        template: (row) => '&lt;button class="btn btn-sm btn-success"&gt;Ver email&lt;/button&gt;',
+        click: (row) => this.lastColumnClick.set(row.email)
+    &#125;
+]</code></pre>
+Template:
+<pre><code class="language-html">&lt;ng-generate-table
+    [columns]="columns" [data]="data"
+    (sortChange)="sortData($event)"
+    (cellClick)="lastCellClick.set($event.row.name + ' — ' + $event.column.label)"
+    tableClass="table table-sm table-bordered"&gt;
+&lt;/ng-generate-table&gt;</code></pre>
+        </div>
+    </div>
+</ng-collapse>
+
+<div class="card">
+    <div class="card-header d-flex align-items-center justify-content-between">
+        <span>Demo</span>
+        <button class="btn btn-sm btn-outline-secondary py-0" type="button" (click)="toggleCode.set(!toggleCode())">
+            <i class="bi bi-code-slash me-1"></i> Código
+        </button>
+    </div>
+    <div class="card-body">
+        <div class="table-responsive">
+            <ng-generate-table
+                [mobileView]="mobileView"
+                [columns]="columns"
+                [data]="data"
+                tableClass="table table-sm table-bordered mb-0"
+                (sortChange)="sortData($event)"
+                (cellClick)="lastCellClick.set($event.row.name + ' — ' + $event.column.label)">
+            </ng-generate-table>
+        </div>
+    </div>
+</div>

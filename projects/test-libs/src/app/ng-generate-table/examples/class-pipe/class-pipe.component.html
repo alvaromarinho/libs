@@ -1,0 +1,41 @@
+<p class="text-muted small mb-3">
+    Cada coluna pode definir <code>thClass</code>/<code>tdClass</code> para estilizar cabeçalho e células,
+    além de um <code>pipe</code> do Angular (com <code>pipeArgs</code> opcionais) aplicado automaticamente
+    ao valor — neste exemplo, <code>DatePipe</code> formata a mesma data de duas formas diferentes.
+</p>
+
+<ng-collapse [toggle]="toggleCode()">
+    <div class="card mb-3">
+        <div class="card-header">
+            <i class="bi bi-code-slash me-1"></i> Código
+        </div>
+        <div class="card-body style-code">
+Typescript:
+<pre><code class="language-js">columns: NgGenerateTableColumns[] = [
+    &#123; label: 'Name',  field: 'name',  thClass: 'bg-secondary text-white', tdClass: 'text-danger' &#125;,
+    &#123; label: 'Email', field: 'email', thClass: 'bg-secondary text-white', tdClass: 'text-success' &#125;,
+    &#123; label: 'Data',  field: 'date',  pipe: DatePipe, thClass: 'bg-warning' &#125;,
+    &#123; label: 'Data formatada', field: 'date', pipe: DatePipe, pipeArgs: ['dd MMM yyyy'], thClass: 'bg-warning' &#125;,
+]</code></pre>
+        </div>
+    </div>
+</ng-collapse>
+
+<div class="card">
+    <div class="card-header d-flex align-items-center justify-content-between">
+        <span>Demo</span>
+        <button class="btn btn-sm btn-outline-secondary py-0" type="button" (click)="toggleCode.set(!toggleCode())">
+            <i class="bi bi-code-slash me-1"></i> Código
+        </button>
+    </div>
+    <div class="card-body">
+        <div class="table-responsive">
+            <ng-generate-table
+                [mobileView]="mobileView"
+                [columns]="columns"
+                [data]="data"
+                tableClass="table table-sm table-bordered mb-0">
+            </ng-generate-table>
+        </div>
+    </div>
+</div>

@@ -34,8 +34,8 @@
       "ng-generate-table": [
         "dist/ng-generate-table"
       ],
-      "ng-month-picker": [
-        "./dist/ng-month-picker"
+      "ng-month-year-picker": [
+        "./dist/ng-month-year-picker"
       ]
     },
     "declaration": false,
@@ -54,10 +54,10 @@
   },
   "references": [
     {
-      "path": "./projects/ng-month-picker/tsconfig.lib.json"
+      "path": "./projects/ng-month-year-picker/tsconfig.lib.json"
     },
     {
-      "path": "./projects/ng-month-picker/tsconfig.spec.json"
+      "path": "./projects/ng-month-year-picker/tsconfig.spec.json"
     },
     {
       "path": "./projects/ng-bs-pagination/tsconfig.lib.json"

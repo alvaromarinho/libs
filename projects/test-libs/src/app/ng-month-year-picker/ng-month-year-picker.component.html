@@ -1,0 +1,43 @@
+<page-header [(toggleCode)]="toggleCode">ng-month-year-picker</page-header>
+
+<p class="text-muted">
+    Dropdown seletor de mês/ano para Angular. O valor é
+    sempre uma <code>string</code> no formato <code>YYYY-MM</code>, o componente emite
+    <code>valueChange</code> e o consumidor decide se atualiza (ou não) o valor exibido.
+</p>
+
+<div class="d-flex flex-wrap gap-2 mb-4">
+    <span class="chip"><i class="bi bi-check2 text-success"></i> Valor em formato <code>YYYY-MM</code></span>
+    <span class="chip"><i class="bi bi-check2 text-success"></i> Navegação entre anos</span>
+    <span class="chip"><i class="bi bi-check2 text-success"></i> Nomes de mês customizáveis</span>
+    <span class="chip"><i class="bi bi-check2 text-success"></i> Fecha ao clicar fora</span>
+    <span class="chip"><i class="bi bi-check2 text-success"></i> Sem Bootstrap nem ícones externos</span>
+    <span class="chip"><i class="bi bi-check2 text-success"></i> Tema via CSS custom properties</span>
+</div>
+
+<ng-collapse [toggle]="toggleCode()">
+    <div class="card mb-4">
+        <div class="card-header">
+            <i class="bi bi-code-slash me-1"></i> Código
+        </div>
+        <div class="card-body style-code">
+<pre><code class="language-html">&lt;ng-month-year-picker [value]="month()" (valueChange)="month.set($event)"&gt;&lt;/ng-month-year-picker&gt;</code></pre>
+        </div>
+    </div>
+</ng-collapse>
+
+<div class="card">
+    <div class="card-header">Demo</div>
+    <div class="card-body">
+        <div class="row mb-3">
+            <div class="col-12 col-sm-4 col-md-3">
+                <ng-month-year-picker [value]="month()" (valueChange)="month.set($event)"></ng-month-year-picker>
+            </div>
+        </div>
+
+        <div class="alert alert-info py-1 mb-0 small">
+            Valor selecionado: <strong>{{ month() }}</strong> — use os botões <i class="bi bi-chevron-left"></i> /
+            <i class="bi bi-chevron-right"></i> no cabeçalho do dropdown para navegar entre anos sem alterar o valor.
+        </div>
+    </div>
+</div>

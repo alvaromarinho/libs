@@ -1,0 +1,122 @@
+<page-header [(toggleCode)]="toggleCode">ng-bs-pagination</page-header>
+
+<p class="text-muted">
+    Componente de paginação configurável para Angular + Bootstrap 5. A propriedade <code>current</code> é
+    sempre de mão única — o componente nunca a altera diretamente, apenas emite <code>change</code>,
+    <code>first</code> e <code>last</code> para que o consumidor atualize o estado.
+</p>
+
+<div class="d-flex flex-wrap gap-2 mb-4">
+    <span class="chip"><i class="bi bi-check2 text-success"></i> Layouts split/center/stacked</span>
+    <span class="chip"><i class="bi bi-check2 text-success"></i> Janela de páginas configurável</span>
+    <span class="chip"><i class="bi bi-check2 text-success"></i> Botões primeira/última</span>
+    <span class="chip"><i class="bi bi-check2 text-success"></i> Tamanhos sm/md/lg</span>
+    <span class="chip"><i class="bi bi-check2 text-success"></i> Texto de info customizável</span>
+    <span class="chip"><i class="bi bi-check2 text-success"></i> Navegação por texto ou ícone</span>
+</div>
+
+<ng-collapse [toggle]="toggleCode()">
+    <div class="card mb-4">
+        <div class="card-header">
+            <i class="bi bi-code-slash me-1"></i> Código
+        </div>
+        <div class="card-body style-code">
+<pre><code class="language-html">&lt;ng-bs-pagination
+    [total]="124" [current]="current()" [itemPerPage]="10"
+    (change)="current.set($event)" (first)="current.set($event)" (last)="current.set($event)"&gt;
+&lt;/ng-bs-pagination&gt;</code></pre>
+        </div>
+    </div>
+</ng-collapse>
+
+<div class="card mb-4">
+    <div class="card-header">Padrão (split, info à esquerda)</div>
+    <div class="card-body">
+        <ng-bs-pagination
+            [total]="124" [current]="current1()" [itemPerPage]="10"
+            (change)="current1.set($event)" (first)="current1.set($event)" (last)="current1.set($event)">
+        </ng-bs-pagination>
+    </div>
+</div>
+
+<div class="card mb-4">
+    <div class="card-header">Empilhado (<code>layout: &#123; type: 'stacked', infoPosition: 'end' &#125;</code>)</div>
+    <div class="card-body">
+        <ng-bs-pagination
+            [total]="124" [current]="current4()" [itemPerPage]="10"
+            [layout]="{ type: 'stacked', infoPosition: 'end' }"
+            (change)="current4.set($event)" (first)="current4.set($event)" (last)="current4.set($event)">
+        </ng-bs-pagination>
+    </div>
+</div>
+
+<div class="card mb-4">
+    <div class="card-header">Split, info à direita (<code>layout: &#123; infoPosition: 'end' &#125;</code>)</div>
+    <div class="card-body">
+        <ng-bs-pagination
+            [total]="124" [current]="current2()" [itemPerPage]="10"
+            [layout]="{ type: 'split', infoPosition: 'end' }"
+            (change)="current2.set($event)" (first)="current2.set($event)" (last)="current2.set($event)">
+        </ng-bs-pagination>
+    </div>
+</div>
+
+<div class="card mb-4">
+    <div class="card-header">Centralizado (<code>layout: &#123; type: 'center' &#125;</code>)</div>
+    <div class="card-body">
+        <ng-bs-pagination
+            [total]="124" [current]="current3()" [itemPerPage]="10"
+            [layout]="{ type: 'center' }"
+            (change)="current3.set($event)" (first)="current3.set($event)" (last)="current3.set($event)">
+        </ng-bs-pagination>
+    </div>
+</div>
+
+<div class="card mb-4">
+    <div class="card-header">Centralizado, info à direita</div>
+    <div class="card-body">
+        <ng-bs-pagination
+            [total]="124" [current]="current3()" [itemPerPage]="10"
+            [layout]="{ type: 'center', infoPosition: 'end' }"
+            (change)="current3.set($event)" (first)="current3.set($event)" (last)="current3.set($event)">
+        </ng-bs-pagination>
+    </div>
+</div>
+
+<div class="card mb-4">
+    <div class="card-header">Sem primeira/última, navegação em texto, tamanho pequeno</div>
+    <div class="card-body">
+        <p class="text-muted small mb-2"><code>[firstLast]="&#123; show: false &#125;"</code> e <code>[prevNext]="&#123; mode: 'text', labels: &#123; ... &#125; &#125;"</code></p>
+        <ng-bs-pagination
+            [total]="124" [current]="current5()" [itemPerPage]="10" size="sm"
+            [firstLast]="{ show: false }"
+            [prevNext]="{ mode: 'text', labels: { prev: 'Anterior', next: 'Próxima' } }"
+            (change)="current5.set($event)" (first)="current5.set($event)" (last)="current5.set($event)">
+        </ng-bs-pagination>
+    </div>
+</div>
+
+<div class="card mb-4">
+    <div class="card-header">Tamanho grande, primeira/última em texto</div>
+    <div class="card-body">
+        <ng-bs-pagination
+            [total]="124" [current]="current6()" [itemPerPage]="10" size="lg"
+            [firstLast]="{ mode: 'text', labels: { first: 'Início', last: 'Fim' } }"
+            (change)="current6.set($event)" (first)="current6.set($event)" (last)="current6.set($event)">
+        </ng-bs-pagination>
+    </div>
+</div>
+
+<div class="card">
+    <div class="card-header">Info customizada via <code>ng-template</code></div>
+    <div class="card-body">
+        <p class="text-muted small mb-2">Substitui o texto "Mostrando X–Y de Z" projetando seu próprio template com acesso a <code>start</code>, <code>end</code> e <code>total</code>.</p>
+        <ng-bs-pagination
+            [total]="124" [current]="current7()" [itemPerPage]="10"
+            (change)="current7.set($event)" (first)="current7.set($event)" (last)="current7.set($event)">
+            <ng-template let-start="start" let-end="end" let-total="total">
+                Exibindo registros <strong>{{ start }}</strong> a <strong>{{ end }}</strong> de <strong>{{ total }}</strong>
+            </ng-template>
+        </ng-bs-pagination>
+    </div>
+</div>

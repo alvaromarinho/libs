@@ -1,0 +1,55 @@
+<p class="text-muted small mb-3">
+    Quando o <code>#rowDetail</code> é projetado, a primeira coluna ganha automaticamente um botão de toggle. O estado
+    fica em <code>expandedRows</code>, controlado pelo consumidor via <code>[(expandedRows)]</code>. Ao expandir, o
+    conteúdo do <code>#rowDetail</code> aparece abaixo da linha. Use <code>expandableRow</code> para decidir quais linhas
+    podem ser expandidas — neste exemplo, apenas os pedidos do <strong>Marinho</strong> e do <strong>Álvaro</strong> têm
+    o toggle.
+</p>
+
+<ng-collapse [toggle]="toggleCode()">
+    <div class="card mb-3">
+        <div class="card-header">
+            <i class="bi bi-code-slash me-1"></i> Código
+        </div>
+        <div class="card-body style-code">
+Typescript:
+<pre><code class="language-js">columns: NgGenerateTableColumns[] = [
+    &#123; label: 'Cliente', field: 'customer' &#125;,
+    &#123; label: 'Total', field: 'total' &#125;,
+];
+
+// Controla quais linhas estão expandidas
+expandedRows = new Set&lt;any&gt;([this.orders.find(o => o.customer === 'Marinho')?.id]);
+
+// Apenas linhas para as quais essa função retorna true terão o toggle de expand
+expandableRow = (order: any) => order.customer === 'Marinho' || order.customer === 'Álvaro';</code></pre>
+Template:
+<pre><code class="language-html" [innerHTML]="detailRowSnippet"></code></pre>
+        </div>
+    </div>
+</ng-collapse>
+
+<div class="card">
+    <div class="card-header d-flex align-items-center justify-content-between">
+        <span>Demo</span>
+        <button class="btn btn-sm btn-outline-secondary py-0" type="button" (click)="toggleCode.set(!toggleCode())">
+            <i class="bi bi-code-slash me-1"></i> Código
+        </button>
+    </div>
+    <div class="card-body">
+        <div class="table-responsive">
+            <ng-generate-table
+                [columns]="detailColumns"
+                [data]="orders"
+                [(expandedRows)]="expandedRows"
+                [expandableRow]="expandableRow"
+                tableClass="table table-sm table-bordered mb-0">
+
+                <ng-template #rowDetail let-order>
+                    <p class="mb-1"><strong>Endereço:</strong> {{ order.address }}</p>
+                    <p class="mb-0"><strong>Itens:</strong> {{ order.items.join(', ') }}</p>
+                </ng-template>
+            </ng-generate-table>
+        </div>
+    </div>
+</div>

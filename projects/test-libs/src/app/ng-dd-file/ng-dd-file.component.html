@@ -1,0 +1,81 @@
+<page-header [(toggleCode)]="toggleCode">ng-dd-file</page-header>
+
+<p class="text-muted">
+    Componente de upload de arquivos por arrastar-e-soltar (ou seleção manual) para Angular, com
+    validação de tamanho/tipo e preview automático de imagens em base64. O componente não guarda
+    estado próprio — <code>filesList</code> é controlado pelo consumidor via os eventos
+    <code>filesAdd</code>/<code>fileRemove</code>.
+</p>
+
+<div class="d-flex flex-wrap gap-2 mb-4">
+    <span class="chip"><i class="bi bi-check2 text-success"></i> Drag &amp; drop + clique</span>
+    <span class="chip"><i class="bi bi-check2 text-success"></i> Preview de imagens</span>
+    <span class="chip"><i class="bi bi-check2 text-success"></i> Limite por arquivo e total</span>
+    <span class="chip"><i class="bi bi-check2 text-success"></i> Filtro por tipo de arquivo</span>
+    <span class="chip"><i class="bi bi-check2 text-success"></i> Múltiplos arquivos</span>
+    <span class="chip"><i class="bi bi-check2 text-success"></i> Labels customizáveis (i18n)</span>
+</div>
+
+<ng-collapse [toggle]="toggleCode()">
+    <div class="card mb-4">
+        <div class="card-header">
+            <i class="bi bi-code-slash me-1"></i> Código
+        </div>
+        <div class="card-body style-code">
+Typescript:
+<pre><code class="language-js">files = signal&lt;File[]&gt;([]);
+
+onFilesAdd(newFiles: File[]) &#123;
+    this.files.update(existing => [...existing, ...newFiles]);
+&#125;</code></pre>
+Template:
+<pre><code class="language-html">&lt;ng-dd-file
+    [btnClass]="&#123; file: 'btn btn-primary', remove: 'btn btn-sm btn-danger' &#125;"
+    [filesList]="files()"
+    [maxFiles]="3"
+    [maxFileSize]="200"
+    [maxTotalSize]="300"
+    (fileError)="lastError.set($event.message)"
+    (fileRemove)="files.set([])"
+    (filesAdd)="onFilesAdd($event)"
+/&gt;</code></pre>
+        </div>
+    </div>
+</ng-collapse>
+
+<div class="card">
+    <div class="card-header">Demo</div>
+    <div class="card-body">
+        <p class="text-muted small mb-2">
+            Limite configurado neste exemplo: máximo de <strong>3 arquivos</strong>, <strong>200 KB</strong> por
+            arquivo e <strong>300 KB</strong> no total — exceder qualquer um dispara o evento <code>fileError</code>.
+        </p>
+
+        @if (files().length) {
+            <div class="alert alert-success py-1 mb-2 small">
+                <strong>{{ files().length }} arquivo(s) adicionado(s):</strong>
+                @for (f of files(); track f.name) {
+                    <span class="badge bg-secondary ms-1">{{ f.name }}</span>
+                }
+            </div>
+        }
+        @if (lastError()) {
+            <div class="alert alert-danger py-1 mb-2 small">
+                <strong>Erro:</strong> {{ lastError() }}
+            </div>
+        }
+
+        <ng-dd-file
+            [btnClass]="{ file: 'btn btn-primary', remove: 'btn btn-sm btn-danger' }"
+            [filesList]="files()"
+            [labels]="{ text: 'Arraste e solte os arquivos', btn: 'SELECIONE O ARQUIVO' }"
+            [maxFiles]="3"
+            [maxFileSize]="200"
+            [maxTotalSize]="300"
+            typeFileAccept="*"
+            (fileError)="lastError.set($event.message)"
+            (fileRemove)="onFilesRemove($event)"
+            (filesAdd)="onFilesAdd($event)">
+        </ng-dd-file>
+    </div>
+</div>

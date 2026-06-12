@@ -1,0 +1,66 @@
+<page-header [(toggleCode)]="toggleCode">ng-bs-toast-service</page-header>
+
+<p class="text-muted">
+    Serviço de notificações toast para Angular + Bootstrap 5, com ícones do
+    <a href="https://icons.getbootstrap.com/" target="_blank" rel="noopener">Bootstrap Icons</a>.
+    Assim como o modal, basta montar <code>&lt;ng-bs-toast-service /&gt;</code> uma vez na raiz da
+    aplicação e chamar <code>toastService.send(...)</code> de qualquer componente ou serviço.
+</p>
+
+<div class="d-flex flex-wrap gap-2 mb-4">
+    <span class="chip"><i class="bi bi-check2 text-success"></i> 4 estilos (success/warning/danger/primary)</span>
+    <span class="chip"><i class="bi bi-check2 text-success"></i> Fila de notificações</span>
+    <span class="chip"><i class="bi bi-check2 text-success"></i> Fechamento automático</span>
+    <span class="chip"><i class="bi bi-check2 text-success"></i> Título opcional sem mensagem</span>
+</div>
+
+<ng-collapse [toggle]="toggleCode()">
+    <div class="card mb-4">
+        <div class="card-header">
+            <i class="bi bi-code-slash me-1"></i> Código
+        </div>
+        <div class="card-body style-code">
+Instalação (app.component.html):
+<pre><code class="language-html">&lt;ng-bs-toast-service /&gt;</code></pre>
+Typescript:
+<pre><code class="language-js">toastService = inject(NgBsToastService);
+
+send(style: string) &#123;
+    this.toastService.send('Título', 'Mensagem', style);
+&#125;</code></pre>
+Template:
+<pre><code class="language-html">&lt;button (click)="send('primary')"&gt;Primary&lt;/button&gt;</code></pre>
+        </div>
+    </div>
+</ng-collapse>
+
+@if (lastSent()) {
+    <div class="alert alert-info py-1 mb-3 small">
+        <strong>Último enviado:</strong> estilo <code>{{ lastSent() }}</code>
+    </div>
+}
+
+<div class="card mb-4">
+    <div class="card-header">Estilos disponíveis</div>
+    <div class="card-body">
+        <div class="d-flex flex-wrap gap-2">
+            <button class="btn btn-primary"         (click)="send('primary')">Primary</button>
+            <button class="btn btn-success"         (click)="send('success')">Success</button>
+            <button class="btn btn-warning"         (click)="send('warning')">Warning</button>
+            <button class="btn btn-danger"          (click)="send('danger')">Danger</button>
+        </div>
+    </div>
+</div>
+
+<div class="card">
+    <div class="card-header">Outros cenários</div>
+    <div class="card-body">
+        <div class="d-flex flex-wrap gap-2 mb-2">
+            <button class="btn btn-outline-secondary" (click)="sendTitleOnly()">Só título (sem mensagem)</button>
+            <button class="btn btn-outline-dark"    (click)="sendAll()">Disparar todos em sequência</button>
+        </div>
+        <p class="text-muted small mb-0">
+            "Disparar todos em sequência" envia 4 toasts com um pequeno intervalo entre cada um, demonstrando a fila de notificações.
+        </p>
+    </div>
+</div>

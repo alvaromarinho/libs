@@ -1,0 +1,43 @@
+{
+  "workbench.colorCustomizations": {
+    // Noite Polar (libs)
+    "activityBar.background": "#243242",
+    "titleBar.activeBackground": "#1b2632",
+  
+    // Floresta Negra (Verde Esmeralda Escuro)
+    // "activityBar.background": "#1e352f",
+    // "titleBar.activeBackground": "#162823",
+
+    // Obsidiana Roxa (Ametista)
+    // "activityBar.background": "#342347",
+    // "titleBar.activeBackground": "#281b37",
+
+    // Brasa de Vulcão (Bordô Vivo)
+    // "activityBar.background": "#4a1e1e",
+    // "titleBar.activeBackground": "#391616",
+
+    // Drácula Moderno (Roxo Pastel)
+    // "activityBar.background": "#2c2e3e",
+    // "titleBar.activeBackground": "#212330",
+
+    // Bronze Metálico (Marrom Quente)
+    // "activityBar.background": "#3b2d20",
+    // "titleBar.activeBackground": "#2e2319",
+
+    // Cyberpunk (Ciano Vibrante)
+    // "activityBar.background": "#0e3a40",
+    // "titleBar.activeBackground": "#0a2b30",
+
+    // Cinza Industrial (Grafite Médio)
+    // "activityBar.background": "#373d49",
+    // "titleBar.activeBackground": "#2b303a",
+
+    // Ouro Velho (Mostarda Fechado)
+    // "activityBar.background": "#3d361d",
+    // "titleBar.activeBackground": "#2f2a16",
+
+    // Oceano Índico (Azul Escuro Intenso)
+    // "activityBar.background": "#1b2b4c",
+    // "titleBar.activeBackground": "#14213b",
+  }
+}

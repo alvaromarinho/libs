@@ -1,61 +1,33 @@
 import { Component, signal } from '@angular/core';
-import { NgClass } from '@angular/common';
+import { RouterOutlet, RouterLink, RouterLinkActive } from '@angular/router';
 import { NgCollapseComponent } from 'ng-collapse';
 import { NgBsModalServiceComponent } from 'ng-bs-modal-service';
 import { NgBsToastServiceComponent } from 'ng-bs-toast-service';
-import { BsCalendarExampleComponent } from './bs-calendar-example.component';
-import { BsModalExampleComponent } from './bs-modal-example.component';
-import { BsToastExampleComponent } from './bs-toast-example.component';
-import { BsPaginationExampleComponent } from './bs-pagination-example.component';
-import { CollapseExampleComponent } from './collapse-example.component';
-import { DdFileExampleComponent } from './dd-file-example.component';
-import { MonthPickerExampleComponent } from './month-picker-example.component';
-import { GTSimpleExampleComponent, GTManualTagsComponent, GTRowClickExampleComponent, GTClassPipeExampleComponent, GTLoadingEmptyExampleComponent, GTMobileCardExampleComponent, GTExpandableRowsExampleComponent } from './generate-table-example';
-
-type PageKey = 'ngBsCalendar' | 'ngBsModalService' | 'ngBsToastService' | 'ngBsPagination' | 'ngCollapse' | 'ngDdFile' | 'ngMonthPicker' | 'ngGenerateTable';
 
 @Component({
     selector: 'app-root',
     templateUrl: './app.component.html',
     standalone: true,
     imports: [
-        NgClass,
+        RouterOutlet,
+        RouterLink,
+        RouterLinkActive,
         NgCollapseComponent,
         NgBsModalServiceComponent,
         NgBsToastServiceComponent,
-        BsCalendarExampleComponent,
-        BsModalExampleComponent,
-        BsToastExampleComponent,
-        BsPaginationExampleComponent,
-        CollapseExampleComponent,
-        DdFileExampleComponent,
-        MonthPickerExampleComponent,
-        GTSimpleExampleComponent,
-        GTManualTagsComponent,
-        GTRowClickExampleComponent,
-        GTClassPipeExampleComponent,
-        GTLoadingEmptyExampleComponent,
-        GTMobileCardExampleComponent,
-        GTExpandableRowsExampleComponent,
     ]
 })
 export class AppComponent {
     toggleNav = signal(false);
-    currentPage = signal<PageKey>('ngBsCalendar');
 
-    navItems: { key: PageKey; label: string }[] = [
-        { key: 'ngBsCalendar',     label: 'ng-bs-calendar' },
-        { key: 'ngBsModalService', label: 'ng-bs-modal-service' },
-        { key: 'ngBsToastService', label: 'ng-bs-toast-service' },
-        { key: 'ngBsPagination',   label: 'ng-bs-pagination' },
-        { key: 'ngCollapse',       label: 'ng-collapse' },
-        { key: 'ngDdFile',         label: 'ng-dd-file' },
-        { key: 'ngMonthPicker',    label: 'ng-month-picker' },
-        { key: 'ngGenerateTable',  label: 'ng-generate-table' },
+    navItems: { path: string; label: string; icon: string }[] = [
+        { path: 'ng-bs-calendar',     label: 'ng-bs-calendar',       icon: 'bi-calendar3' },
+        { path: 'ng-bs-modal-service', label: 'ng-bs-modal-service',  icon: 'bi-window' },
+        { path: 'ng-bs-toast-service', label: 'ng-bs-toast-service',  icon: 'bi-bell' },
+        { path: 'ng-bs-pagination',   label: 'ng-bs-pagination',     icon: 'bi-arrow-left-right' },
+        { path: 'ng-collapse',       label: 'ng-collapse',          icon: 'bi-arrows-collapse' },
+        { path: 'ng-dd-file',         label: 'ng-dd-file',           icon: 'bi-cloud-upload' },
+        { path: 'ng-month-year-picker', label: 'ng-month-year-picker', icon: 'bi-calendar-month' },
+        { path: 'ng-generate-table',  label: 'ng-generate-table',    icon: 'bi-table' },
     ];
-
-    changePage(page: PageKey) {
-        this.toggleNav.set(false);
-        this.currentPage.set(page);
-    }
 }

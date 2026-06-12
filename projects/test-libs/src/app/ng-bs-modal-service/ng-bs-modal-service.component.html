@@ -1,0 +1,100 @@
+<page-header [(toggleCode)]="toggleCode">ng-bs-modal-service</page-header>
+
+<p class="text-muted">
+    Serviço de modais para Angular + Bootstrap 5. Em vez de declarar um <code>&lt;div class="modal"&gt;</code>
+    para cada caso de uso, você injeta <code>NgBsModalService</code> e chama <code>open()</code> de qualquer
+    lugar da aplicação — o componente <code>&lt;ng-bs-modal-service /&gt;</code>, montado uma única vez na raiz,
+    cuida de renderizar o conteúdo.
+</p>
+
+<div class="d-flex flex-wrap gap-2 mb-4">
+    <span class="chip"><i class="bi bi-check2 text-success"></i> Fila de modais</span>
+    <span class="chip"><i class="bi bi-check2 text-success"></i> Carrossel de imagens</span>
+    <span class="chip"><i class="bi bi-check2 text-success"></i> Modo popover</span>
+    <span class="chip"><i class="bi bi-check2 text-success"></i> Backdrop estático</span>
+    <span class="chip"><i class="bi bi-check2 text-success"></i> Tamanhos sm/lg/xl</span>
+    <span class="chip"><i class="bi bi-check2 text-success"></i> Classes customizadas</span>
+</div>
+
+<ng-collapse [toggle]="toggleCode()">
+    <div class="card mb-4">
+        <div class="card-header">
+            <i class="bi bi-code-slash me-1"></i> Código
+        </div>
+        <div class="card-body style-code">
+Instalação (app.component.html):
+<pre><code class="language-html">&lt;ng-bs-modal-service /&gt;</code></pre>
+Typescript:
+<pre><code class="language-js">modalService = inject(NgBsModalService);
+
+showModal(body: TemplateRef&lt;any&gt;) &#123;
+    this.modalService.open(&#123; header: 'Modal', body &#125;);
+&#125;</code></pre>
+Template:
+<pre><code class="language-html">&lt;button (click)="showModal(modalBody)"&gt;Show Modal&lt;/button&gt;
+
+&lt;ng-template #modalBody&gt;
+    &lt;img src="https://placehold.co/766x400" alt="placeholder"&gt;
+&lt;/ng-template&gt;</code></pre>
+        </div>
+    </div>
+</ng-collapse>
+
+@if (lastAction()) {
+    <div class="alert alert-info py-1 mb-3 small">
+        <strong>Último aberto:</strong> {{ lastAction() }}
+    </div>
+}
+
+<div class="card mb-4">
+    <div class="card-header">Modos de abertura</div>
+    <div class="card-body">
+        <div class="d-flex flex-wrap gap-2 mb-2">
+            <button class="btn btn-success px-5" (click)="showPopover(modalBody, el)" #el>Popover</button>
+            <button class="btn btn-primary px-5" (click)="openQueueModal(modalBody)">Modal A</button>
+            <button class="btn btn-secondary px-5" (click)="showModalContent(modalContent)">Modal Content</button>
+        </div>
+        <p class="text-muted small mb-0">
+            <strong>Popover</strong> abre o modal ancorado ao botão clicado (<code>popoverTo</code>).
+            <strong>Modal A</strong> abre um modal de fila simples — veja abaixo.
+            <strong>Modal Content</strong> usa um <code>&lt;ng-template&gt;</code> completo, com header/body/footer próprios.
+        </p>
+    </div>
+</div>
+
+<div class="card mb-4">
+    <div class="card-header">Carrossel de imagens</div>
+    <div class="card-body">
+        <p class="text-muted small mb-2">Clique em uma miniatura para abrir o carrossel embutido no modal (<code>options.carousel</code>).</p>
+        <div class="d-flex overflow-auto">
+            @for (img of images; track img.url; let last = $last; let i = $index) {
+                <div [ngClass]="{'me-3': !last}" style="cursor:pointer" (click)="showModalImg(i)">
+                    <img class="rounded" [src]="img.url" [alt]="img.name" height="100" width="100">
+                </div>
+            }
+        </div>
+    </div>
+</div>
+
+<div class="card">
+    <div class="card-header">Comportamento de fila</div>
+    <div class="card-body">
+        <p class="text-muted small mb-0">
+            Abra o <strong>Modal A</strong> e, dentro dele, clique em <strong>"Abrir Modal B (sobre A)"</strong>.
+            O B é exibido sobre o A; ao fechar o B, o A reaparece automaticamente — o
+            <code>NgBsModalService</code> mantém os modais em fila e mostra o próximo quando o atual é fechado.
+        </p>
+    </div>
+</div>
+
+<ng-template #modalBody>
+    <button class="btn btn-outline-secondary" (click)="openQueueModal()">Abrir Modal B (sobre A)</button>
+    <input type="text" class="form-control mb-2">
+    <img src="https://placehold.co/766x400" alt="placeholder">
+</ng-template>
+
+<ng-template #modalContent>
+    <div class="modal-header">Header</div>
+    <div class="modal-body">Body</div>
+    <div class="modal-footer">Footer</div>
+</ng-template>

@@ -1,0 +1,56 @@
+<p class="text-muted small mb-3">
+    <code>[loading]="true"</code> exibe a <code>loadingMessage</code> configurada em <code>config</code> no
+    lugar das linhas. Quando <code>[data]</code> é um array vazio, a tabela exibe a
+    <code>emptyMessage</code> — use os botões abaixo para alternar entre os dois estados.
+</p>
+
+<ng-collapse [toggle]="toggleCode()">
+    <div class="card mb-3">
+        <div class="card-header">
+            <i class="bi bi-code-slash me-1"></i> Código
+        </div>
+        <div class="card-body style-code">
+Typescript:
+<pre><code class="language-js">loading = signal(false);
+hasData = signal(true);</code></pre>
+Template:
+<pre><code class="language-html">&lt;ng-generate-table
+    [columns]="columns"
+    [data]="hasData() ? data : []"
+    [loading]="loading()"
+    [config]="&#123; emptyMessage: 'Nenhum registro encontrado.', loadingMessage: 'Aguarde...' &#125;"
+    tableClass="table table-sm table-bordered"&gt;
+&lt;/ng-generate-table&gt;</code></pre>
+        </div>
+    </div>
+</ng-collapse>
+
+<div class="card">
+    <div class="card-header d-flex align-items-center justify-content-between">
+        <span>Demo</span>
+        <button class="btn btn-sm btn-outline-secondary py-0" type="button" (click)="toggleCode.set(!toggleCode())">
+            <i class="bi bi-code-slash me-1"></i> Código
+        </button>
+    </div>
+    <div class="card-body">
+        <div class="d-flex flex-wrap gap-2 mb-3">
+            <button class="btn btn-outline-primary btn-sm" (click)="loading.set(!loading())">
+                {{ loading() ? 'Parar loading' : 'Simular loading' }}
+            </button>
+            <button class="btn btn-outline-secondary btn-sm" (click)="hasData.update(v => !v)">
+                {{ hasData() ? 'Limpar dados (empty state)' : 'Restaurar dados' }}
+            </button>
+        </div>
+
+        <div class="table-responsive">
+            <ng-generate-table
+                [mobileView]="mobileView"
+                [columns]="columns"
+                [data]="hasData() ? data : []"
+                [loading]="loading()"
+                [config]="{ emptyMessage: 'Nenhum registro encontrado.', loadingMessage: 'Aguarde...' }"
+                tableClass="table table-sm table-bordered mb-0">
+            </ng-generate-table>
+        </div>
+    </div>
+</div>

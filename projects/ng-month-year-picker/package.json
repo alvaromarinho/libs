@@ -1,0 +1,32 @@
+{
+  "name": "ng-month-year-picker",
+  "version": "1.0.0",
+  "description": "Month/year picker dropdown component for Angular",
+  "author": "Alvaro Marinho",
+  "license": "MIT",
+  "keywords": [
+    "angular",
+    "month",
+    "year",
+    "picker",
+    "date",
+    "ng",
+    "component"
+  ],
+  "homepage": "https://github.com/alvaromarinho/libs/tree/master/projects/ng-month-year-picker#readme",
+  "bugs": {
+    "url": "https://github.com/alvaromarinho/libs/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/alvaromarinho/libs/tree/master/projects/ng-month-year-picker"
+  },
+  "peerDependencies": {
+    "@angular/common": ">=14.0.0 <22.0.0",
+    "@angular/core": ">=14.0.0 <22.0.0"
+  },
+  "dependencies": {
+    "tslib": "^2.3.0"
+  },
+  "sideEffects": false
+}
