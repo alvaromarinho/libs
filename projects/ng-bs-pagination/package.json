@@ -1,0 +1,32 @@
+{
+  "name": "ng-bs-pagination",
+  "version": "1.0.0",
+  "description": "Configurable pagination component for Angular and Bootstrap 5",
+  "author": "Alvaro Marinho",
+  "license": "MIT",
+  "keywords": [
+    "angular",
+    "bootstrap",
+    "pagination",
+    "pager",
+    "ng",
+    "component"
+  ],
+  "homepage": "https://github.com/alvaromarinho/libs/tree/master/projects/ng-bs-pagination#readme",
+  "bugs": {
+    "url": "https://github.com/alvaromarinho/libs/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/alvaromarinho/libs/tree/master/projects/ng-bs-pagination"
+  },
+  "peerDependencies": {
+    "@angular/common": ">=14.0.0 <22.0.0",
+    "@angular/core": ">=14.0.0 <22.0.0",
+    "bootstrap": "^5.0.0"
+  },
+  "dependencies": {
+    "tslib": "^2.3.0"
+  },
+  "sideEffects": false
+}

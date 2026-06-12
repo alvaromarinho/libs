@@ -1,0 +1,55 @@
+@if (totalPages > 1) {
+    <div [class]="wrapperClasses">
+
+        @if (layout.showInfo) {
+            <div class="text-muted small">
+                @if (infoTemplate) {
+                    <ng-container *ngTemplateOutlet="infoTemplate; context: infoContext"></ng-container>
+                } @else {
+                    <span>Mostrando {{ infoContext.start }}–{{ infoContext.end }} de {{ infoContext.total }}</span>
+                }
+            </div>
+        }
+
+        <nav aria-label="Paginação">
+            <ul class="pagination mb-0" [class]="sizeClass">
+
+                @if (firstLast.show) {
+                    <li class="page-item" [class.disabled]="current === 1">
+                        <button class="page-link" type="button" (click)="goFirst()" title="Primeira página">
+                            <span [attr.aria-hidden]="firstLast.mode === 'icon' ? 'true' : null">{{ firstLast.labels.first }}</span>
+                        </button>
+                    </li>
+                }
+
+                <li class="page-item" [class.disabled]="current === 1">
+                    <button class="page-link" type="button" (click)="goTo(current - 1)" title="Página anterior">
+                        <span [attr.aria-hidden]="prevNext.mode === 'icon' ? 'true' : null">{{ prevNext.labels.prev }}</span>
+                    </button>
+                </li>
+
+                @for (page of pages; track page) {
+                    <li class="page-item" [class.active]="page === current">
+                        <button class="page-link" type="button" (click)="goTo(page)">{{ page }}</button>
+                    </li>
+                }
+
+                <li class="page-item" [class.disabled]="current === totalPages">
+                    <button class="page-link" type="button" (click)="goTo(current + 1)" title="Próxima página">
+                        <span [attr.aria-hidden]="prevNext.mode === 'icon' ? 'true' : null">{{ prevNext.labels.next }}</span>
+                    </button>
+                </li>
+
+                @if (firstLast.show) {
+                    <li class="page-item" [class.disabled]="current === totalPages">
+                        <button class="page-link" type="button" (click)="goLast()" title="Última página">
+                            <span [attr.aria-hidden]="firstLast.mode === 'icon' ? 'true' : null">{{ firstLast.labels.last }}</span>
+                        </button>
+                    </li>
+                }
+
+            </ul>
+        </nav>
+
+    </div>
+}

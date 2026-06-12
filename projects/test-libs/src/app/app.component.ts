@@ -6,11 +6,13 @@ import { NgBsToastServiceComponent } from 'ng-bs-toast-service';
 import { BsCalendarExampleComponent } from './bs-calendar-example.component';
 import { BsModalExampleComponent } from './bs-modal-example.component';
 import { BsToastExampleComponent } from './bs-toast-example.component';
+import { BsPaginationExampleComponent } from './bs-pagination-example.component';
 import { CollapseExampleComponent } from './collapse-example.component';
 import { DdFileExampleComponent } from './dd-file-example.component';
+import { MonthPickerExampleComponent } from './month-picker-example.component';
 import { GTSimpleExampleComponent, GTManualTagsComponent, GTRowClickExampleComponent, GTClassPipeExampleComponent, GTLoadingEmptyExampleComponent, GTMobileCardExampleComponent, GTExpandableRowsExampleComponent } from './generate-table-example';
 
-type PageKey = 'ngBsCalendar' | 'ngBsModalService' | 'ngBsToastService' | 'ngCollapse' | 'ngDdFile' | 'ngGenerateTable';
+type PageKey = 'ngBsCalendar' | 'ngBsModalService' | 'ngBsToastService' | 'ngBsPagination' | 'ngCollapse' | 'ngDdFile' | 'ngMonthPicker' | 'ngGenerateTable';
 
 @Component({
     selector: 'app-root',
@@ -24,8 +26,10 @@ type PageKey = 'ngBsCalendar' | 'ngBsModalService' | 'ngBsToastService' | 'ngCol
         BsCalendarExampleComponent,
         BsModalExampleComponent,
         BsToastExampleComponent,
+        BsPaginationExampleComponent,
         CollapseExampleComponent,
         DdFileExampleComponent,
+        MonthPickerExampleComponent,
         GTSimpleExampleComponent,
         GTManualTagsComponent,
         GTRowClickExampleComponent,
@@ -43,8 +47,10 @@ export class AppComponent {
         { key: 'ngBsCalendar',     label: 'ng-bs-calendar' },
         { key: 'ngBsModalService', label: 'ng-bs-modal-service' },
         { key: 'ngBsToastService', label: 'ng-bs-toast-service' },
+        { key: 'ngBsPagination',   label: 'ng-bs-pagination' },
         { key: 'ngCollapse',       label: 'ng-collapse' },
         { key: 'ngDdFile',         label: 'ng-dd-file' },
+        { key: 'ngMonthPicker',    label: 'ng-month-picker' },
         { key: 'ngGenerateTable',  label: 'ng-generate-table' },
     ];
 

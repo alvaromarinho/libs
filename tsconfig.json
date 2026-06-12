@@ -19,6 +19,9 @@
       "ng-bs-modal-service": [
         "dist/ng-bs-modal-service"
       ],
+      "ng-bs-pagination": [
+        "./dist/ng-bs-pagination"
+      ],
       "ng-bs-toast-service": [
         "dist/ng-bs-toast-service"
       ],
@@ -30,6 +33,9 @@
       ],
       "ng-generate-table": [
         "dist/ng-generate-table"
+      ],
+      "ng-month-picker": [
+        "./dist/ng-month-picker"
       ]
     },
     "declaration": false,
@@ -45,5 +51,19 @@
     "strictInjectionParameters": true,
     "strictInputAccessModifiers": true,
     "strictTemplates": true
-  }
+  },
+  "references": [
+    {
+      "path": "./projects/ng-month-picker/tsconfig.lib.json"
+    },
+    {
+      "path": "./projects/ng-month-picker/tsconfig.spec.json"
+    },
+    {
+      "path": "./projects/ng-bs-pagination/tsconfig.lib.json"
+    },
+    {
+      "path": "./projects/ng-bs-pagination/tsconfig.spec.json"
+    }
+  ]
 }

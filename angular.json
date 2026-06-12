@@ -316,6 +316,58 @@
           }
         }
       }
+    },
+    "ng-month-picker": {
+      "projectType": "library",
+      "root": "projects/ng-month-picker",
+      "sourceRoot": "projects/ng-month-picker/src",
+      "prefix": "lib",
+      "architect": {
+        "build": {
+          "builder": "@angular/build:ng-packagr",
+          "configurations": {
+            "production": {
+              "tsConfig": "projects/ng-month-picker/tsconfig.lib.prod.json"
+            },
+            "development": {
+              "tsConfig": "projects/ng-month-picker/tsconfig.lib.json"
+            }
+          },
+          "defaultConfiguration": "production"
+        },
+        "test": {
+          "builder": "@angular/build:unit-test",
+          "options": {
+            "tsConfig": "projects/ng-month-picker/tsconfig.spec.json"
+          }
+        }
+      }
+    },
+    "ng-bs-pagination": {
+      "projectType": "library",
+      "root": "projects/ng-bs-pagination",
+      "sourceRoot": "projects/ng-bs-pagination/src",
+      "prefix": "lib",
+      "architect": {
+        "build": {
+          "builder": "@angular/build:ng-packagr",
+          "configurations": {
+            "production": {
+              "tsConfig": "projects/ng-bs-pagination/tsconfig.lib.prod.json"
+            },
+            "development": {
+              "tsConfig": "projects/ng-bs-pagination/tsconfig.lib.json"
+            }
+          },
+          "defaultConfiguration": "production"
+        },
+        "test": {
+          "builder": "@angular/build:unit-test",
+          "options": {
+            "tsConfig": "projects/ng-bs-pagination/tsconfig.spec.json"
+          }
+        }
+      }
     }
   },
   "schematics": {
