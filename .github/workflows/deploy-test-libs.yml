@@ -23,10 +23,12 @@ jobs:
             npm install --legacy-peer-deps
             npx ng build ng-bs-calendar --configuration production
             npx ng build ng-bs-modal-service --configuration production
+            npx ng build ng-bs-pagination --configuration production
             npx ng build ng-bs-toast-service --configuration production
             npx ng build ng-collapse --configuration production
             npx ng build ng-dd-file --configuration production
             npx ng build ng-generate-table --configuration production
+            npx ng build ng-month-year-picker --configuration production
             npx ng build test-libs --configuration production
             rm -rf node_modules projects
             systemctl reload nginx
