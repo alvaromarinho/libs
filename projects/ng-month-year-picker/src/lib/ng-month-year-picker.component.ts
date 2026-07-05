@@ -10,11 +10,10 @@ export class NgMonthYearPickerComponent implements OnChanges {
 
     /** Texto exibido no botão. Se vazio, é derivado de `value` + `monthNames`. */
     @Input() label?: string;
-    /** Nomes dos meses exibidos no grid (padrão: PT-BR). */
+    @Input() todayLabel = 'Hoje';
     @Input() monthNames: string[] = ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun', 'Jul', 'Ago', 'Set', 'Out', 'Nov', 'Dez'];
-    
-    /** Valor no formato `YYYY-MM`. */
-    @Input() value = '';
+    @Input() disabled = false;
+    @Input() value = ''; /** `YYYY-MM`. */
     @Output() valueChange = new EventEmitter<string>();
 
     showPicker = false;
@@ -41,6 +40,7 @@ export class NgMonthYearPickerComponent implements OnChanges {
 
     toggle(event: Event) {
         event.stopPropagation();
+        if (this.disabled) return;
         if (!this.showPicker) this.pickerYear = this.selectedYear || new Date().getFullYear();
         this.showPicker = !this.showPicker;
     }
@@ -49,6 +49,12 @@ export class NgMonthYearPickerComponent implements OnChanges {
         const value = `${this.pickerYear}-${String(monthIndex + 1).padStart(2, '0')}`;
         this.valueChange.emit(value);
         this.showPicker = false;
+    }
+
+    selectToday() {
+        const today = new Date();
+        this.pickerYear = today.getFullYear();
+        this.select(today.getMonth());
     }
 
     isSelected(monthIndex: number): boolean {

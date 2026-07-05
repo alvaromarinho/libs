@@ -15,6 +15,7 @@ export class MonthYearPickerExampleComponent implements AfterViewInit {
 
     toggleCode = signal(false);
     month = signal(new Date().toISOString().slice(0, 7));
+    disabled = signal(false);
 
     ngAfterViewInit() {
         Prism.highlightAll();

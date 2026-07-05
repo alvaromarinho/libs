@@ -28,6 +28,11 @@
     background-color: var(--ng-month-year-picker-hover-bg);
 }
 
+.trigger:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
 .dropdown {
     position: absolute;
     top: calc(100% + 4px);
@@ -101,4 +106,21 @@
 .month-btn.selected {
     color: var(--ng-month-year-picker-primary-color);
     background-color: var(--ng-month-year-picker-primary);
+}
+
+.today-btn {
+    width: 100%;
+    margin-top: 4px;
+    padding: 0.3rem 0.25rem;
+    font: inherit;
+    font-size: 0.78rem;
+    color: var(--ng-month-year-picker-color);
+    background-color: var(--ng-month-year-picker-bg);
+    border: 1px solid transparent;
+    border-radius: var(--ng-month-year-picker-radius);
+    cursor: pointer;
+}
+
+.today-btn:hover {
+    background-color: var(--ng-month-year-picker-hover-bg);
 }

@@ -1,4 +1,4 @@
-<button type="button" class="trigger" (click)="toggle($event)">
+<button type="button" class="trigger" [disabled]="disabled" (click)="toggle($event)">
     {{ displayLabel }}
 </button>
 
@@ -20,5 +20,6 @@
                 </button>
             }
         </div>
+        <button type="button" class="today-btn" (click)="selectToday()">{{ todayLabel }}</button>
     </div>
 }

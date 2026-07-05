@@ -13,14 +13,15 @@ Month/year picker dropdown component for Angular. Self-contained — no Bootstra
 ## Public API
 
 - Selector: `ng-month-year-picker`
-- Inputs: `value: string` (format `YYYY-MM`), `label?: string` (overrides the button text; if omitted, derived from `value` + `monthNames`), `monthNames: string[]` (default PT-BR `['Jan', ..., 'Dez']`)
+- Inputs: `value: string` (format `YYYY-MM`), `label?: string` (overrides the button text; if omitted, derived from `value` + `monthNames`), `monthNames: string[]` (default PT-BR `['Jan', ..., 'Dez']`), `disabled: boolean` (default `false`; disables the trigger button and blocks opening the picker), `todayLabel: string` (default `'Hoje'`; text of the "today" button)
 - Outputs: `valueChange` (emits `YYYY-MM` when a month is picked)
 
 ## How it works
 
-- The trigger is a single button showing `displayLabel`; clicking it toggles `showPicker` and sets `pickerYear` from `value` (or current year if `value` is empty).
-- The dropdown shows a year header (prev/next via chevron buttons, changing only `pickerYear`) and a 4-column grid of `monthNames` buttons.
+- The trigger is a single button showing `displayLabel`; clicking it toggles `showPicker` and sets `pickerYear` from `value` (or current year if `value` is empty). `toggle()` is a no-op when `disabled` is `true`.
+- The dropdown shows a year header (prev/next via chevron buttons, changing only `pickerYear`), a 4-column grid of `monthNames` buttons, and a "Hoje" button below the grid.
 - Selecting a month emits `valueChange` with `${pickerYear}-MM` and closes the dropdown. `value` itself is never mutated internally — the parent owns it via `valueChange`.
+- The "Hoje" button (`selectToday()`) sets `pickerYear` to the current year and calls `select()` with the current month, jumping straight to today regardless of what year is currently browsed.
 - A `@HostListener('document:click')` closes the dropdown on any outside click; the dropdown's own click handler calls `stopPropagation()` so clicks inside it don't trigger this.
 - `ngOnChanges` resyncs `pickerYear` to `value`'s year whenever `value` changes while the picker is closed (so reopening shows the right year), but leaves `pickerYear` alone while open (so browsing years isn't reset by an external `value` update).
 
@@ -28,6 +29,7 @@ Month/year picker dropdown component for Angular. Self-contained — no Bootstra
 
 - `isSelected()` compares against `pickerYear`, not the current year — the highlighted month only matches `value` when `pickerYear === selectedYear`.
 - The prev/next year chevrons are inline SVGs (no icon font dependency).
+- `disabled` only guards `toggle()` — it doesn't prevent programmatically setting `showPicker` or calling `select()`/`selectToday()` directly.
 - `:host` is `display: inline-flex; width: 100%` — the component fills its container's width; the dropdown is absolutely positioned and centered under the trigger.
 - Colors/spacing are controlled via `--ng-month-year-picker-*` CSS custom properties on `:host` (e.g. `--ng-month-year-picker-primary` for the selected month) — override them on the host element to theme the component.
 

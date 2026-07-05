@@ -1,6 +1,6 @@
 {
   "name": "ng-month-year-picker",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "Month/year picker dropdown component for Angular",
   "author": "Alvaro Marinho",
   "license": "MIT",

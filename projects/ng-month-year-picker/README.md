@@ -11,6 +11,8 @@ Month/year picker dropdown component for Angular. Self-contained — no Bootstra
 - 📅 **Year navigation** - Browse years without changing the selected value
 - 🌍 **Customizable month names** - Defaults to PT-BR, pass your own locale
 - 🖱️ **Click-outside to close** - No extra wiring needed
+- ⏭️ **Jump to today** - Built-in "Hoje" button in the dropdown
+- 🚫 **Disableable** - `disabled` input blocks opening the picker
 - 🎨 **Themeable** - colors/spacing via `--ng-month-year-picker-*` CSS custom properties
 - ⚡ **Standalone component support** (Angular 14+)
 - 🔧 **NgModule compatible** (backward compatible)
@@ -111,6 +113,8 @@ export class AppComponent {
 | `value`      | `string`   | `''`                                                  | Selected month in `YYYY-MM` format                             |
 | `label`      | `string`   | derived from `value` + `monthNames`                  | Overrides the text shown on the trigger button                |
 | `monthNames` | `string[]` | `['Jan','Fev','Mar','Abr','Mai','Jun','Jul','Ago','Set','Out','Nov','Dez']` | Month names used in the grid and derived label |
+| `disabled`   | `boolean`  | `false`                                               | Disables the trigger button and blocks opening the picker     |
+| `todayLabel` | `string`   | `'Hoje'`                                              | Text shown on the "today" button                               |
 
 ### Outputs
 
@@ -174,6 +178,12 @@ export class ExampleEnComponent {
 <ng-month-year-picker [value]="month()" label="Select a month" (valueChange)="month.set($event)"></ng-month-year-picker>
 ```
 
+### Disabled
+
+```html
+<ng-month-year-picker [value]="month()" [disabled]="true" (valueChange)="month.set($event)"></ng-month-year-picker>
+```
+
 ### Theming
 
 Override the CSS custom properties on the host element to match your design system:
@@ -197,6 +207,8 @@ ng-month-year-picker {
 1. **`value` is one-way**: the component never mutates it. Update it yourself from `valueChange`.
 
 2. **Year navigation is independent**: browsing years with the chevrons only changes the dropdown's displayed year (`pickerYear`) — it doesn't affect `value` until a month is actually picked.
+
+3. **"Hoje" ignores the browsed year**: clicking the "Hoje" button always jumps to the current month/year, regardless of what year the dropdown is currently showing.
 
 ---
 
