@@ -1,4 +1,4 @@
-import { AfterViewInit, Component, inject, signal } from '@angular/core';
+import { AfterViewInit, Component, inject, signal, ChangeDetectionStrategy } from '@angular/core';
 import { NgBsToastService } from 'ng-bs-toast-service';
 import { NgCollapseComponent } from 'ng-collapse';
 import { PageHeaderComponent } from '../shared/page-header/page-header.component';
@@ -11,6 +11,7 @@ declare const Prism: any;
     selector: 'bs-toast-example',
     standalone: true,
     imports: [NgCollapseComponent, PageHeaderComponent],
+    changeDetection: ChangeDetectionStrategy.Eager,
     templateUrl: './ng-bs-toast-service.component.html'
 })
 export class BsToastExampleComponent implements AfterViewInit {

@@ -1,4 +1,4 @@
-import { AfterViewInit, Component, signal } from '@angular/core';
+import { AfterViewInit, Component, signal, ChangeDetectionStrategy } from '@angular/core';
 import { NgClass } from '@angular/common';
 import { NgGenerateTableComponent, NgGenerateTableColumns } from 'ng-generate-table';
 import { NgCollapseComponent } from 'ng-collapse';
@@ -9,6 +9,7 @@ declare const Prism: any;
     selector: 'gt-mobile-card-example',
     standalone: true,
     imports: [NgClass, NgGenerateTableComponent, NgCollapseComponent],
+    changeDetection: ChangeDetectionStrategy.Eager,
     templateUrl: './mobile-card.component.html'
 })
 export class GTMobileCardExampleComponent implements AfterViewInit {

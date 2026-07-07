@@ -35,7 +35,7 @@ Month/year picker dropdown component for Angular. Self-contained — no Bootstra
 
 ## Dependencies
 
-Peer deps: `@angular/core`/`common` `>=14 <22`. No Bootstrap or icon font required.
+Peer deps: `@angular/core`/`common` `>=14 <23`. No Bootstrap or icon font required.
 
 ## Build & test
 

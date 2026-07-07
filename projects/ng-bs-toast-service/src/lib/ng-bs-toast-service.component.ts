@@ -1,4 +1,4 @@
-import { OnInit, OnDestroy, Component, ViewChildren, QueryList, ElementRef, ChangeDetectorRef } from '@angular/core';
+import { OnInit, OnDestroy, Component, ViewChildren, QueryList, ElementRef, ChangeDetectorRef, ChangeDetectionStrategy } from '@angular/core';
 import { NgBsToastService, ToastMessage } from './ng-bs-toast-service.service';
 import { Toast } from 'bootstrap';
 import { CommonModule } from '@angular/common';
@@ -13,6 +13,7 @@ interface ToastData extends ToastMessage {
     selector: 'ng-bs-toast-service',
     imports: [CommonModule],
     templateUrl: './ng-bs-toast-service.component.html',
+    changeDetection: ChangeDetectionStrategy.Eager,
     styleUrls: ['./ng-bs-toast-service.component.css']
 })
 export class NgBsToastServiceComponent implements OnInit, OnDestroy {

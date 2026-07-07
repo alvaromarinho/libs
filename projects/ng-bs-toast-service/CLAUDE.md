@@ -26,7 +26,7 @@ Service-driven toast/notification system for Angular + Bootstrap 5.
 
 ## Dependencies
 
-Peer deps: `@angular/core`/`common` `>=14 <22`, `bootstrap ^5`, `bootstrap-icons ^1`. Requires Bootstrap CSS/JS and Bootstrap Icons in the host app.
+Peer deps: `@angular/core`/`common` `>=14 <23`, `bootstrap ^5`, `bootstrap-icons ^1`. Requires Bootstrap CSS/JS and Bootstrap Icons in the host app.
 
 ## Build & test
 

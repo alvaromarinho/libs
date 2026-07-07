@@ -25,13 +25,9 @@
           "defaultConfiguration": "production"
         },
         "test": {
-          "builder": "@angular/build:karma",
+          "builder": "@angular/build:unit-test",
           "options": {
-            "tsConfig": "projects/ng-generate-table/tsconfig.spec.json",
-            "polyfills": [
-              "zone.js",
-              "zone.js/testing"
-            ]
+            "tsConfig": "projects/ng-generate-table/tsconfig.spec.json"
           }
         }
       }
@@ -133,21 +129,9 @@
           }
         },
         "test": {
-          "builder": "@angular/build:karma",
+          "builder": "@angular/build:unit-test",
           "options": {
-            "polyfills": [
-              "zone.js",
-              "zone.js/testing"
-            ],
-            "tsConfig": "projects/test-libs/tsconfig.spec.json",
-            "assets": [
-              "projects/test-libs/src/favicon.ico",
-              "projects/test-libs/src/assets"
-            ],
-            "styles": [
-              "projects/test-libs/src/styles.css"
-            ],
-            "scripts": []
+            "tsConfig": "projects/test-libs/tsconfig.spec.json"
           }
         }
       }
@@ -174,13 +158,9 @@
           "defaultConfiguration": "production"
         },
         "test": {
-          "builder": "@angular/build:karma",
+          "builder": "@angular/build:unit-test",
           "options": {
-            "tsConfig": "projects/ng-dd-file/tsconfig.spec.json",
-            "polyfills": [
-              "zone.js",
-              "zone.js/testing"
-            ]
+            "tsConfig": "projects/ng-dd-file/tsconfig.spec.json"
           }
         }
       }
@@ -207,13 +187,9 @@
           "defaultConfiguration": "production"
         },
         "test": {
-          "builder": "@angular/build:karma",
+          "builder": "@angular/build:unit-test",
           "options": {
-            "tsConfig": "projects/ng-collapse/tsconfig.spec.json",
-            "polyfills": [
-              "zone.js",
-              "zone.js/testing"
-            ]
+            "tsConfig": "projects/ng-collapse/tsconfig.spec.json"
           }
         }
       }
@@ -240,13 +216,9 @@
           "defaultConfiguration": "production"
         },
         "test": {
-          "builder": "@angular/build:karma",
+          "builder": "@angular/build:unit-test",
           "options": {
-            "tsConfig": "projects/ng-bs-calendar/tsconfig.spec.json",
-            "polyfills": [
-              "zone.js",
-              "zone.js/testing"
-            ]
+            "tsConfig": "projects/ng-bs-calendar/tsconfig.spec.json"
           }
         }
       }
@@ -273,13 +245,9 @@
           "defaultConfiguration": "production"
         },
         "test": {
-          "builder": "@angular/build:karma",
+          "builder": "@angular/build:unit-test",
           "options": {
-            "tsConfig": "projects/ng-bs-modal-service/tsconfig.spec.json",
-            "polyfills": [
-              "zone.js",
-              "zone.js/testing"
-            ]
+            "tsConfig": "projects/ng-bs-modal-service/tsconfig.spec.json"
           }
         }
       }
@@ -306,13 +274,9 @@
           "defaultConfiguration": "production"
         },
         "test": {
-          "builder": "@angular/build:karma",
+          "builder": "@angular/build:unit-test",
           "options": {
-            "tsConfig": "projects/ng-bs-toast-service/tsconfig.spec.json",
-            "polyfills": [
-              "zone.js",
-              "zone.js/testing"
-            ]
+            "tsConfig": "projects/ng-bs-toast-service/tsconfig.spec.json"
           }
         }
       }

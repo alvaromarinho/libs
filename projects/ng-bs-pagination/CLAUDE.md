@@ -32,7 +32,7 @@ Configurable pagination component for Angular and Bootstrap 5.
 
 ## Dependencies
 
-Peer deps: `@angular/core`/`common` `>=14 <22`, `bootstrap ^5`. Requires Bootstrap CSS in the host app (uses `.pagination`, `.page-item`, `.page-link` classes).
+Peer deps: `@angular/core`/`common` `>=14 <23`, `bootstrap ^5`. Requires Bootstrap CSS in the host app (uses `.pagination`, `.page-item`, `.page-link` classes).
 
 ## Build & test
 

@@ -1,4 +1,4 @@
-import { ChangeDetectorRef, Component, OnInit, OnDestroy, TemplateRef } from '@angular/core';
+import { ChangeDetectorRef, Component, OnInit, OnDestroy, TemplateRef, ChangeDetectionStrategy } from '@angular/core';
 import { NgBsModalService } from './ng-bs-modal-service.service';
 import { NgBsModalServiceData } from './ng-bs-modal-service.model';
 import { Carousel, Modal } from 'bootstrap';
@@ -9,6 +9,7 @@ import { Subscription } from 'rxjs';
     selector: 'ng-bs-modal-service',
     imports: [CommonModule],
     templateUrl: './ng-bs-modal-service.component.html',
+    changeDetection: ChangeDetectionStrategy.Eager,
     styleUrls: [`./ng-bs-modal-service.component.css`]
 })
 export class NgBsModalServiceComponent implements OnInit, OnDestroy {

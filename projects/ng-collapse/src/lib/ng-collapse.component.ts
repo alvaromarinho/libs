@@ -28,7 +28,7 @@ export class NgCollapseComponent implements OnChanges, AfterViewInit, OnDestroy 
     protected showOverflow = false;
     protected maxHeightValue: number = 0;
 
-    private overflowTimer?: number;
+    private timers: number[] = [];
     private resizeObserver?: ResizeObserver;
 
     constructor(private cdr: ChangeDetectorRef) { }
@@ -78,16 +78,16 @@ export class NgCollapseComponent implements OnChanges, AfterViewInit, OnDestroy 
             this.maxHeightValue = 0;
             this.cdr.detectChanges();
 
-            setTimeout(() => {
+            this.schedule(() => {
                 this.isExpanded = true;
                 this.cdr.detectChanges();
 
-                setTimeout(() => {
+                this.schedule(() => {
                     this.maxHeightValue = this.calculateHeight();
                     this.cdr.markForCheck();
 
                     // Ativa overflow após transição
-                    this.overflowTimer = window.setTimeout(() => {
+                    this.schedule(() => {
                         this.showOverflow = true;
                         this.cdr.markForCheck();
                     }, this.transitionDuration);
@@ -101,11 +101,11 @@ export class NgCollapseComponent implements OnChanges, AfterViewInit, OnDestroy 
                 this.maxHeightValue = this.calculateHeight();
                 this.cdr.detectChanges();
 
-                setTimeout(() => {
+                this.schedule(() => {
                     this.maxHeightValue = 0;
                     this.cdr.markForCheck();
 
-                    this.overflowTimer = window.setTimeout(() => {
+                    this.schedule(() => {
                         this.isExpanded = false;
                         this.cdr.markForCheck();
                     }, 300);
@@ -125,10 +125,12 @@ export class NgCollapseComponent implements OnChanges, AfterViewInit, OnDestroy 
         return element.scrollHeight;
     }
 
+    private schedule(fn: () => void, delay: number): void {
+        this.timers.push(window.setTimeout(fn, delay));
+    }
+
     private clearTimer(): void {
-        if (this.overflowTimer !== undefined) {
-            clearTimeout(this.overflowTimer);
-            this.overflowTimer = undefined;
-        }
+        this.timers.forEach(timer => clearTimeout(timer));
+        this.timers = [];
     }
 }

@@ -1,6 +1,6 @@
 {
   "name": "ng-bs-pagination",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Configurable pagination component for Angular and Bootstrap 5",
   "author": "Alvaro Marinho",
   "license": "MIT",
@@ -21,8 +21,8 @@
     "url": "https://github.com/alvaromarinho/libs/tree/master/projects/ng-bs-pagination"
   },
   "peerDependencies": {
-    "@angular/common": ">=14.0.0 <22.0.0",
-    "@angular/core": ">=14.0.0 <22.0.0",
+    "@angular/common": ">=14.0.0 <23.0.0",
+    "@angular/core": ">=14.0.0 <23.0.0",
     "bootstrap": "^5.0.0"
   },
   "dependencies": {

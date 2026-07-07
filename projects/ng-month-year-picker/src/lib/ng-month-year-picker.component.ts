@@ -1,9 +1,10 @@
-import { Component, EventEmitter, HostListener, Input, OnChanges, Output } from '@angular/core';
+import { Component, EventEmitter, HostListener, Input, OnChanges, Output, ChangeDetectionStrategy } from '@angular/core';
 
 @Component({
     selector: 'ng-month-year-picker',
     standalone: true,
     templateUrl: './ng-month-year-picker.component.html',
+    changeDetection: ChangeDetectionStrategy.Eager,
     styleUrl: './ng-month-year-picker.component.css',
 })
 export class NgMonthYearPickerComponent implements OnChanges {

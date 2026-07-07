@@ -32,7 +32,7 @@ Weekly scheduling calendar component for Angular + Bootstrap 5, using Luxon for 
 
 ## Dependencies
 
-Peer deps: `@angular/core`/`common` `>=14 <22`, `bootstrap ^5`, `luxon ^3`. Requires Bootstrap CSS/JS loaded by the host app (for tooltip styling/behavior).
+Peer deps: `@angular/core`/`common` `>=14 <23`, `bootstrap ^5`, `luxon ^3`. Requires Bootstrap CSS/JS loaded by the host app (for tooltip styling/behavior).
 
 ## Build & test
 

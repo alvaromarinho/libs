@@ -20,7 +20,7 @@ Configurable pagination component for Angular and Bootstrap 5.
 
 | ng-bs-pagination | Angular       | Bootstrap | Standalone |
 |-------------------|---------------|-----------|------------|
-| 1.0.x             | 14.x - 21.x   | 5.x       | ✅ Yes     |
+| 1.0.x             | 14.x - 22.x   | 5.x       | ✅ Yes     |
 
 ## 📦 Installation
 

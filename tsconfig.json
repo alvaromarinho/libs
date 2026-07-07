@@ -2,7 +2,6 @@
 {
   "compileOnSave": false,
   "compilerOptions": {
-    "baseUrl": "./",
     "outDir": "./dist/out-tsc",
     "forceConsistentCasingInFileNames": true,
     "esModuleInterop": true,
@@ -14,25 +13,25 @@
     "sourceMap": true,
     "paths": {
       "ng-bs-calendar": [
-        "dist/ng-bs-calendar"
+        "./dist/ng-bs-calendar"
       ],
       "ng-bs-modal-service": [
-        "dist/ng-bs-modal-service"
+        "./dist/ng-bs-modal-service"
       ],
       "ng-bs-pagination": [
         "./dist/ng-bs-pagination"
       ],
       "ng-bs-toast-service": [
-        "dist/ng-bs-toast-service"
+        "./dist/ng-bs-toast-service"
       ],
       "ng-collapse": [
-        "dist/ng-collapse"
+        "./dist/ng-collapse"
       ],
       "ng-dd-file": [
-        "dist/ng-dd-file"
+        "./dist/ng-dd-file"
       ],
       "ng-generate-table": [
-        "dist/ng-generate-table"
+        "./dist/ng-generate-table"
       ],
       "ng-month-year-picker": [
         "./dist/ng-month-year-picker"

@@ -1,4 +1,4 @@
-import { AfterViewInit, Component, ViewChild, signal } from '@angular/core';
+import { AfterViewInit, Component, ViewChild, signal, ChangeDetectionStrategy } from '@angular/core';
 import { JsonPipe } from '@angular/common';
 import { NgBsCalendarComponent } from 'ng-bs-calendar';
 import { NgCollapseComponent } from 'ng-collapse';
@@ -10,6 +10,7 @@ declare const Prism: any;
     selector: 'bs-calendar-example',
     standalone: true,
     imports: [NgBsCalendarComponent, NgCollapseComponent, PageHeaderComponent, JsonPipe],
+    changeDetection: ChangeDetectionStrategy.Eager,
     templateUrl: './ng-bs-calendar.component.html'
 })
 export class BsCalendarExampleComponent implements AfterViewInit {

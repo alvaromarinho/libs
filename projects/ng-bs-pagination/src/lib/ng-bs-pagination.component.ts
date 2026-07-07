@@ -1,4 +1,4 @@
-import { Component, ContentChild, EventEmitter, Input, Output, TemplateRef } from '@angular/core';
+import { Component, ContentChild, EventEmitter, Input, Output, TemplateRef, ChangeDetectionStrategy } from '@angular/core';
 import { NgTemplateOutlet } from '@angular/common';
 import {
     DEFAULT_FIRST_LAST,
@@ -14,6 +14,7 @@ import {
     selector: 'ng-bs-pagination',
     standalone: true,
     imports: [NgTemplateOutlet],
+    changeDetection: ChangeDetectionStrategy.Eager,
     templateUrl: './ng-bs-pagination.component.html',
 })
 export class NgBsPaginationComponent {

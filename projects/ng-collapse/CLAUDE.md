@@ -29,7 +29,7 @@ Smooth collapse/expand wrapper component for Angular, animated via `max-height` 
 
 ## Dependencies
 
-Peer deps only: `@angular/core`/`common` `>=14 <22`. No Bootstrap, no third-party libs.
+Peer deps only: `@angular/core`/`common` `>=14 <23`. No Bootstrap, no third-party libs.
 
 ## Build & test
 

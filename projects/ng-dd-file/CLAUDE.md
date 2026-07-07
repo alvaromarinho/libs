@@ -32,7 +32,7 @@ Drag-and-drop file upload component for Angular, with size/type validation and i
 
 ## Dependencies
 
-Peer deps only: `@angular/core`/`common` `>=14 <22`. No third-party libs.
+Peer deps only: `@angular/core`/`common` `>=14 <23`. No third-party libs.
 
 ## Build & test
 

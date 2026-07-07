@@ -32,7 +32,7 @@ Service-driven modal/dialog system for Angular + Bootstrap 5, with a queue, imag
 
 ## Dependencies
 
-Peer deps: `@angular/core`/`common` `>=14 <22`, `bootstrap ^5`. Requires Bootstrap CSS/JS in the host app.
+Peer deps: `@angular/core`/`common` `>=14 <23`, `bootstrap ^5`. Requires Bootstrap CSS/JS in the host app.
 
 ## Build & test
 

@@ -21,7 +21,7 @@ Month/year picker dropdown component for Angular. Self-contained — no Bootstra
 
 | ng-month-year-picker | Angular       | Standalone |
 |------------------|---------------|-----------|
-| 1.0.x            | 14.x - 21.x   | ✅ Yes     |
+| 1.0.x            | 14.x - 22.x   | ✅ Yes     |
 
 ## 📦 Installation
 

@@ -1,4 +1,4 @@
-import { AfterViewInit, Component, signal } from '@angular/core';
+import { AfterViewInit, Component, signal, ChangeDetectionStrategy } from '@angular/core';
 import { NgCollapseComponent } from 'ng-collapse';
 import { PageHeaderComponent } from '../shared/page-header/page-header.component';
 import { GTSimpleExampleComponent } from './examples/simple/simple.component';
@@ -27,6 +27,7 @@ type GTTab = 'simple' | 'manual' | 'rowClick' | 'classPipe' | 'loadingEmpty' | '
         GTMobileCardExampleComponent,
         GTExpandableRowsExampleComponent,
     ],
+    changeDetection: ChangeDetectionStrategy.Eager,
     templateUrl: './ng-generate-table.component.html'
 })
 export class GenerateTableExamplesComponent implements AfterViewInit {

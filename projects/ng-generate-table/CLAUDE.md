@@ -48,7 +48,7 @@ Dynamic, column-config-driven table component for Angular with sorting, custom c
 
 ## Dependencies
 
-Peer deps only: `@angular/core`/`common` `>=14 <22`. No third-party libs.
+Peer deps only: `@angular/core`/`common` `>=14 <23`. No third-party libs.
 
 ## Build & test
 

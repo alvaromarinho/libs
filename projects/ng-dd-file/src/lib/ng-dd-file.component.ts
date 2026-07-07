@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, ElementRef, EventEmitter, Input, Output, ViewChild } from '@angular/core';
+import { Component, ElementRef, EventEmitter, Input, Output, ViewChild, ChangeDetectionStrategy } from '@angular/core';
 import { NgDdFileDirective } from './ng-dd-file.directive';
 
 interface FileWithBase64 extends File {
@@ -17,6 +17,7 @@ interface FileError {
     selector: 'ng-dd-file',
     imports: [CommonModule, NgDdFileDirective],
     templateUrl: './ng-dd-file.component.html',
+    changeDetection: ChangeDetectionStrategy.Eager,
     styleUrls: ['./ng-dd-file.component.css']
 })
 export class NgDdFileComponent {
