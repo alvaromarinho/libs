@@ -8,9 +8,14 @@ Toast notification service for Angular and Bootstrap 5 with Bootstrap Icons supp
 ## ✨ Features
 
 - 🎯 **Service-based notifications** - Show toasts from anywhere
-- 🎨 **Multiple styles** - success, warning, danger, primary
-- 🔔 **Auto-dismiss** - Toasts automatically close after 5 seconds
-- 📚 **Queue support** - Stack multiple toasts
+- 🎨 **All 8 Bootstrap colors** - primary, secondary, success, danger, warning, info, light, dark
+- 🖤 **2 render themes** - bootstrap (solid) and bootstrap-dark (native dark mode); default set via `[theme]` @Input, overridable per `send()` call
+- ⏱️ **Countdown progress bar** - visual auto-dismiss timer, pauses on hover
+- 🔔 **Style-aware auto-dismiss** - warning 7s, danger 10s, rest 4s (or pass your own `duration`)
+- 📍 **7 positions** - top/middle/bottom × start/center/end, one container per position
+- 📚 **Queue support** - configurable max toasts per position, overflow queues
+- ✋ **Programmatic dismiss** - `dismiss(id)`, `dismissAll()`, or subscribe to `send()`'s Observable
+- 📱 **Mobile-friendly** - full width, glued to the top under 576px
 - 🎭 **Bootstrap Icons** - Beautiful icon integration
 - ⚡ **Standalone component support** (Angular 14+)
 - 🔧 **NgModule compatible** (backward compatible)
@@ -167,24 +172,46 @@ export class AppComponent {
 
 ```typescript
 class NgBsToastService {
-  // Show a toast notification
+  // Show a toast. Returns an Observable that completes when the toast closes.
   send(
     title: string,
     message: string | null,
-    style?: 'success' | 'warning' | 'danger' | 'primary',
-    duration = 5000
-  ): void
+    style?: ToastStyle,
+    duration?: number,
+    options?: { theme?: ToastTheme; position?: ToastPosition }
+  ): Observable<void>
+
+  dismiss(id: number): void      // close one toast programmatically
+  dismissAll(): void             // close every shown/queued toast
 }
 ```
 
 ### Parameters
 
-| Parameter  | Type                                              | Required | Default     | Description               |
-|------------|---------------------------------------------------|----------|-------------|---------------------------|
-| `title`    | `string`                                          | Yes      | -           | Toast title               |
-| `message`  | `string \| null`                                  | Yes      | -           | Toast message content     |
-| `style`    | `'success' \| 'warning' \| 'danger' \| 'primary'` | No       | `'primary'` | Toast color style         |
-| `duration` | number                                            | No       | 5000        | Toast duration            |
+| Parameter  | Type                        | Required | Default            | Description                                                 |
+|------------|------------------------------|----------|---------------------|---------------------------------------------------------------|
+| `title`    | `string`                     | Yes      | -                   | Toast title                                                    |
+| `message`  | `string \| null`              | Yes      | -                   | Toast message content                                          |
+| `style`    | `ToastStyle`                  | No       | `'primary'`         | One of the 8 Bootstrap colors                                  |
+| `duration` | `number`                     | No       | resolved from style | `warning` 7000ms, `danger` 10000ms, rest 4000ms                |
+| `options.theme`    | `ToastTheme`          | No       | the component's `[theme]` @Input (`'bootstrap'` by default) | `'bootstrap'` \| `'bootstrap-dark'` |
+| `options.position` | `ToastPosition`       | No       | `'top-end'`           | any of the 7 positions below                                   |
+
+```typescript
+type ToastStyle = 'primary' | 'secondary' | 'success' | 'danger' | 'warning' | 'info' | 'light' | 'dark';
+type ToastTheme = 'bootstrap' | 'bootstrap-dark';
+type ToastPosition = 'top-start' | 'top-center' | 'top-end'
+                    | 'middle-center'
+                    | 'bottom-start' | 'bottom-center' | 'bottom-end';
+```
+
+Getting a closed-notification instead of firing and forgetting:
+
+```typescript
+this.toastService.send('Saved', null, 'success').subscribe(() => {
+  console.log('toast closed');
+});
+```
 
 ---
 
@@ -294,14 +321,33 @@ async loadData() {
 
 ## 🎨 Toast Styles
 
-The library uses Bootstrap's color scheme:
+All 8 Bootstrap colors, each with its own icon:
 
-| Style     | Color | Use Case                |
-|-----------|-------|-------------------------|
-| `success` | Green | Successful operations   |
-| `warning` | Yellow| Warnings & caution      |
-| `danger`  | Red   | Errors & failures       |
-| `primary` | Blue  | Info & general messages |
+| Style       | Icon                        | Use Case                     |
+|-------------|------------------------------|-------------------------------|
+| `primary`   | `bi-chat-text-fill`           | General messages               |
+| `secondary` | `bi-dash-circle-fill`         | Neutral notices                |
+| `success`   | `bi-check-circle-fill`        | Successful operations          |
+| `danger`    | `bi-x-circle-fill`            | Errors & failures              |
+| `warning`   | `bi-exclamation-circle-fill`  | Warnings & caution             |
+| `info`      | `bi-info-circle-fill`         | Informational messages         |
+| `light`     | `bi-brightness-high-fill`     | Low-emphasis notices           |
+| `dark`      | `bi-moon-stars-fill`          | Low-emphasis, dark accent      |
+
+## 🖤 Themes
+
+Independent from `style` — pick how the toast is rendered. Set a default for every toast via the component's `[theme]` @Input, or override per `send()` call:
+
+- **`bootstrap`** (default) — solid `text-bg-{style}` toast, bootstrap's contrast-computed text color. The progress bar uses a translucent white/black overlay (not the style color) — `bg-{style}` would be the same color as the background and disappear.
+- **`bootstrap-dark`** — the same color pairing bootstrap's own `.alert-{style}` uses: `bg-{style}-subtle` / `text-{style}-emphasis` / `border-{style}-subtle`, all dark-mode aware via `data-bs-theme="dark"`. The progress bar uses the style's own `*-text-emphasis` color, which bootstrap already tunes to stay legible against `*-bg-subtle` — including for style `'dark'`, where a plain `bg-dark` bar would be nearly invisible dark-on-dark.
+
+```typescript
+// Default for every toast (e.g. app.component.html):
+// <ng-bs-toast-service [theme]="darkMode() ? 'bootstrap-dark' : 'bootstrap'" />
+
+// Per-call override:
+this.toastService.send('Erro', 'Algo deu errado', 'danger', undefined, { theme: 'bootstrap-dark', position: 'bottom-end' });
+```
 
 ---
 
@@ -381,26 +427,32 @@ export class AppComponent {
 
 ### Auto-dismiss Duration
 
-By default, toasts auto-dismiss after **7 seconds**. This is currently hardcoded in the component. If you need to customize this, you can modify the timeout in the component:
+Resolved from `style` when omitted — `warning` 7s, `danger` 10s, rest 4s. Pass `duration` explicitly to override, in milliseconds:
 
 ```typescript
-// In ng-bs-toast-service.component.ts
-setTimeout(() => {
-  // ... cleanup logic
-}, 7000); // Change this value (in milliseconds)
+this.toastService.send('Salvando…', null, 'primary', 1500);
 ```
+
+Hovering a toast pauses its countdown (and the progress bar); it resumes with the remaining time on mouse-leave.
 
 ### Toast Position
 
-Toasts appear in the default Bootstrap toast container position. You can customize the position with CSS:
+7 bootstrap-documented positions, passed per toast via `options.position` (default `'top-end'`). Each position gets its own `.toast-container`, so toasts in different corners don't push each other around:
 
-```css
-ng-bs-toast-service {
-  position: fixed;
-  top: 20px;
-  right: 20px;
-  z-index: 9999;
-}
+```typescript
+this.toastService.send('Copiado!', null, 'success', undefined, { position: 'bottom-center' });
+```
+
+### Queue / Max Toasts
+
+`<ng-bs-toast-service [maxToastsPerPosition]="5" />` — toasts beyond the limit for a given position wait in a queue and appear as older ones close.
+
+### Dismissing Programmatically
+
+```typescript
+const closed$ = this.toastService.send('Uploading…', null, 'primary', 999999);
+// later, e.g. on upload complete:
+this.toastService.dismissAll(); // or keep the id from an internal event and call dismiss(id)
 ```
 
 ---

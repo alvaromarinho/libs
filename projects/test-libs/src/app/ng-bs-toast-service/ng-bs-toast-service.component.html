@@ -8,10 +8,13 @@
 </p>
 
 <div class="d-flex flex-wrap gap-2 mb-4">
-    <span class="chip"><i class="bi bi-check2 text-success"></i> 4 estilos (success/warning/danger/primary)</span>
-    <span class="chip"><i class="bi bi-check2 text-success"></i> Fila de notificações</span>
-    <span class="chip"><i class="bi bi-check2 text-success"></i> Fechamento automático</span>
-    <span class="chip"><i class="bi bi-check2 text-success"></i> Título opcional sem mensagem</span>
+    <span class="chip"><i class="bi bi-check2 text-success"></i> 8 cores do Bootstrap</span>
+    <span class="chip"><i class="bi bi-check2 text-success"></i> 2 temas (bootstrap / bootstrap-dark)</span>
+    <span class="chip"><i class="bi bi-check2 text-success"></i> 7 posições</span>
+    <span class="chip"><i class="bi bi-check2 text-success"></i> Barra de progresso, pausa no hover</span>
+    <span class="chip"><i class="bi bi-check2 text-success"></i> Duração por estilo (warning 7s, danger 10s, resto 4s)</span>
+    <span class="chip"><i class="bi bi-check2 text-success"></i> Fila com limite por posição</span>
+    <span class="chip"><i class="bi bi-check2 text-success"></i> dismiss(id) / dismissAll()</span>
 </div>
 
 <ng-collapse [toggle]="toggleCode()">
@@ -21,34 +24,72 @@
         </div>
         <div class="card-body style-code">
 Instalação (app.component.html):
-<pre><code class="language-html">&lt;ng-bs-toast-service /&gt;</code></pre>
+<pre><code class="language-html">&lt;ng-bs-toast-service [maxToastsPerPosition]="5" /&gt;</code></pre>
 Typescript:
 <pre><code class="language-js">toastService = inject(NgBsToastService);
 
-send(style: string) &#123;
-    this.toastService.send('Título', 'Mensagem', style);
+send(style: ToastStyle) &#123;
+    // duration omitido: resolvido pelo style (warning 7s, danger 10s, resto 4s)
+    this.toastService.send('Título', 'Mensagem', style, undefined, &#123;
+        theme: 'bootstrap-dark', // 'bootstrap' | 'bootstrap-dark'
+        position: 'bottom-end'   // top/middle/bottom x start/center/end
+    &#125;).subscribe(() => console.log('toast fechado'));
 &#125;</code></pre>
 Template:
-<pre><code class="language-html">&lt;button (click)="send('primary')"&gt;Primary&lt;/button&gt;</code></pre>
+<pre><code class="language-html">&lt;button (click)="send('success')"&gt;Success&lt;/button&gt;</code></pre>
+Fechar programaticamente:
+<pre><code class="language-js">this.toastService.dismiss(id);   // um toast específico
+this.toastService.dismissAll();  // todos, mostrados ou na fila</code></pre>
         </div>
     </div>
 </ng-collapse>
 
 @if (lastSent()) {
     <div class="alert alert-info py-1 mb-3 small">
-        <strong>Último enviado:</strong> estilo <code>{{ lastSent() }}</code>
+        <strong>Último enviado:</strong> {{ lastSent() }}
     </div>
 }
 
 <div class="card mb-4">
-    <div class="card-header">Estilos disponíveis</div>
+    <div class="card-header">Tema e posição</div>
+    <div class="card-body">
+        <div class="mb-2">
+            <div class="small text-muted mb-1">Tema (independente da cor)</div>
+            <div class="btn-group btn-group-sm" role="group">
+                @for (t of themes; track t) {
+                    <button type="button" class="btn"
+                        [class.btn-primary]="theme() === t"
+                        [class.btn-outline-primary]="theme() !== t"
+                        (click)="theme.set(t)">{{ t }}</button>
+                }
+            </div>
+        </div>
+        <div>
+            <div class="small text-muted mb-1">Posição</div>
+            <div class="d-flex flex-wrap gap-1">
+                @for (p of positions; track p) {
+                    <button type="button" class="btn btn-sm"
+                        [class.btn-secondary]="position() === p"
+                        [class.btn-outline-secondary]="position() !== p"
+                        (click)="position.set(p)">{{ p }}</button>
+                }
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="card mb-4">
+    <div class="card-header">8 estilos disponíveis</div>
     <div class="card-body">
         <div class="d-flex flex-wrap gap-2">
-            <button class="btn btn-primary"         (click)="send('primary')">Primary</button>
-            <button class="btn btn-success"         (click)="send('success')">Success</button>
-            <button class="btn btn-warning"         (click)="send('warning')">Warning</button>
-            <button class="btn btn-danger"          (click)="send('danger')">Danger</button>
+            @for (style of styles; track style) {
+                <button class="btn btn-{{ style }}" (click)="send(style)">{{ style }}</button>
+            }
         </div>
+        <p class="text-muted small mb-0 mt-2">
+            Duração automática pelo estilo: <strong>warning</strong> 7s, <strong>danger</strong> 10s, os demais 4s
+            — passe o mouse sobre um toast pra pausar a contagem.
+        </p>
     </div>
 </div>
 
@@ -57,10 +98,17 @@ Template:
     <div class="card-body">
         <div class="d-flex flex-wrap gap-2 mb-2">
             <button class="btn btn-outline-secondary" (click)="sendTitleOnly()">Só título (sem mensagem)</button>
-            <button class="btn btn-outline-dark"    (click)="sendAll()">Disparar todos em sequência</button>
+            <button class="btn btn-outline-warning" (click)="sendAll()">Disparar os 8 estilos em sequência</button>
+            <button class="btn btn-outline-primary" (click)="sendQueueDemo()">Fila (7 de uma vez, máx. 5 visíveis)</button>
+            <button class="btn btn-outline-info" (click)="sendWithClose()">Detectar fechamento (Observable)</button>
+            <button class="btn btn-outline-danger" (click)="dismissAll()">Fechar todos agora</button>
         </div>
         <p class="text-muted small mb-0">
-            "Disparar todos em sequência" envia 4 toasts com um pequeno intervalo entre cada um, demonstrando a fila de notificações.
+            <strong>Fila</strong> mostra o comportamento de <code>maxToastsPerPosition</code> — os 2 excedentes só
+            aparecem quando um dos 5 visíveis fechar. <strong>Detectar fechamento</strong> mostra o
+            <code>Observable&lt;void&gt;</code> retornado por <code>send()</code>, igual ao <code>open()</code> do
+            <code>ng-bs-modal-service</code>. No mobile (&lt;576px), qualquer posição escolhida acima aparece
+            colada no topo e com largura cheia.
         </p>
     </div>
 </div>

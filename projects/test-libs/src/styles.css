@@ -1,7 +1,7 @@
 html, body { height: 100%; scrollbar-color: var(--bs-gray-500) var(--bs-gray-200); }
 
 body {
-    background-color: #f4f6f9;
+    background-color: var(--bs-tertiary-bg);
 }
 
 /* ==========================================================================
@@ -13,7 +13,7 @@ App shell
 
 /* Sidebar */
 .sidebar {
-    background-color: #fff;
+    background-color: var(--bs-body-bg);
 }
 
 .sidebar-brand img {
@@ -29,20 +29,20 @@ App shell
     border-left: 3px solid transparent;
     border-radius: 0;
     text-align: left;
-    color: #495057;
+    color: var(--bs-secondary-color);
     padding: .65rem 1.25rem;
     transition: background-color .15s ease-in-out, color .15s ease-in-out, border-color .15s ease-in-out;
 }
 
 .sidebar-link:hover {
-    background-color: #f1f5fb;
-    color: #0d6efd;
+    background-color: var(--bs-tertiary-bg);
+    color: var(--bs-primary);
 }
 
 .sidebar-link.active {
-    background-color: #e7f1ff;
-    border-left-color: #0d6efd;
-    color: #0d6efd;
+    background-color: var(--bs-primary-bg-subtle);
+    border-left-color: var(--bs-primary);
+    color: var(--bs-primary-text-emphasis);
 }
 
 .sidebar-link i {
@@ -52,7 +52,7 @@ App shell
 }
 
 .sidebar-footer {
-    color: #adb5bd;
+    color: var(--bs-tertiary-color);
 }
 
 /* Mobile nav */
@@ -68,7 +68,7 @@ App shell
 
 /* Content area */
 .content-panel {
-    background-color: #fff;
+    background-color: var(--bs-body-bg);
     border-radius: .5rem;
     box-shadow: 0 1px 3px rgba(0, 0, 0, .06);
     padding: 1.25rem 1.5rem;
@@ -106,9 +106,9 @@ parágrafo de descrição, chips de features, callout com o código-fonte
 
 /* Code samples */
 .style-code {
-    background-color: #F5F2F0;
+    background-color: var(--bs-tertiary-bg);
     font-size: .85rem;
-    color: #6c757d;
+    color: var(--bs-secondary-color);
 }
 
 .style-code pre[class*="language-"] {
@@ -161,13 +161,13 @@ parágrafo de descrição, chips de features, callout com o código-fonte
 
 /* Tables geradas pelo ng-generate-table */
 .table > thead > tr > th {
-    background-color: #fff;
-    border-bottom: 1px solid var(--bs-gray-200);
+    background-color: var(--bs-body-bg);
+    border-bottom: 1px solid var(--bs-border-color);
     font-size: .68rem;
     font-weight: 700;
     text-transform: uppercase;
     letter-spacing: .08em;
-    color: var(--bs-secondary);
+    color: var(--bs-secondary-color);
     white-space: nowrap;
 }
 

@@ -1,10 +1,12 @@
 import { TemplateRef } from "@angular/core"
+import { Subject } from "rxjs"
 
 export interface NgBsModalServiceData {
     action: 'open' | 'close' | 'closeAll',
     content?: TemplateRef<any> | NgBsModalServiceContent,
     options?: NgBsModalServiceOptions,
-    open?: boolean
+    open?: boolean,
+    closed?: Subject<void>
 }
 
 export interface NgBsModalServiceContent {

@@ -36,6 +36,9 @@ Template:
 &lt;ng-template #modalBody&gt;
     &lt;img src="https://placehold.co/766x400" alt="placeholder"&gt;
 &lt;/ng-template&gt;</code></pre>
+Detectar fechamento (X, backdrop, ESC ou <code>close()</code> — <code>open()</code> retorna um <code>Observable&lt;void&gt;</code>):
+<pre><code class="language-js">this.modalService.open(&#123; header: 'Modal', body &#125;)
+    .subscribe(() => console.log('modal fechado'));</code></pre>
         </div>
     </div>
 </ng-collapse>
@@ -53,11 +56,13 @@ Template:
             <button class="btn btn-success px-5" (click)="showPopover(modalBody, el)" #el>Popover</button>
             <button class="btn btn-primary px-5" (click)="openQueueModal(modalBody)">Modal A</button>
             <button class="btn btn-secondary px-5" (click)="showModalContent(modalContent)">Modal Content</button>
+            <button class="btn btn-outline-info px-5" (click)="showModalWithClose(modalCloseBody)">Detectar fechamento</button>
         </div>
         <p class="text-muted small mb-0">
             <strong>Popover</strong> abre o modal ancorado ao botão clicado (<code>popoverTo</code>).
             <strong>Modal A</strong> abre um modal de fila simples — veja abaixo.
             <strong>Modal Content</strong> usa um <code>&lt;ng-template&gt;</code> completo, com header/body/footer próprios.
+            <strong>Detectar fechamento</strong> — feche via X, clique no backdrop ou ESC: o <code>Observable</code> de <code>open()</code> dispara igual.
         </p>
     </div>
 </div>
@@ -91,6 +96,11 @@ Template:
     <button class="btn btn-outline-secondary" (click)="openQueueModal()">Abrir Modal B (sobre A)</button>
     <input type="text" class="form-control mb-2">
     <img src="https://placehold.co/766x400" alt="placeholder">
+</ng-template>
+
+<ng-template #modalCloseBody>
+    Feche este modal pelo <strong>X</strong>, clicando fora (<strong>backdrop</strong>) ou <strong>ESC</strong> —
+    o card acima mostra "Modal fechado (closed$ disparou)" quando o evento chegar.
 </ng-template>
 
 <ng-template #modalContent>

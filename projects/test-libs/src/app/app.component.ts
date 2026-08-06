@@ -1,4 +1,5 @@
 import { Component, signal, ChangeDetectionStrategy } from '@angular/core';
+import { NgClass } from '@angular/common';
 import { RouterOutlet, RouterLink, RouterLinkActive } from '@angular/router';
 import { NgCollapseComponent } from 'ng-collapse';
 import { NgBsModalServiceComponent } from 'ng-bs-modal-service';
@@ -10,6 +11,7 @@ import { NgBsToastServiceComponent } from 'ng-bs-toast-service';
     standalone: true,
     changeDetection: ChangeDetectionStrategy.Eager,
     imports: [
+        NgClass,
         RouterOutlet,
         RouterLink,
         RouterLinkActive,
@@ -20,6 +22,7 @@ import { NgBsToastServiceComponent } from 'ng-bs-toast-service';
 })
 export class AppComponent {
     toggleNav = signal(false);
+    darkMode = signal(false);
 
     navItems: { path: string; label: string; icon: string; }[] = [
         { path: 'ng-bs-calendar', label: 'ng-bs-calendar', icon: 'bi-calendar3' },
@@ -31,4 +34,9 @@ export class AppComponent {
         { path: 'ng-month-year-picker', label: 'ng-month-year-picker', icon: 'bi-calendar-month' },
         { path: 'ng-generate-table', label: 'ng-generate-table', icon: 'bi-table' },
     ];
+
+    toggleDarkMode() {
+        this.darkMode.update(v => !v);
+        document.documentElement.setAttribute('data-bs-theme', this.darkMode() ? 'dark' : 'light');
+    }
 }

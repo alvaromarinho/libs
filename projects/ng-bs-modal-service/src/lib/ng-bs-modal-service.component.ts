@@ -105,9 +105,13 @@ export class NgBsModalServiceComponent implements OnInit, OnDestroy {
     }
 
     private closeModal() {
-        this.action === 'closeAll'
-            ? this.modalQueue = []
-            : !this.keepInQueue && this.modalQueue.splice(this.modalQueue.length - 1, 1);
+        if (this.action === 'closeAll') {
+            this.modalQueue.forEach((m) => this.notifyClosed(m));
+            this.modalQueue = [];
+        } else if (!this.keepInQueue) {
+            const [removed] = this.modalQueue.splice(this.modalQueue.length - 1, 1);
+            this.notifyClosed(removed);
+        }
 
         this.keepInQueue = false;
         if (this.modalQueue.length > 0) {
@@ -115,6 +119,11 @@ export class NgBsModalServiceComponent implements OnInit, OnDestroy {
             this.setModalData(lastModal);
             this.modal?.show();
         }
+    }
+
+    private notifyClosed(modal?: NgBsModalServiceData) {
+        modal?.closed?.next();
+        modal?.closed?.complete();
     }
 
     private handleModalQueue(modal: NgBsModalServiceData) {

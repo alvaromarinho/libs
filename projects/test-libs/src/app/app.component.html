@@ -1,5 +1,5 @@
 <ng-bs-modal-service />
-<ng-bs-toast-service />
+<ng-bs-toast-service [theme]="darkMode() ? 'bootstrap-dark' : 'bootstrap'" />
 
 <!-- Navbar mobile -->
 <nav class="navbar navbar-dark bg-dark d-md-none">
@@ -8,6 +8,9 @@
             <i class="bi bi-shield-fill-check"></i>
             Angular Libs
         </a>
+        <button type="button" class="btn btn-sm btn-outline-light me-2" (click)="toggleDarkMode()" title="Alternar tema Bootstrap">
+            <i class="bi" [ngClass]="darkMode() ? 'bi-sun-fill' : 'bi-moon-stars-fill'"></i>
+        </button>
         <button class="navbar-toggler" type="button" (click)="toggleNav.set(!toggleNav())">
             <span class="navbar-toggler-icon"></span>
         </button>
@@ -36,7 +39,7 @@
             <img class="my-2" height="64" src="/assets/angular.png" alt="Angular">
             <h1 class="fs-5 fw-semibold mb-0">Alvaro Marinho</h1>
             <h2 class="fs-6 fw-light text-muted mb-2">Angular Libs</h2>
-            <a class="btn btn-sm btn-outline-dark rounded-pill px-3" href="https://github.com/alvaromarinho/libs" target="_blank">
+            <a class="btn btn-sm btn-outline-secondary rounded-pill px-3" href="https://github.com/alvaromarinho/libs" target="_blank">
                 <i class="bi bi-github me-1"></i> GitHub
             </a>
         </div>
@@ -51,7 +54,14 @@
             }
         </nav>
         <div class="sidebar-footer text-center small p-2 border-top">
-            Angular Libs Playground
+            <div class="form-check form-switch d-inline-flex align-items-center gap-2 mb-1">
+                <input class="form-check-input" type="checkbox" role="switch" id="darkModeSwitch"
+                    [checked]="darkMode()" (change)="toggleDarkMode()">
+                <label class="form-check-label" for="darkModeSwitch">
+                    <i class="bi" [ngClass]="darkMode() ? 'bi-moon-stars-fill' : 'bi-sun-fill'"></i>
+                    Bootstrap dark mode
+                </label>
+            </div>
         </div>
     </div>
 

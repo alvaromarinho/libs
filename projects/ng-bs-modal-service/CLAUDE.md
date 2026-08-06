@@ -14,8 +14,9 @@ Service-driven modal/dialog system for Angular + Bootstrap 5, with a queue, imag
 
 - `NgBsModalService` is a thin `Subject<NgBsModalServiceData>` wrapper (`open`/`close`/`closeAll` just emit actions). It holds **no state** — all state (queue, current modal, Bootstrap `Modal`/`Carousel` instances) lives in `NgBsModalServiceComponent`.
 - Consumers must mount `<ng-bs-modal-service>` once (e.g. in the root app component). Calling `open()` from anywhere injects content into that single instance.
+- `open()` returns an `Observable<void>` — a `Subject<void>` (`NgBsModalServiceData.closed`) created per-call, threaded through to the component and completed by `closeModal()`'s `notifyClosed()` however the modal actually closes (X, backdrop, ESC, `close()`, or `closeAll()`).
 - `content` can be a plain object (`NgBsModalServiceContent` with header/body/footer as strings or `TemplateRef`) or a raw `TemplateRef` for a fully custom modal body.
-- **Queueing**: if `open()` is called while a modal is showing, the new modal is queued (`modalQueue`). The current modal is hidden first; on `hidden.bs.modal` the queued one is shown. `closeAll` empties the queue.
+- **Queueing**: if `open()` is called while a modal is showing, the new modal is queued (`modalQueue`). The current modal is hidden first; on `hidden.bs.modal` the queued one is shown. `closeAll` empties the queue and calls `notifyClosed()` on every queued modal (including ones never shown), so no caller's `open()` Observable is left dangling.
 - **Carousel**: `options.carousel = { index, images }` renders a Bootstrap carousel inside the modal; arrow keys are wired via `setCarouselEvents()`/`cleanCarouselEvents()`.
 - **Popover positioning**: `options.popoverTo: HTMLElement` repositions the modal dialog next to that element (`createPopoverStyle()`), computing left/right/top/bottom placement from `getBoundingClientRect()` and toggling an arrow via CSS custom properties (`--arrow-left`). `removePopoverStyle()` resets all inline styles when not in popover mode.
 

@@ -13,9 +13,11 @@ export class NgBsModalService {
         return this.subject.asObservable();
     }
 
-    open(content: NgBsModalServiceContent | TemplateRef<any>, options?: NgBsModalServiceOptions) {
+    open(content: NgBsModalServiceContent | TemplateRef<any>, options?: NgBsModalServiceOptions): Observable<void> {
         options = options || {} as any;
-        this.subject.next({ action: 'open', content, options });
+        const closed = new Subject<void>();
+        this.subject.next({ action: 'open', content, options, closed });
+        return closed.asObservable();
     }
 
     close() {

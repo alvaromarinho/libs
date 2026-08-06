@@ -57,4 +57,10 @@ export class BsModalExampleComponent implements AfterViewInit {
             body: body ?? 'Este é um modal de exemplo para demonstrar o comportamento de fila.'
         });
     }
+
+    showModalWithClose(body: TemplateRef<any>) {
+        this.lastAction.set('Modal com closed$');
+        this.modalService.open({ header: 'Feche via X, backdrop ou ESC', body })
+            .subscribe(() => this.lastAction.set('Modal fechado (closed$ disparou)'));
+    }
 }

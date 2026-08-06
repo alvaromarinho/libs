@@ -171,8 +171,9 @@ export class AppComponent {
 
 ```typescript
 class NgBsModalService {
-  // Open a modal
-  open(content: NgBsModalServiceContent | TemplateRef<any>, options?: NgBsModalServiceOptions): void
+  // Open a modal. Returns an Observable that completes when this modal closes
+  // (via X, backdrop, ESC, close(), or closeAll()).
+  open(content: NgBsModalServiceContent | TemplateRef<any>, options?: NgBsModalServiceOptions): Observable<void>
   
   // Close current modal
   close(): void
@@ -208,6 +209,14 @@ interface NgBsModalServiceOptions {
     modalFooter?: string;
   };
 }
+```
+
+Detecting when a modal closes — `open()` returns an `Observable<void>` that completes however it closes (X, backdrop, ESC, `close()`, or `closeAll()`):
+
+```typescript
+this.modalService.open({ header: 'Modal', body }).subscribe(() => {
+  console.log('modal closed');
+});
 ```
 
 ---
