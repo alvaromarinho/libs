@@ -19,12 +19,9 @@
         <ul class="navbar-nav px-2 pb-2">
             @for (nav of navItems; track nav.path) {
                 <li class="nav-item">
-                    <a class="nav-link d-flex align-items-center gap-2 w-100"
-                        [routerLink]="nav.path"
-                        routerLinkActive="active"
+                    <a class="nav-link d-flex align-items-center gap-2 w-100" [routerLink]="nav.path" routerLinkActive="active"
                         (click)="toggleNav.set(false)">
-                        <i class="bi {{ nav.icon }}"></i>
-                        {{ nav.label }}
+                        <i class="bi {{ nav.icon }}"></i> {{ nav.label }}
                     </a>
                 </li>
             }
@@ -45,18 +42,16 @@
         </div>
         <nav class="sidebar-nav nav flex-column flex-grow-1 py-2">
             @for (nav of navItems; track nav.path) {
-                <a class="nav-link sidebar-link d-flex align-items-center gap-2"
-                    [routerLink]="nav.path"
-                    routerLinkActive="active">
-                    <i class="bi {{ nav.icon }}"></i>
-                    <span>{{ nav.label }}</span>
-                </a>
+            <a class="nav-link sidebar-link d-flex align-items-center gap-2" [routerLink]="nav.path" routerLinkActive="active">
+                <i class="bi {{ nav.icon }}"></i>
+                <span>{{ nav.label }}</span>
+            </a>
             }
         </nav>
         <div class="sidebar-footer text-center small p-2 border-top">
             <div class="form-check form-switch d-inline-flex align-items-center gap-2 mb-1">
-                <input class="form-check-input" type="checkbox" role="switch" id="darkModeSwitch"
-                    [checked]="darkMode()" (change)="toggleDarkMode()">
+                <input class="form-check-input" type="checkbox" role="switch" id="darkModeSwitch" [checked]="darkMode()"
+                    (change)="toggleDarkMode()">
                 <label class="form-check-label" for="darkModeSwitch">
                     <i class="bi" [ngClass]="darkMode() ? 'bi-moon-stars-fill' : 'bi-sun-fill'"></i>
                     Bootstrap dark mode
