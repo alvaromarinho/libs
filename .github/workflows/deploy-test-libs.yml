@@ -31,4 +31,4 @@ jobs:
             npx ng build ng-month-year-picker --configuration production
             npx ng build test-libs --configuration production
             rm -rf node_modules projects
-            systemctl reload nginx
+            sudo systemctl reload nginx

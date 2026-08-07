@@ -19,8 +19,7 @@
         <ul class="navbar-nav px-2 pb-2">
             @for (nav of navItems; track nav.path) {
                 <li class="nav-item">
-                    <a class="nav-link d-flex align-items-center gap-2 w-100" [routerLink]="nav.path" routerLinkActive="active"
-                        (click)="toggleNav.set(false)">
+                    <a class="nav-link d-flex align-items-center gap-2 w-100" [routerLink]="nav.path" routerLinkActive="active" (click)="toggleNav.set(false)">
                         <i class="bi {{ nav.icon }}"></i> {{ nav.label }}
                     </a>
                 </li>
