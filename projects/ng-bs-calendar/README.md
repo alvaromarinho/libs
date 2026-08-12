@@ -225,7 +225,7 @@ export class AppComponent {
 
 | Input         | Type              | Default      | Description |
 |---------------|-------------------|--------------|-------------|
-| `data`        | `CalendarData[]`  | `[]`         | Array of calendar events |
+| `data`        | `CalendarData[]`  | `[]`         | Array of calendar events. Reactive — can be replaced after init (e.g. `[data]="events$ \| async"` resolving, or the host refetching after `changeWeek`); the grid recomputes overlap sizing and redraws. Doesn't re-emit `changeWeek` on its own (that'd loop back into the fetch that changed `data`). |
 | `loading`     | `boolean`         | `false`      | Shows loading state |
 | `start`       | `string`          | current week | Start date in 'YYYY-MM-DD' format |
 | `showButtons` | `boolean`         | `true`       | Show/hide navigation buttons |
@@ -237,7 +237,7 @@ export class AppComponent {
 |-----------------|------|-------------|
 | `changeWeek`     | `{ start: string, end: string }` | Emitted when the visible range changes — on navigation (`prevWeek`/`todayWeek`/`nextWeek`) and whenever `view` toggles. Fetch/update `data` for `[start, end]` when this fires. |
 | `clickCell`      | `CalendarData` | Emitted when a cell/event with data is clicked |
-| `clickEmptyCell` | `{ day: string, hour: string }` | Emitted when an empty hour-slot cell is clicked (mouse or keyboard — Enter/Space) — `day` (`yyyy-MM-dd`) and `hour` (`HH:mm`) identify the clicked slot, useful for opening a create-event form prefilled with that date/time |
+| `clickEmptyCell` | `{ day: string, hour: string }` | Emitted when an empty hour-slot cell is clicked (mouse or keyboard — Enter/Space) — `day` (`yyyy-MM-dd`) and `hour` (`HH:mm`) identify the clicked slot, useful for opening a create-event form prefilled with that date/time. The clicked cell also gets a `.cell-selected` border, so the user can see which slot they picked; it stays until another empty cell is clicked. |
 
 ### CalendarData Interface
 

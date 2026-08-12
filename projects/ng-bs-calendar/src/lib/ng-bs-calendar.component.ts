@@ -61,6 +61,8 @@ export class NgBsCalendarComponent implements OnInit, OnChanges, OnDestroy {
     private tooltip?: Tooltip;
     private platformId = inject(PLATFORM_ID);
 
+    protected selectedEmptyCell: { day: string; hour: string } | null = null;
+
     @Input() loading = false;
     @Input() data!: CalendarDataFull[];
     @Input() start = date(this.today).startOf('isoWeek').subtract(1, 'day').format('YYYY-MM-DD');
@@ -98,13 +100,7 @@ export class NgBsCalendarComponent implements OnInit, OnChanges, OnDestroy {
         }
 
         this.positionCache.clear();
-
-        // verificando overlap para setar o tamanho
-        this.data = [...this.data].sort((a, b) => date(a.start).valueOf() - date(b.start).valueOf());
-        this.data.map((d1: CalendarDataFull) => {
-            d1._size = 0;
-            this.data.map((d2: CalendarDataFull) => this.overlaps(d1, d2) ? d1._size!++ : d1._size)
-        })
+        this._processData();
         this.setSchedule();
         this.cdr.markForCheck();
     }
@@ -115,6 +111,24 @@ export class NgBsCalendarComponent implements OnInit, OnChanges, OnDestroy {
             this.emitChangeWeek();
             this.cdr.markForCheck();
         }
+        if (changes['data'] && !changes['data'].firstChange) {
+            if (!this.data || !Array.isArray(this.data)) {
+                this.data = [];
+            }
+            this.positionCache.clear();
+            this._processData();
+            this.setSchedule(this.schedule.week?.[0]?.label ?? this.start);
+            this.cdr.markForCheck();
+        }
+    }
+
+    // sort + overlap sizing de `data` — chamado no init e sempre que `data` muda (ex: `[data]="events$ | async"`)
+    private _processData() {
+        this.data = [...this.data].sort((a, b) => date(a.start).valueOf() - date(b.start).valueOf());
+        this.data.map((d1: CalendarDataFull) => {
+            d1._size = 0;
+            this.data.map((d2: CalendarDataFull) => this.overlaps(d1, d2) ? d1._size!++ : d1._size)
+        })
     }
 
     ngOnDestroy() {
@@ -144,6 +158,11 @@ export class NgBsCalendarComponent implements OnInit, OnChanges, OnDestroy {
             start: this.schedule.week[0].label,
             end: this.schedule.week[this.schedule.week.length - 1].label
         });
+    }
+
+    protected onEmptyCellClick(day: string, hour: string) {
+        this.selectedEmptyCell = { day, hour };
+        this.clickEmptyCell.emit({ day, hour });
     }
 
     protected getIndexPosition(obj: CalendarDataFull, index: number) {
