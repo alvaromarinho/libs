@@ -89,6 +89,8 @@
                           </div>
                         }
                       </div>
+                    } @else if (isBlocked(hour!)) {
+                      <div class="h-100 w-100 cell-blocked" aria-hidden="true"></div>
                     } @else {
                       <div class="h-100 w-100 pointer" role="button" tabindex="0" aria-label="Novo evento"
                         [class.cell-selected]="selectedEmptyCell?.day === schedule.week[indexDay-1].label && selectedEmptyCell?.hour === hour"

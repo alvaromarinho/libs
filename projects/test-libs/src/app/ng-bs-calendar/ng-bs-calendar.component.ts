@@ -1,7 +1,8 @@
 import { AfterViewInit, Component, ViewChild, signal, ChangeDetectionStrategy } from '@angular/core';
 import { JsonPipe } from '@angular/common';
+import { FormsModule } from '@angular/forms';
 import dayjs from 'dayjs';
-import { CalendarView, NgBsCalendarComponent } from 'ng-bs-calendar';
+import { BreakHour, CalendarView, NgBsCalendarComponent } from 'ng-bs-calendar';
 import { NgCollapseComponent } from 'ng-collapse';
 import { PageHeaderComponent } from '../shared/page-header/page-header.component';
 
@@ -10,7 +11,7 @@ declare const Prism: any;
 @Component({
     selector: 'bs-calendar-example',
     standalone: true,
-    imports: [NgBsCalendarComponent, NgCollapseComponent, PageHeaderComponent, JsonPipe],
+    imports: [NgBsCalendarComponent, NgCollapseComponent, PageHeaderComponent, JsonPipe, FormsModule],
     changeDetection: ChangeDetectionStrategy.Eager,
     templateUrl: './ng-bs-calendar.component.html'
 })
@@ -21,6 +22,11 @@ export class BsCalendarExampleComponent implements AfterViewInit {
     toggleCode = signal(false);
     lastEvent = signal<any>(null);
     view = signal<CalendarView>('week');
+    businessHours = signal(false);
+    slotMinutes = signal(30);
+    lunchBreak = signal(false);
+    protected readonly lunchBreakHours: BreakHour[] = [{ start: '12:00', end: '13:00' }];
+    protected readonly noBreakHours: BreakHour[] = [];
 
     // dayjs (fuso local) — igual ao que ng-bs-calendar usa internamente pro "hoje";
     // Date.toISOString() usaria UTC e desalinharia perto da meia-noite local

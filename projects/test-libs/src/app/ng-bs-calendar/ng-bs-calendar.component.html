@@ -18,6 +18,9 @@
     <span class="chip"><i class="bi bi-check2 text-success"></i> Eventos sobrepostos</span>
     <span class="chip"><i class="bi bi-check2 text-success"></i> Standalone ou NgModule</span>
     <span class="chip"><i class="bi bi-check2 text-success"></i> Internacionalização</span>
+    <span class="chip"><i class="bi bi-check2 text-success"></i> Range de horário (startHour/endHour)</span>
+    <span class="chip"><i class="bi bi-check2 text-success"></i> Slot configurável (slotMinutes)</span>
+    <span class="chip"><i class="bi bi-check2 text-success"></i> Horário bloqueado (breakHours)</span>
 </div>
 
 <ng-collapse [toggle]="toggleCode()">
@@ -32,7 +35,7 @@ Typescript:
     ...
 ]</code></pre>
 Template:
-<pre><code class="language-html">&lt;ng-bs-calendar [data]="calendar" [view]="isMobile() ? 'day' : 'week'" (changeWeek)="onEvent($event)" (clickCell)="onEvent($event)" (clickEmptyCell)="onEvent($event)"&gt;&lt;/ng-bs-calendar&gt;</code></pre>
+<pre><code class="language-html">&lt;ng-bs-calendar [data]="calendar" [view]="isMobile() ? 'day' : 'week'" [startHour]="'08:00'" [endHour]="'17:00'" [slotMinutes]="60" [breakHours]="[&#123; start: '12:00', end: '13:00' &#125;]" (changeWeek)="onEvent($event)" (clickCell)="onEvent($event)" (clickEmptyCell)="onEvent($event)"&gt;&lt;/ng-bs-calendar&gt;</code></pre>
         </div>
     </div>
 </ng-collapse>
@@ -45,6 +48,19 @@ Template:
                 <button type="button" class="btn btn-outline-primary" [class.active]="view() === 'week'" [attr.aria-pressed]="view() === 'week'" (click)="view.set('week')">Semana</button>
                 <button type="button" class="btn btn-outline-primary" [class.active]="view() === 'day'" [attr.aria-pressed]="view() === 'day'" (click)="view.set('day')">Dia</button>
             </div>
+            <button type="button" class="btn btn-sm btn-outline-primary" [class.active]="businessHours()" [attr.aria-pressed]="businessHours()" (click)="businessHours.set(!businessHours())">
+                Horário 08:00–17:00
+            </button>
+            <select class="form-select form-select-sm w-auto" aria-label="Tamanho do slot" [ngModel]="slotMinutes()" (ngModelChange)="slotMinutes.set($event)">
+                <option [ngValue]="10">10 min</option>
+                <option [ngValue]="15">15 min</option>
+                <option [ngValue]="20">20 min</option>
+                <option [ngValue]="30">30 min</option>
+                <option [ngValue]="60">1 hora</option>
+            </select>
+            <button type="button" class="btn btn-sm btn-outline-primary" [class.active]="lunchBreak()" [attr.aria-pressed]="lunchBreak()" (click)="lunchBreak.set(!lunchBreak())">
+                Almoço 12:00–13:00
+            </button>
             <div>
                 <button class="btn btn-sm btn-outline-primary px-3" (click)="prev()">«</button>
                 <button class="btn btn-sm btn-outline-primary ms-2" (click)="today()">HOJE</button>
@@ -64,6 +80,10 @@ Template:
             [showButtons]="false"
             [start]="now"
             [view]="view()"
+            [startHour]="businessHours() ? '08:00' : '00:00'"
+            [endHour]="businessHours() ? '17:00' : '24:00'"
+            [slotMinutes]="slotMinutes()"
+            [breakHours]="lunchBreak() ? lunchBreakHours : noBreakHours"
             (changeWeek)="lastEvent.set($event)"
             (clickCell)="lastEvent.set($event)"
             (clickEmptyCell)="lastEvent.set($event)">

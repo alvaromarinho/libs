@@ -17,6 +17,11 @@ export interface CalendarData {
     description?: string;
 }
 
+export interface BreakHour {
+    start: string; // 'HH:mm', deve bater com um slot de `slots`
+    end: string;   // 'HH:mm', idem, e > start
+}
+
 interface CalendarDataFull extends CalendarData {
     _startNow?: boolean;
     _endNow?: boolean;
@@ -37,7 +42,17 @@ interface Schedule {
 }
 
 const date = (string: string) => dayjs(string);
-const hours30min = Array(24 * 2).fill(0).map((_, i) => (`${~~(i / 2)}`.padStart(2, '0') + ':' + `${60 * (i / 2 % 1)}`.padStart(2, '0')));
+
+const MINUTES_IN_DAY = 24 * 60;
+const DEFAULT_SLOT_MINUTES = 30;
+
+// gera os labels 'HH:mm' de 00:00 até o último slot antes de 24:00, no passo `minutes`.
+// só é chamada com `minutes` já validado (ver _validateSlotMinutes) — divide MINUTES_IN_DAY
+// sem resto, então o último slot sempre termina exatamente em 24:00, sem sobra fracionada
+const buildHourSlots = (minutes: number) => Array(MINUTES_IN_DAY / minutes).fill(0).map((_, i) => {
+    const total = i * minutes;
+    return `${~~(total / 60)}`.padStart(2, '0') + ':' + `${total % 60}`.padStart(2, '0');
+});
 
 const escapeHtml = (value: string) => (value ?? '').replace(/[&<>"']/g, (char) => ({
     '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;',
@@ -55,7 +70,12 @@ export class NgBsCalendarComponent implements OnInit, OnChanges, OnDestroy {
     today = dayjs().format('YYYY-MM-DD');
     protected schedule = {} as Schedule;
     protected scheduleFlat: any[] = [];
-    protected hours = [null, null, ...hours30min]
+
+    private validStartHour = '00:00';
+    private validEndHour = '24:00';
+    private validSlotMinutes = DEFAULT_SLOT_MINUTES;
+    private slots: string[] = buildHourSlots(DEFAULT_SLOT_MINUTES);
+    private blockedSlots = new Set<string>();
 
     private positionCache = new Map<any, number>();
     private tooltip?: Tooltip;
@@ -68,6 +88,10 @@ export class NgBsCalendarComponent implements OnInit, OnChanges, OnDestroy {
     @Input() start = date(this.today).startOf('isoWeek').subtract(1, 'day').format('YYYY-MM-DD');
     @Input() showButtons = true;
     @Input() view: CalendarView = 'week';
+    @Input() startHour = '00:00';
+    @Input() endHour = '24:00';
+    @Input() slotMinutes = DEFAULT_SLOT_MINUTES;
+    @Input() breakHours: BreakHour[] = [];
     @Output() clickCell = new EventEmitter<any>();
     @Output() clickEmptyCell = new EventEmitter<{ day: string; hour: string }>();
     @Output() changeWeek = new EventEmitter<any>();
@@ -82,6 +106,18 @@ export class NgBsCalendarComponent implements OnInit, OnChanges, OnDestroy {
 
     protected get gridCols() {
         return Array(this.daysCount + 1);
+    }
+
+    // mantém os 2 null iniciais (célula de mês + linha "Dia", usadas pelo template por índice) —
+    // só filtra os slots (tamanho definido por slotMinutes) pelo range validado
+    protected get hours() {
+        return [null, null, ...this.slots.filter((h) => h >= this.validStartHour && h < this.validEndHour)];
+    }
+
+    // true pra qualquer slot dentro de algum range de `breakHours` (ex: almoço) — aplicado igual
+    // em todos os dias exibidos, não bloqueia célula com evento real já colocado nela (ver template)
+    protected isBlocked(hour: string) {
+        return this.blockedSlots.has(hour);
     }
 
     constructor(private cdr: ChangeDetectorRef) {
@@ -99,6 +135,9 @@ export class NgBsCalendarComponent implements OnInit, OnChanges, OnDestroy {
             this.data = [];
         }
 
+        this._validateSlotMinutes();
+        this._validateHourRange();
+        this._validateBreakHours();
         this.positionCache.clear();
         this._processData();
         this.setSchedule();
@@ -106,6 +145,23 @@ export class NgBsCalendarComponent implements OnInit, OnChanges, OnDestroy {
     }
 
     ngOnChanges(changes: SimpleChanges) {
+        if (changes['slotMinutes']) {
+            this._validateSlotMinutes();
+            this._validateHourRange(); // startHour/endHour podem não bater mais nos novos slots
+            this._validateBreakHours(); // idem breakHours
+            if (!changes['slotMinutes'].firstChange) {
+                // dict de day.hours foi montado com o tamanho de slot anterior — precisa remontar
+                this.setSchedule(this.schedule.week?.[0]?.label ?? this.start);
+            }
+            this.cdr.markForCheck();
+        } else if (changes['startHour'] || changes['endHour']) {
+            this._validateHourRange();
+            this.cdr.markForCheck();
+        }
+        if (changes['breakHours'] && !changes['slotMinutes']) {
+            this._validateBreakHours();
+            this.cdr.markForCheck();
+        }
         if (changes['view'] && !changes['view'].firstChange) {
             this.setSchedule(this.schedule.week?.[0]?.label ?? this.start);
             this.emitChangeWeek();
@@ -129,6 +185,60 @@ export class NgBsCalendarComponent implements OnInit, OnChanges, OnDestroy {
             d1._size = 0;
             this.data.map((d2: CalendarDataFull) => this.overlaps(d1, d2) ? d1._size!++ : d1._size)
         })
+    }
+
+    // valida `startHour`/`endHour` (formato HH:mm batendo com um slot de `slots`; endHour aceita
+    // também '24:00' como "fim do dia") — range inválido cai pro default e avisa no console em vez
+    // de cortar a grade num ponto errado
+    private _validateHourRange() {
+        const isValidStart = this.slots.includes(this.startHour);
+        const isValidEnd = this.endHour === '24:00' || this.slots.includes(this.endHour);
+
+        if (!isValidStart) {
+            console.warn(`ng-bs-calendar: startHour inválido ("${this.startHour}"), usando '00:00'.`);
+        }
+        if (!isValidEnd) {
+            console.warn(`ng-bs-calendar: endHour inválido ("${this.endHour}"), usando '24:00'.`);
+        }
+
+        this.validStartHour = isValidStart ? this.startHour : '00:00';
+        this.validEndHour = isValidEnd ? this.endHour : '24:00';
+    }
+
+    // valida `slotMinutes`: precisa ser inteiro positivo que divide MINUTES_IN_DAY sem resto —
+    // é o que garante slots de tamanho igual até 24:00 sem sobra fracionada (ex: 17min quebraria
+    // isso — 1440/17 não é inteiro). Presets comuns: 10, 15, 20, 30 (default), 60.
+    private _validateSlotMinutes() {
+        const isValid = Number.isInteger(this.slotMinutes) && this.slotMinutes > 0 && MINUTES_IN_DAY % this.slotMinutes === 0;
+
+        if (!isValid) {
+            console.warn(`ng-bs-calendar: slotMinutes inválido ("${this.slotMinutes}"), usando ${DEFAULT_SLOT_MINUTES}.`);
+        }
+
+        this.validSlotMinutes = isValid ? this.slotMinutes : DEFAULT_SLOT_MINUTES;
+        this.slots = buildHourSlots(this.validSlotMinutes);
+    }
+
+    // expande `breakHours` (ranges 'HH:mm') nos slots de `slots` que caem dentro de cada range —
+    // entrada inválida (formato fora de um slot, ou start >= end) é ignorada com warning, sem
+    // derrubar as outras entradas válidas do array
+    private _validateBreakHours() {
+        const blocked = new Set<string>();
+
+        for (const range of this.breakHours) {
+            const isValidStart = this.slots.includes(range.start);
+            const isValidEnd = range.end === '24:00' || this.slots.includes(range.end);
+            const isValidOrder = range.start < range.end;
+
+            if (!isValidStart || !isValidEnd || !isValidOrder) {
+                console.warn(`ng-bs-calendar: breakHours inválido (${JSON.stringify(range)}), ignorado.`);
+                continue;
+            }
+
+            this.slots.filter((h) => h >= range.start && h < range.end).forEach((h) => blocked.add(h));
+        }
+
+        this.blockedSlots = blocked;
     }
 
     ngOnDestroy() {
@@ -191,7 +301,7 @@ export class NgBsCalendarComponent implements OnInit, OnChanges, OnDestroy {
         }
         this.schedule.week = [];
 
-        const hours = hours30min.reduce((accumulator, value, index) => ({ ...accumulator, [value!]: undefined }), {})
+        const hours = this.slots.reduce((accumulator, value) => ({ ...accumulator, [value]: undefined }), {})
         for (let i = 0; i < daysCount; i++) {
             const day = date(this.schedule.startWeek).add(i, 'day').format('YYYY-MM-DD');
             this.schedule.week.push({ label: day, hours: { ...hours }, allDay: [] });
@@ -246,7 +356,7 @@ export class NgBsCalendarComponent implements OnInit, OnChanges, OnDestroy {
 
     private setInHour(obj: any, day: { label: string; hours: any; }, key: string) {
         const _startNow = day.label == date(obj.start).format('YYYY-MM-DD') && key == date(obj.start).format('HH:mm');
-        const _endNow = day.label == date(obj.end).format('YYYY-MM-DD') && key == date(obj.end).subtract(30, 'minute').format('HH:mm');
+        const _endNow = day.label == date(obj.end).format('YYYY-MM-DD') && key == date(obj.end).subtract(this.validSlotMinutes, 'minute').format('HH:mm');
 
         day.hours[key] = day.hours[key] || [];
         day.hours[key].push({ ...obj, _startNow, _endNow });
