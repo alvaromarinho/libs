@@ -4,9 +4,9 @@
   <ng-content></ng-content>
   @if (showButtons) {
     <div class="ms-auto">
-      <button class="btn btn-sm btn-outline-secondary ms-2 px-3" (click)="prevWeek()">«</button>
-      <button class="btn btn-sm btn-outline-secondary ms-2" (click)="todayWeek()">HOJE</button>
-      <button class="btn btn-sm btn-outline-secondary ms-2 px-3" (click)="nextWeek()">»</button>
+      <button class="btn btn-sm btn-outline-secondary ms-2 px-3" (click)="prevWeek()" [attr.aria-label]="view === 'day' ? 'Dia anterior' : 'Semana anterior'">«</button>
+      <button class="btn btn-sm btn-outline-secondary ms-2" (click)="todayWeek()" aria-label="Ir para hoje">HOJE</button>
+      <button class="btn btn-sm btn-outline-secondary ms-2 px-3" (click)="nextWeek()" [attr.aria-label]="view === 'day' ? 'Próximo dia' : 'Próxima semana'">»</button>
     </div>
   }
 </div>
@@ -22,9 +22,9 @@
     <div class="card card-body" id="schedule">
       <div class="container-fluid">
         @for (hour of hours; track hour; let indexHour = $index; let firstRow = $first) {
-          <div class="row border-inside-top" [ngClass]="{'position-sticky bg-white': firstRow || indexHour == 1, 'top-0': firstRow, 'top-day': indexHour == 1}"
+          <div class="row border-inside-top" [ngClass]="{'position-sticky bg-body': firstRow || indexHour == 1, 'top-0': firstRow, 'top-day': indexHour == 1}"
             [id]="hour">
-            @for (day of [].constructor(8); track $index; let indexDay = $index; let firstCol = $first) {
+            @for (day of gridCols; track $index; let indexDay = $index; let firstCol = $first) {
               <div [ngClass]="{'col-day border-inside-start': !firstCol, 'col-1': firstCol, 'px-0': !firstRow && !firstCol}"
                 >
                 <!-- MONTH CELL -->
@@ -63,31 +63,37 @@
                   <div class="d-flex flex-column px-1 pb-1 w-100">
                     @for (obj of schedule.week[indexDay-1].allDay; track obj; let index = $index; let count = $count) {
                       <div class="badge pointer text-truncate border text-start mt-1 w-100" (click)="clickCell.emit(obj)"
-                        [attr.style]="'border-color:rgba(0,0,0, .25) !important;'" [ngStyle]="{backgroundColor: obj.color+'80'}"
+                        style="border-color:rgba(0,0,0, .25) !important;" [ngStyle]="{backgroundColor: obj.color+'80'}"
                         data-bs-toggle="tooltip" data-bs-placement="bottom" data-bs-html="true" [attr.data-bs-title]="getTooltipHtml(obj)">
                         <span>{{ obj.title }}</span>
                       </div>
                     }
                   </div>
                 }
-                @if (!firstRow && !firstCol) {
+                @if (!firstRow && indexHour != 1 && !firstCol) {
                   <div class="d-flex flex-column h-100">
                     @if (schedule.week[indexDay-1].hours[hour!]) {
                       <div class="position-relative h-100">
                         @for (obj of schedule.week[indexDay-1].hours[hour!]; track obj; let index = $index; let count = $count) {
                           <div class="position-absolute start-0 end-0 h-100 text-truncate text-start badge rounded-0 border-start border-end pointer"
+                            style="border-color:rgba(0,0,0, .25) !important;"
                             [ngClass]="{'border-top rounded-top': obj._startNow, 'border-bottom rounded-bottom': obj._endNow }"
                             (click)="clickCell.emit(obj)" data-bs-toggle="tooltip" data-bs-html="true" [attr.data-bs-title]="getTooltipHtml(obj)"
-                            [attr.style]="'border-color:rgba(0,0,0, .25) !important;'"
                                     [ngStyle]="{
                                         backgroundColor: obj.color+'80',
-                                        zIndex: index, 
-                                        width: 100/(obj._size >= 5 ? 5 : obj._size )+'%', 
+                                        zIndex: index,
+                                        width: 100/(obj._size >= 5 ? 5 : obj._size )+'%',
                                         marginLeft: 100/obj._size*getIndexPosition(obj, index)+'%'
                                     }">
                             <span>{{ obj._startNow || hour == '00:00' ? obj.title : '' }}</span>
                           </div>
                         }
+                      </div>
+                    } @else {
+                      <div class="h-100 w-100 pointer" role="button" tabindex="0" aria-label="Novo evento"
+                        (click)="clickEmptyCell.emit({ day: schedule.week[indexDay-1].label, hour: hour! })"
+                        (keydown.enter)="clickEmptyCell.emit({ day: schedule.week[indexDay-1].label, hour: hour! })"
+                        (keydown.space)="$event.preventDefault(); clickEmptyCell.emit({ day: schedule.week[indexDay-1].label, hour: hour! })">
                       </div>
                     }
                   </div>

@@ -16,17 +16,20 @@
     min-width: 60rem;
 }
 
+:host.cal-day-view #schedule .container-fluid {
+    min-width: 0;
+}
+
 #schedule .col-day {
-    flex: 0 0 auto;
-    width: 13.09523809571%;
+    flex: 1 1 0%;
 }
 
 #schedule .border-inside-top {
-    box-shadow: inset 0 -1px 0 #dee2e6;
+    box-shadow: inset 0 -1px 0 var(--bs-border-color, #dee2e6);
 }
 
 #schedule .border-inside-start {
-    box-shadow: inset 1px 0 0 #dee2e6;
+    box-shadow: inset 1px 0 0 var(--bs-border-color, #dee2e6);
 }
 
 #schedule .position-sticky {
@@ -35,10 +38,6 @@
 
 #schedule .top-day {
     top: calc(4rem - 2px);
-}
-
-#schedule .p-no-ticket {
-    padding: .35rem 0;
 }
 
 .pointer {

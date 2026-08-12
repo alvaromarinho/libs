@@ -1,6 +1,7 @@
 import { AfterViewInit, Component, ViewChild, signal, ChangeDetectionStrategy } from '@angular/core';
 import { JsonPipe } from '@angular/common';
-import { NgBsCalendarComponent } from 'ng-bs-calendar';
+import dayjs from 'dayjs';
+import { CalendarView, NgBsCalendarComponent } from 'ng-bs-calendar';
 import { NgCollapseComponent } from 'ng-collapse';
 import { PageHeaderComponent } from '../shared/page-header/page-header.component';
 
@@ -19,10 +20,13 @@ export class BsCalendarExampleComponent implements AfterViewInit {
 
     toggleCode = signal(false);
     lastEvent = signal<any>(null);
+    view = signal<CalendarView>('week');
 
-    yesterday = new Date(new Date().setDate(new Date().getDate() - 1)).toISOString().split('T')[0];
-    now       = new Date().toISOString().split('T')[0];
-    tomorrow  = new Date(new Date().setDate(new Date().getDate() + 1)).toISOString().split('T')[0];
+    // dayjs (fuso local) — igual ao que ng-bs-calendar usa internamente pro "hoje";
+    // Date.toISOString() usaria UTC e desalinharia perto da meia-noite local
+    yesterday = dayjs().subtract(1, 'day').format('YYYY-MM-DD');
+    now       = dayjs().format('YYYY-MM-DD');
+    tomorrow  = dayjs().add(1, 'day').format('YYYY-MM-DD');
 
     calendar = [
         { id: 1,  title: '1',  color: '#ff0000', start: `${this.now}T19:00:00`,       end: `${this.now}T20:00:00` },

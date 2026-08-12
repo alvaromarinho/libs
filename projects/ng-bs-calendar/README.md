@@ -3,7 +3,7 @@
 [![npm version](https://badge.fury.io/js/ng-bs-calendar.svg)](https://www.npmjs.com/package/ng-bs-calendar)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
-Calendar component for Angular and Bootstrap 5 with scheduling support using Luxon.
+Calendar component for Angular and Bootstrap 5 with scheduling support using dayjs.
 
 ## ✨ Features
 
@@ -19,10 +19,12 @@ Calendar component for Angular and Bootstrap 5 with scheduling support using Lux
 
 ## 🔧 Compatibility
 
-| ng-bs-calendar | Angular       | Bootstrap | Luxon | Standalone |
-|----------------|---------------|-----------|-------|------------|
-| 1.0.x          | 14.x - 22.x   | 5.x       | 3.x   | ✅ Yes     |
-| 0.0.x          | 15.x          | 5.x       | 3.x   | ❌ No      |
+| ng-bs-calendar | Angular       | Bootstrap | Date lib     | Standalone |
+|----------------|---------------|-----------|--------------|------------|
+| 1.3.x          | 14.x - 22.x   | 5.x       | dayjs 1.11.x | ✅ Yes     |
+| 1.2.x          | 14.x - 22.x   | 5.x       | dayjs 1.11.x | ✅ Yes     |
+| 1.0.x - 1.1.x  | 14.x - 22.x   | 5.x       | Luxon 3.x    | ✅ Yes     |
+| 0.0.x          | 15.x          | 5.x       | Luxon 3.x    | ❌ No      |
 
 ## 📦 Installation
 
@@ -42,9 +44,14 @@ This library requires:
 ```json
 {
   "bootstrap": "^5.0.0",
-  "luxon": "^3.0.0"
+  "dayjs": "^1.11.0"
 }
 ```
+
+> ⚠️ **Breaking change in 1.2.0**: the peer dependency switched from Luxon to dayjs.
+> If you're upgrading from 1.0.x/1.1.x, install `dayjs` and remove `luxon` (unless
+> another part of your app still needs it). The public API (`CalendarData`, inputs,
+> outputs) is unchanged — only the internal date library differs.
 
 Make sure Bootstrap CSS and JS are included in your `angular.json`:
 ```json
@@ -77,7 +84,8 @@ import { NgBsCalendarComponent, CalendarData } from 'ng-bs-calendar';
       [start]="'2024-11-25'" 
       [showButtons]="true" 
       (changeWeek)="onWeekChange($event)" 
-      (clickCell)="onCellClick($event)">
+      (clickCell)="onCellClick($event)"
+      (clickEmptyCell)="onEmptyCellClick($event)">
       <h1>My Calendar</h1>
     </ng-bs-calendar>
   `
@@ -108,6 +116,10 @@ export class AppComponent {
 
   onCellClick(event: CalendarData) {
     console.log('Cell clicked:', event);
+  }
+
+  onEmptyCellClick(event: { day: string; hour: string }) {
+    console.log('Empty cell clicked:', event); // e.g. open a create-event form prefilled with day/hour
   }
 }
 ```
@@ -185,6 +197,10 @@ export class AppComponent {
   onCellClick(event: CalendarData) {
     console.log('Cell clicked:', event);
   }
+
+  onEmptyCellClick(event: { day: string; hour: string }) {
+    console.log('Empty cell clicked:', event); // e.g. open a create-event form prefilled with day/hour
+  }
 }
 ```
 
@@ -213,13 +229,15 @@ export class AppComponent {
 | `loading`     | `boolean`         | `false`      | Shows loading state |
 | `start`       | `string`          | current week | Start date in 'YYYY-MM-DD' format |
 | `showButtons` | `boolean`         | `true`       | Show/hide navigation buttons |
+| `view`        | `'week' \| 'day'` | `'week'`     | Grid mode — `'day'` shows a single day filling the available width (no forced horizontal scroll), navigating one day at a time. The library doesn't auto-switch by viewport; bind it yourself, e.g. `[view]="isMobile() ? 'day' : 'week'"` from `BreakpointObserver`. Reactive — can be toggled after init; toggling re-anchors on the day currently visible (not necessarily "today") and re-emits `changeWeek` for the new range. A `CalendarView` type (`'week' | 'day'`) is exported for typing your own state. |
 
 ### Outputs
 
-| Output        | Type | Description |
-|---------------|------|-------------|
-| `changeWeek`  | `{ start: string, end: string }` | Emitted when week changes |
-| `clickCell`   | `CalendarData` | Emitted when a calendar cell is clicked |
+| Output          | Type | Description |
+|-----------------|------|-------------|
+| `changeWeek`     | `{ start: string, end: string }` | Emitted when the visible range changes — on navigation (`prevWeek`/`todayWeek`/`nextWeek`) and whenever `view` toggles. Fetch/update `data` for `[start, end]` when this fires. |
+| `clickCell`      | `CalendarData` | Emitted when a cell/event with data is clicked |
+| `clickEmptyCell` | `{ day: string, hour: string }` | Emitted when an empty hour-slot cell is clicked (mouse or keyboard — Enter/Space) — `day` (`yyyy-MM-dd`) and `hour` (`HH:mm`) identify the clicked slot, useful for opening a create-event form prefilled with that date/time |
 
 ### CalendarData Interface
 
@@ -230,7 +248,7 @@ interface CalendarData {
   end: string;                // End date/time (ISO format: 'YYYY-MM-DDTHH:mm:ss')
   title: string;              // Event title
   color: string;              // Event color (hex, rgb, or named color)
-  description?: string;       // Optional description
+  description?: string;       // Optional description, shown in the event tooltip below the title
 }
 ```
 
@@ -318,12 +336,16 @@ export class CalendarComponent implements OnInit {
 
 ### Custom Styling
 
+The grid borders and sticky header background follow Bootstrap's own theme variables
+(`--bs-border-color`, `--bs-body-bg` via the `bg-body` utility class), so they already
+adapt to Bootstrap 5.3's `data-bs-theme="dark"` on an ancestor element. Override them
+like any other Bootstrap variable:
+
 ```css
 /* Override calendar colors */
 ng-bs-calendar {
-  --calendar-border-color: #dee2e6;
-  --calendar-header-bg: #f8f9fa;
-  --calendar-cell-hover: #e9ecef;
+  --bs-border-color: #dee2e6;
+  --bs-body-bg: #f8f9fa;
 }
 ```
 

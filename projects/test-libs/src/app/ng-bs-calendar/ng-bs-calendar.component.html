@@ -2,7 +2,7 @@
 
 <p class="text-muted">
     Componente de calendário semanal para Angular + Bootstrap 5, com suporte a agendamento via
-    <a href="https://moment.github.io/luxon/" target="_blank" rel="noopener">Luxon</a>.
+    <a href="https://day.js.org/" target="_blank" rel="noopener">dayjs</a>.
     Cada evento é posicionado em slots de 30 minutos e eventos sobrepostos no mesmo dia são
     organizados lado a lado automaticamente.
 </p>
@@ -13,6 +13,8 @@
     <span class="chip"><i class="bi bi-check2 text-success"></i> Navegação entre semanas</span>
     <span class="chip"><i class="bi bi-check2 text-success"></i> Cores por evento</span>
     <span class="chip"><i class="bi bi-check2 text-success"></i> Clique em células/eventos</span>
+    <span class="chip"><i class="bi bi-check2 text-success"></i> Clique em célula vazia</span>
+    <span class="chip"><i class="bi bi-check2 text-success"></i> Visão diária (mobile)</span>
     <span class="chip"><i class="bi bi-check2 text-success"></i> Eventos sobrepostos</span>
     <span class="chip"><i class="bi bi-check2 text-success"></i> Standalone ou NgModule</span>
     <span class="chip"><i class="bi bi-check2 text-success"></i> Internacionalização</span>
@@ -30,7 +32,7 @@ Typescript:
     ...
 ]</code></pre>
 Template:
-<pre><code class="language-html">&lt;ng-bs-calendar [data]="calendar" (changeWeek)="onEvent($event)" (clickCell)="onEvent($event)"&gt;&lt;/ng-bs-calendar&gt;</code></pre>
+<pre><code class="language-html">&lt;ng-bs-calendar [data]="calendar" [view]="isMobile() ? 'day' : 'week'" (changeWeek)="onEvent($event)" (clickCell)="onEvent($event)" (clickEmptyCell)="onEvent($event)"&gt;&lt;/ng-bs-calendar&gt;</code></pre>
         </div>
     </div>
 </ng-collapse>
@@ -38,10 +40,16 @@ Template:
 <div class="card">
     <div class="card-header d-flex align-items-center justify-content-between flex-wrap gap-2">
         <span>Demo</span>
-        <div>
-            <button class="btn btn-sm btn-outline-primary px-3" (click)="prev()">«</button>
-            <button class="btn btn-sm btn-outline-primary ms-2" (click)="today()">HOJE</button>
-            <button class="btn btn-sm btn-outline-primary ms-2 px-3" (click)="next()">»</button>
+        <div class="d-flex gap-2">
+            <div class="btn-group btn-group-sm" role="group" aria-label="Visão">
+                <button type="button" class="btn btn-outline-primary" [class.active]="view() === 'week'" [attr.aria-pressed]="view() === 'week'" (click)="view.set('week')">Semana</button>
+                <button type="button" class="btn btn-outline-primary" [class.active]="view() === 'day'" [attr.aria-pressed]="view() === 'day'" (click)="view.set('day')">Dia</button>
+            </div>
+            <div>
+                <button class="btn btn-sm btn-outline-primary px-3" (click)="prev()">«</button>
+                <button class="btn btn-sm btn-outline-primary ms-2" (click)="today()">HOJE</button>
+                <button class="btn btn-sm btn-outline-primary ms-2 px-3" (click)="next()">»</button>
+            </div>
         </div>
     </div>
     <div class="card-body">
@@ -54,8 +62,11 @@ Template:
         <ng-bs-calendar
             [data]="calendar"
             [showButtons]="false"
+            [start]="now"
+            [view]="view()"
             (changeWeek)="lastEvent.set($event)"
-            (clickCell)="lastEvent.set($event)">
+            (clickCell)="lastEvent.set($event)"
+            (clickEmptyCell)="lastEvent.set($event)">
         </ng-bs-calendar>
     </div>
 </div>

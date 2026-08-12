@@ -1,7 +1,10 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { DateTime } from 'luxon';
+import dayjs from 'dayjs';
+import isoWeek from 'dayjs/plugin/isoWeek';
 
 import { CalendarData, NgBsCalendarComponent } from './ng-bs-calendar.component';
+
+dayjs.extend(isoWeek);
 
 // Semana fixa para os testes: 2026-07-05 (domingo) a 2026-07-11 (sábado)
 const SUNDAY = '2026-07-05';
@@ -19,6 +22,15 @@ describe('NgBsCalendarComponent', () => {
     component = fixture.componentInstance;
     fixture.componentRef.setInput('data', data);
     fixture.componentRef.setInput('start', start);
+    fixture.detectChanges();
+  }
+
+  function createDay(data: CalendarData[], start = SUNDAY) {
+    fixture = TestBed.createComponent(NgBsCalendarComponent);
+    component = fixture.componentInstance;
+    fixture.componentRef.setInput('data', data);
+    fixture.componentRef.setInput('start', start);
+    fixture.componentRef.setInput('view', 'day');
     fixture.detectChanges();
   }
 
@@ -43,6 +55,13 @@ describe('NgBsCalendarComponent', () => {
     expect(component.data).toEqual([]);
   });
 
+  it('renders without throwing when [data] is never bound (loading=false default)', () => {
+    fixture = TestBed.createComponent(NgBsCalendarComponent);
+    component = fixture.componentInstance;
+    expect(() => fixture.detectChanges()).not.toThrow();
+    expect(schedule().week.length).toBe(7);
+  });
+
   describe('week construction', () => {
     it('builds 7 consecutive days starting on the display-week start', () => {
       create([]);
@@ -51,17 +70,17 @@ describe('NgBsCalendarComponent', () => {
       expect(week[0].label).toBe(SUNDAY);
       expect(week[6].label).toBe('2026-07-11');
       for (let i = 0; i < 7; i++) {
-        expect(week[i].label).toBe(DateTime.fromISO(SUNDAY).plus({ day: i }).toFormat('yyyy-MM-dd'));
+        expect(week[i].label).toBe(dayjs(SUNDAY).add(i, 'day').format('YYYY-MM-DD'));
       }
     });
 
     it('computes prev/next week anchors', () => {
       create([]);
       expect(schedule().startWeek).toBe(SUNDAY);
-      const prevStart = DateTime.fromISO(schedule().prev);
-      const nextStart = DateTime.fromISO(schedule().next);
-      expect(prevStart < DateTime.fromISO(SUNDAY)).toBe(true);
-      expect(nextStart > DateTime.fromISO('2026-07-11')).toBe(true);
+      const prevStart = dayjs(schedule().prev);
+      const nextStart = dayjs(schedule().next);
+      expect(prevStart.isBefore(dayjs(SUNDAY))).toBe(true);
+      expect(nextStart.isAfter(dayjs('2026-07-11'))).toBe(true);
     });
   });
 
@@ -150,6 +169,75 @@ describe('NgBsCalendarComponent', () => {
       const week = schedule().week.map((d: any) => d.label);
       expect(week).toContain(component.today);
       expect(range).not.toBeNull();
+    });
+  });
+
+  describe('day view', () => {
+    it('builds a single-day schedule anchored on start', () => {
+      createDay([]);
+      const week = schedule().week;
+      expect(week.length).toBe(1);
+      expect(week[0].label).toBe(SUNDAY);
+    });
+
+    it('places events within the single visible day', () => {
+      createDay([makeEvent({ id: 1, start: '2026-07-05T09:00:00', end: '2026-07-05T10:00:00' })]);
+
+      const day = schedule().week[0];
+      expect(day.hours['09:00'].length).toBe(1);
+      expect(day.hours['09:30'].length).toBe(1);
+    });
+
+    it('nextWeek/prevWeek step by 1 day, not 7, and emit start === end', () => {
+      createDay([]);
+      let range: any = null;
+      component.changeWeek.subscribe(r => range = r);
+
+      component.nextWeek();
+
+      expect(range.start).toBe('2026-07-06');
+      expect(range.end).toBe('2026-07-06');
+      expect(schedule().week.length).toBe(1);
+      expect(schedule().week[0].label).toBe('2026-07-06');
+
+      component.prevWeek();
+
+      expect(range.start).toBe('2026-07-05');
+      expect(range.end).toBe('2026-07-05');
+    });
+
+    it('todayWeek shows only the current day', () => {
+      createDay([], '2020-01-05'); // dia antigo
+      component.todayWeek();
+
+      expect(schedule().week.length).toBe(1);
+      expect(schedule().week[0].label).toBe(component.today);
+    });
+  });
+
+  describe('view toggling', () => {
+    it('rebuilds the schedule and emits changeWeek when view changes after init', () => {
+      create([]);
+      let range: any = null;
+      component.changeWeek.subscribe(r => range = r);
+
+      fixture.componentRef.setInput('view', 'day');
+      fixture.detectChanges();
+
+      expect(schedule().week.length).toBe(1);
+      expect(schedule().week[0].label).toBe(SUNDAY);
+      expect(range).not.toBeNull();
+      expect(range.start).toBe(SUNDAY);
+      expect(range.end).toBe(SUNDAY);
+    });
+
+    it('going back to week view re-anchors on the day that was visible', () => {
+      createDay([], '2026-07-08'); // quarta-feira, dentro da semana de SUNDAY
+      fixture.componentRef.setInput('view', 'week');
+      fixture.detectChanges();
+
+      expect(schedule().week.length).toBe(7);
+      expect(schedule().week[0].label).toBe(SUNDAY);
     });
   });
 });
