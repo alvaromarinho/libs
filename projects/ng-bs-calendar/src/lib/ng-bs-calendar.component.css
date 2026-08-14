@@ -24,6 +24,10 @@
     flex: 1 1 0%;
 }
 
+#schedule .col-1 {
+    min-width: 4rem;
+}
+
 #schedule .border-inside-top {
     box-shadow: inset 0 -1px 0 var(--bs-border-color, #dee2e6);
 }
@@ -61,6 +65,20 @@
     font-size: .8rem;
 }
 
+.cal-header-buttons {
+    flex-shrink: 0;
+    white-space: nowrap;
+}
+
 @media only screen and (max-width: 768px) {
     #schedule { width: calc(100vw - 2rem) }
+
+    .cal-header {
+        row-gap: .5rem;
+    }
+
+    .cal-header-buttons {
+        display: flex;
+        flex-wrap: nowrap;
+    }
 }

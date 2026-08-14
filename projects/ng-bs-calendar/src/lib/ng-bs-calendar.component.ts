@@ -83,6 +83,11 @@ export class NgBsCalendarComponent implements OnInit, OnChanges, OnDestroy {
 
     protected selectedEmptyCell: { day: string; hour: string } | null = null;
 
+    // true assim que `start` chega em ngOnChanges (mesmo no firstChange) — indica que o host
+    // vinculou [start] explicitamente. Usado só no ngOnInit pra decidir se `view: 'day'` sem
+    // [start] deve abrir em hoje em vez do default (que é sempre alinhado à semana, ver Gotchas).
+    private startExplicitlySet = false;
+
     @Input() loading = false;
     @Input() data!: CalendarDataFull[];
     @Input() start = date(this.today).startOf('isoWeek').subtract(1, 'day').format('YYYY-MM-DD');
@@ -135,6 +140,12 @@ export class NgBsCalendarComponent implements OnInit, OnChanges, OnDestroy {
             this.data = [];
         }
 
+        // view 'day' sem [start] vinculado: abre em hoje, não no primeiro dia da semana
+        // (default de `start` é sempre semana-alinhado, ver Gotchas no CLAUDE.md).
+        if (!this.startExplicitlySet && this.view === 'day') {
+            this.start = this.today;
+        }
+
         this._validateSlotMinutes();
         this._validateHourRange();
         this._validateBreakHours();
@@ -145,6 +156,9 @@ export class NgBsCalendarComponent implements OnInit, OnChanges, OnDestroy {
     }
 
     ngOnChanges(changes: SimpleChanges) {
+        if (changes['start']) {
+            this.startExplicitlySet = true;
+        }
         if (changes['slotMinutes']) {
             this._validateSlotMinutes();
             this._validateHourRange(); // startHour/endHour podem não bater mais nos novos slots
@@ -163,7 +177,13 @@ export class NgBsCalendarComponent implements OnInit, OnChanges, OnDestroy {
             this.cdr.markForCheck();
         }
         if (changes['view'] && !changes['view'].firstChange) {
-            this.setSchedule(this.schedule.week?.[0]?.label ?? this.start);
+            // anchor padrão: primeiro dia atualmente visível (preserva a semana/dia que o host
+            // estava navegando). Mas se `today` cai dentro do range visível, prioriza `today` —
+            // sem isso, alternar semana->dia sempre abria no domingo da semana em vez do dia atual.
+            const currentFirst = this.schedule.week?.[0]?.label;
+            const currentLast = this.schedule.week?.[this.schedule.week.length - 1]?.label;
+            const isTodayVisible = !!currentFirst && !!currentLast && this.today >= currentFirst && this.today <= currentLast;
+            this.setSchedule(isTodayVisible ? this.today : (currentFirst ?? this.start));
             this.emitChangeWeek();
             this.cdr.markForCheck();
         }
