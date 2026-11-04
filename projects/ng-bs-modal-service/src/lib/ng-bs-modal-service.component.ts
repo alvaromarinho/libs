@@ -219,6 +219,8 @@ export class NgBsModalServiceComponent implements OnInit, OnDestroy {
         this.html.dialog.style.height = 'auto';
         this.html.dialog.style.display = 'flex';
         this.html.dialog.style.left = `${left}px`;
+        // O .modal-dialog tem margem (--bs-modal-margin) no mobile, que somaria ao left e colaria o lado direito na borda.
+        this.html.dialog.style.margin = '0';
         this.html.dialog.style.setProperty('--arrow-left', `${anchorCenter - left - 5}px`);
         this.html.backdrop.style.setProperty('--bs-backdrop-opacity', '0');
 

@@ -245,6 +245,7 @@ describe('NgBsModalServiceComponent', () => {
 
       expect(dialog.style.width).toBe('500px');
       expect(dialog.style.left).toBe('100px');
+      expect(dialog.style.margin).toBe('0px');
       expect(dialog.style.getPropertyValue('--arrow-left')).toBe('18px');
     });
 
