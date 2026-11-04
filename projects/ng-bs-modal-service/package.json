@@ -1,6 +1,6 @@
 {
   "name": "ng-bs-modal-service",
-  "version": "1.2.0",
+  "version": "1.2.1",
   "description": "Modal service for Angular and Bootstrap 5 with queue support, carousel, and popover positioning",
   "author": "Alvaro Marinho",
   "license": "MIT",

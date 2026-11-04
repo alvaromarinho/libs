@@ -29,6 +29,8 @@ Service-driven modal/dialog system for Angular + Bootstrap 5, with a queue, imag
 - Only **one** `NgBsModalServiceComponent` should exist in the app — it's a singleton-by-convention host, not enforced in code. Multiple instances would each subscribe to the same service stream and fight over `document` listeners.
 - `ngOnInit` attaches global `document` listeners for `shown.bs.modal`/`hidden.bs.modal` — these are bound functions stored (`boundShownHandler`/`boundHiddenHandler`) specifically so `ngOnDestroy` can remove the exact same reference.
 - `setModalData()` uses `setTimeout(..., 0)` to read the backdrop element after Bootstrap creates it — required because the backdrop DOM node doesn't exist synchronously when `modal.show()` is called.
+- Modal content is wrapped in `@for (current of [modalData]; track current)`: each `open()` creates a new `modalData` object, so the body view (and any component inside a `TemplateRef`) is recreated and runs `ngOnInit` again — `ngTemplateOutlet` alone would reuse the view when the same `TemplateRef` is reopened. A modal coming back from the queue is the same object, so its state is kept.
+- Popover width is `min(modalWidth, innerWidth - 16)` and `left` is clamped to an 8px gutter, so on narrow (mobile) viewports it never overflows; the arrow follows the anchor via `--arrow-left`.
 - IDs (`modalId`, `carouselId`) are random per component instance — fine for a singleton, but don't assume stable IDs across instances/SSR.
 
 ## Dependencies

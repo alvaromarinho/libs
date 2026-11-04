@@ -1,4 +1,4 @@
-import { TemplateRef } from '@angular/core';
+import { Component, OnInit, TemplateRef, ViewChild } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { vi } from 'vitest';
 
@@ -21,6 +21,18 @@ vi.mock('bootstrap', () => {
   }
   return { Modal: FakeModal, Carousel: FakeCarousel };
 });
+
+let bodyInits = 0;
+
+@Component({ selector: 'test-body', template: 'corpo' })
+class TestBodyComponent implements OnInit {
+  ngOnInit() { bodyInits++; }
+}
+
+@Component({ imports: [TestBodyComponent], template: '<ng-template #body><test-body /></ng-template>' })
+class TemplateHostComponent {
+  @ViewChild('body', { static: true }) body!: TemplateRef<unknown>;
+}
 
 describe('NgBsModalServiceComponent', () => {
   let component: NgBsModalServiceComponent;
@@ -130,6 +142,41 @@ describe('NgBsModalServiceComponent', () => {
     });
   });
 
+  describe('body from TemplateRef', () => {
+    it('recreates the body view on each open, even with the same TemplateRef', () => {
+      const host = TestBed.createComponent(TemplateHostComponent);
+      host.detectChanges();
+      bodyInits = 0;
+
+      service.open({ header: 'x', body: host.componentInstance.body });
+      fixture.detectChanges();
+      service.close();
+      document.dispatchEvent(new Event('hidden.bs.modal'));
+
+      service.open({ header: 'x', body: host.componentInstance.body });
+      fixture.detectChanges();
+
+      expect(bodyInits).toBe(2);
+      host.destroy();
+    });
+
+    it('keeps the body view when the same modal comes back from the queue', () => {
+      const host = TestBed.createComponent(TemplateHostComponent);
+      host.detectChanges();
+      bodyInits = 0;
+
+      service.open({ header: 'x', body: host.componentInstance.body });
+      fixture.detectChanges();
+      component.modalQueue.push({ action: 'open', content: { body: 'segundo' } });
+      service.close();
+      document.dispatchEvent(new Event('hidden.bs.modal'));
+      fixture.detectChanges();
+
+      expect(bodyInits).toBe(1);
+      host.destroy();
+    });
+  });
+
   describe('content type helpers', () => {
     it('isString detects strings', () => {
       expect(component.isString('abc')).toBe(true);
@@ -149,6 +196,63 @@ describe('NgBsModalServiceComponent', () => {
       expect(component.modalBodyClass).toBe('');
       expect(component.modalFooterClass).toBe('');
       expect(component.showCloseButton).toBe(true);
+    });
+  });
+
+  describe('popover positioning (popoverTo)', () => {
+    const originalWidth = window.innerWidth;
+
+    function setupPopover(viewportWidth: number, anchor: { left: number; width: number; }, modalWidth = 500) {
+      Object.defineProperty(window, 'innerWidth', { configurable: true, value: viewportWidth });
+      vi.spyOn(window, 'getComputedStyle').mockReturnValue({ getPropertyValue: () => `${modalWidth}px` } as unknown as CSSStyleDeclaration);
+
+      const popoverTo = document.createElement('button');
+      Object.defineProperty(popoverTo, 'offsetWidth', { value: anchor.width });
+      Object.defineProperty(popoverTo, 'offsetHeight', { value: 40 });
+      popoverTo.getBoundingClientRect = () => ({
+        left: anchor.left, right: anchor.left + anchor.width, width: anchor.width,
+        top: 700, bottom: 740, height: 40, x: anchor.left, y: 700, toJSON: () => ({}),
+      });
+
+      const dialog = document.createElement('div');
+      component.html = {
+        modal: document.createElement('div'),
+        dialog,
+        content: document.createElement('div'),
+        backdrop: document.createElement('div'),
+      };
+      component.modalData = { action: 'open', options: { popoverTo } };
+      (component as any).createPopoverStyle();
+      return dialog;
+    }
+
+    afterEach(() => {
+      Object.defineProperty(window, 'innerWidth', { configurable: true, value: originalWidth });
+      vi.restoreAllMocks();
+    });
+
+    it('keeps the popover inside a narrow viewport (mobile) instead of a negative left', () => {
+      // botão no canto inferior direito de um celular de 390px; --bs-modal-width 500px não cabe
+      const dialog = setupPopover(390, { left: 320, width: 46 });
+
+      expect(dialog.style.width).toBe('374px');
+      expect(dialog.style.left).toBe('8px');
+      expect(dialog.style.getPropertyValue('--arrow-left')).toBe(`${320 + 23 - 8 - 5}px`);
+    });
+
+    it('aligns to the anchor left edge when it fits to the right', () => {
+      const dialog = setupPopover(1440, { left: 100, width: 46 });
+
+      expect(dialog.style.width).toBe('500px');
+      expect(dialog.style.left).toBe('100px');
+      expect(dialog.style.getPropertyValue('--arrow-left')).toBe('18px');
+    });
+
+    it('aligns to the anchor right edge when it does not fit to the right', () => {
+      const dialog = setupPopover(1440, { left: 1300, width: 46 });
+
+      expect(dialog.style.left).toBe(`${1346 - 500}px`);
+      expect(dialog.style.getPropertyValue('--arrow-left')).toBe(`${1323 - 846 - 5}px`);
     });
   });
 

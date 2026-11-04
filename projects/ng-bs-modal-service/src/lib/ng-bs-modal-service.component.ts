@@ -196,7 +196,6 @@ export class NgBsModalServiceComponent implements OnInit, OnDestroy {
         }
 
         const position = popoverTo.getBoundingClientRect();
-        const spaceToRight = (window.innerWidth - position.right + popoverTo.offsetWidth);
         const spaceToTop = position.top;
         const spaceToBottom = window.innerHeight - position.bottom;
 
@@ -206,20 +205,22 @@ export class NgBsModalServiceComponent implements OnInit, OnDestroy {
         this.html.content.classList.add('shadow');
         this.html.dialog.classList.remove('modal-dialog-centered');
         this.html.dialog.classList.add('mt-0');
+        // --bs-modal-width (500px no mobile, 800px no lg) pode passar da viewport: limita a largura e
+        // prende o popover dentro da tela, senão ele sai pela esquerda (left negativo) em tela estreita.
+        const gutter = 8;
+        const width = Math.min(modalWidth, window.innerWidth - gutter * 2);
+        const preferredLeft = position.left + width <= window.innerWidth - gutter ? position.left : position.right - width;
+        const left = Math.min(Math.max(preferredLeft, gutter), window.innerWidth - width - gutter);
+        const anchorCenter = position.left + position.width / 2;
+
         this.html.dialog.style.position = 'fixed';
-        this.html.dialog.style.width = '100%';
+        this.html.dialog.style.width = `${width}px`;
+        this.html.dialog.style.maxWidth = `${width}px`;
         this.html.dialog.style.height = 'auto';
         this.html.dialog.style.display = 'flex';
+        this.html.dialog.style.left = `${left}px`;
+        this.html.dialog.style.setProperty('--arrow-left', `${anchorCenter - left - 5}px`);
         this.html.backdrop.style.setProperty('--bs-backdrop-opacity', '0');
-
-        // align modal to the right if there is enough space
-        if (spaceToRight > modalWidth) {
-            this.html.dialog.style.left = position.left + 'px';
-            this.html.dialog.style.setProperty('--arrow-left', `${popoverTo.offsetWidth / 2 - 5}px`)
-        } else {
-            this.html.dialog.style.left = position.right - modalWidth + 'px';
-            this.html.dialog.style.setProperty('--arrow-left', `${modalWidth - popoverTo.offsetWidth / 2 - 5}px`)
-        }
 
         // align modal to the top if there is enough space
         if (spaceToBottom < modalMinHeight) {
