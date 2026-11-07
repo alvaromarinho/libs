@@ -188,6 +188,8 @@ interface NgGenerateTableColumns {
 }
 ```
 
+> **Security:** in the table view, the string returned by `template` is rendered as trusted HTML (`bypassSecurityTrustHtml`), so Bootstrap `data-bs-*` attributes keep working. Escape every value that comes from user input before interpolating it (for example `escape` from `lodash-es`): `` template: (row) => `<b>${escape(row.name)}</b>` ``. The mobile card view sanitizes with Angular's `DomSanitizer`.
+
 ---
 
 ## 💡 Examples
