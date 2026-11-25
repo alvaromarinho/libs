@@ -40,6 +40,8 @@ const STYLE_DURATIONS: Partial<Record<ToastStyle, number>> = {
     danger: 10000,
 };
 const DEFAULT_DURATION = 4000;
+// Toasts kept while no component listens; past this, the oldest is dropped (its send() Observable completes).
+const BUFFER_LIMIT = 20;
 
 /** Default auto-hide duration for a given style: warning 7s, danger 10s, rest 4s. */
 export function resolveToastDuration(style?: ToastStyle): number {
@@ -78,6 +80,10 @@ export class NgBsToastService {
             this.stream.next(toast);
         } else {
             this.buffer.push(toast);
+            if (this.buffer.length > BUFFER_LIMIT) {
+                const [dropped] = this.buffer.splice(0, 1);
+                this.notifyClosed(dropped.id);
+            }
         }
 
         return closed$.asObservable();

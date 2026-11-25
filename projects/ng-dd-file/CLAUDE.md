@@ -14,13 +14,13 @@ Drag-and-drop file upload component for Angular, with size/type validation and i
 - Component selector: `ng-dd-file`
 - Directive selector: `[ddFile]` — applies `fileover` class on dragover and emits `droppedFile: FileList` on drop
 - Inputs: `btnClass: { file?, remove? }`, `filesList?: FileWithBase64[]`, `labels: { text, btn }` (PT-BR defaults), `maxFiles?`, `maxFileSize?` (KB), `maxTotalSize?` (KB), `multiple?`, `typeFileAccept` (default `'*'`, same syntax as HTML `accept`)
-- Outputs: `fileError: { type: 'size'|'total'|'type', message, file? }`, `fileRemove: { file, index }`, `filesAdd: FileWithBase64[]`
+- Outputs: `fileError: { type: 'size'|'total'|'type'|'count', message, file? }`, `fileRemove: { file, index }`, `filesAdd: FileWithBase64[]`
 
 ## How it works
 
 - Inputs are signal inputs; the directive keeps `fileOver` in a signal bound through `host`. Template members are `protected`.
 - `onInputChange()` (file `<input>` `change`) and `onDrop()` (`droppedFile` from the directive) both feed the private `addFiles(File[])`.
-- Validation order per file: `maxTotalSize` (checked once for the whole batch including existing `filesList`, aborts entirely if exceeded) → `maxFileSize` (per file, skips file) → `typeFileAccept` (per file, skips file) → `maxFiles` (stops adding once `filesList.length` + accepted files reaches it).
+- Validation order per file: `maxTotalSize` (checked once for the whole batch including existing `filesList`, aborts entirely if exceeded) → `maxFileSize` (per file, skips file) → `typeFileAccept` (per file, skips file) → `maxFiles` (once `filesList` + pending + accepted files reach it, each further file emits `fileError` `'count'`). Accepted files sit in the private `pending` list while images read their `base64`, so `maxFiles` and `maxTotalSize` also count batches still in flight; they leave `pending` right after `filesAdd` (consumer is expected to update `filesList` in that handler).
 - Images (`file.type.startsWith('image/')`) get a `base64` data URL attached via `FileReader` for preview; non-images are passed through as-is (`FileWithBase64` extends `File` with optional `base64`/`url`).
 - `isValidFileType()` supports three `accept` syntaxes: extension (`.pdf`), MIME wildcard (`image/*`), and exact MIME type (`application/pdf`).
 - The component does **not** maintain its own file list state — `filesList` is an input the consumer owns; `filesAdd`/`fileRemove` are emitted for the consumer to update it **with a new array** (the component is `OnPush`; `push`/`splice` in place won't re-render it).

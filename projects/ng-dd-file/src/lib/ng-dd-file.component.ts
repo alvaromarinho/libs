@@ -7,7 +7,7 @@ export interface FileWithBase64 extends File {
 }
 
 export interface FileError {
-    type: 'size' | 'total' | 'type';
+    type: 'size' | 'total' | 'type' | 'count';
     message: string;
     file?: File;
 }
@@ -38,6 +38,8 @@ export class NgDdFileComponent {
     readonly filesAdd = output<FileWithBase64[]>();
 
     private readonly fileDropRef = viewChild<ElementRef<HTMLInputElement>>('fileDropRef');
+    // Arquivos aceitos de lotes que ainda leem o preview (base64): contam no limite até o filesAdd.
+    private pending: File[] = [];
 
     protected limitReached(): boolean {
         const maxFiles = this.maxFiles();
@@ -64,7 +66,7 @@ export class NgDdFileComponent {
     }
 
     private async addFiles(selected: File[]): Promise<void> {
-        const current = this.filesList() ?? [];
+        const current = [...(this.filesList() ?? []), ...this.pending];
         const maxTotalSize = this.maxTotalSize();
         const maxFileSize = this.maxFileSize();
         const maxFiles = this.maxFiles();
@@ -78,12 +80,9 @@ export class NgDdFileComponent {
             }
         }
 
-        // maxFiles conta os arquivos que já estão em filesList.
         const available = maxFiles ? Math.max(0, maxFiles - current.length) : Infinity;
 
         for (const file of selected) {
-            if (files.length >= available) break;
-
             if (maxFileSize && file.size > maxFileSize * 1024) {
                 this.fileError.emit({ type: 'size', message: 'Arquivo maior que o permitido!', file });
                 continue;
@@ -94,14 +93,25 @@ export class NgDdFileComponent {
                 continue;
             }
 
-            const fileWithBase64 = file as FileWithBase64;
-            if (this.isImg(file)) {
-                fileWithBase64.base64 = await this.getBase64(file);
+            if (files.length >= available) {
+                this.fileError.emit({ type: 'count', message: 'Limite de arquivos atingido!', file });
+                continue;
             }
-            files.push(fileWithBase64);
+
+            files.push(file);
         }
 
-        this.filesAdd.emit(files);
+        this.pending = [...this.pending, ...files];
+        try {
+            for (const file of files) {
+                if (this.isImg(file)) {
+                    file.base64 = await this.getBase64(file);
+                }
+            }
+            this.filesAdd.emit(files);
+        } finally {
+            this.pending = this.pending.filter(file => !files.includes(file));
+        }
     }
 
     private isImg(file: File): boolean {

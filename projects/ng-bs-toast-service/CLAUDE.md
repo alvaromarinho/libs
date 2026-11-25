@@ -33,7 +33,7 @@ Service-driven toast/notification system for Angular + Bootstrap 5.
 ## Gotchas
 
 - Only **one** `NgBsToastServiceComponent` should exist in the app.
-- `NgBsToastService` buffers toasts sent while no component listens (e.g. an app-initializer racing `ngOnInit`, or between a destroy and a new instance) and hands all of them, once and in order, to the next `listen()` subscriber. `listen()` is a `defer` that counts listeners; `finalize` comes from `rxjs/operators` so rxjs 6 still works.
+- `NgBsToastService` buffers toasts sent while no component listens (e.g. an app-initializer racing `ngOnInit`, or between a destroy and a new instance) and hands all of them, once and in order, to the next `listen()` subscriber. The buffer keeps the newest 20 (`BUFFER_LIMIT`); a dropped toast gets `notifyClosed`, so its `send()` Observable completes. `listen()` is a `defer` that counts listeners; `finalize` comes from `rxjs/operators` so rxjs 6 still works.
 - Disposal errors (`instance.dispose()`) are intentionally swallowed in `disposeToast()` (used by `removeToast` and on destroy) — element may already be gone from the DOM.
 - `bg-{style}-subtle`/`text-{style}-emphasis`/`data-bs-theme` dark-mode CSS vars require **Bootstrap ≥5.3** even though the peer dep is pinned `^5.0.0` — on Bootstrap 5.0–5.2 the `'bootstrap-dark'` theme will render but without the dark-mode color adaptation (falls back to light-mode subtle/emphasis colors). Installed dev dependency is 5.3.3.
 - Mobile (`<576px`) forces every position's container to `top:0` full-width via CSS `!important`, regardless of the configured `position` — this is intentional per spec, not a bug if a `bottom-end` toast appears at the top on a phone.

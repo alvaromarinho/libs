@@ -465,7 +465,7 @@ this.toastService.dismissAll(); // or keep the id from an internal event and cal
 - `send()`, `dismiss()`, `dismissAll()` and the component's `[theme]`/`[maxToastsPerPosition]` bindings don't change.
 - Setting an input from code (`ref.instance.theme = ...`) no longer works: use `ref.setInput('theme', ...)`.
 - Internal members (`toastData`, `toastsForPosition()`, `pauseToast()`, `resumeToast()`, `toastClasses()`, `iconClasses()`, `progressBarStyle()`, `closeButtonClass()`, ...) are no longer public.
-- Toasts sent while no `<ng-bs-toast-service>` is listening are all delivered, in order, to the next one (1.x kept only the last). A component created later no longer re-shows a toast that was already shown.
+- Toasts sent while no `<ng-bs-toast-service>` is listening are delivered, in order, to the next one (1.x kept only the last). Up to 20 wait; past that the oldest is dropped and its `send()` Observable completes. A component created later no longer re-shows a toast that was already shown.
 - Angular 14 to 17 stay on 1.x.
 
 ---

@@ -274,6 +274,23 @@ describe('NgBsModalServiceComponent', () => {
 
             expect(bodyInits).toBe(2);
         });
+
+        it('recreates the body without the NG0956 dev warning', async () => {
+            const warn = vi.spyOn(console, 'warn').mockImplementation(() => undefined);
+            try {
+                service.open({ header: 'x', body: host.body() });
+                await render();
+                service.close();
+                await render();
+                service.open({ header: 'x', body: host.body() });
+                await render();
+
+                const messages = warn.mock.calls.map(args => String(args[0]));
+                expect(messages.filter(m => m.includes('NG0956'))).toEqual([]);
+            } finally {
+                warn.mockRestore();
+            }
+        });
     });
 
     describe('popover positioning (popoverTo)', () => {

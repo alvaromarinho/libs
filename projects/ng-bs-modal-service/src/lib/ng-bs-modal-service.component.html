@@ -7,8 +7,8 @@
             <div class="modal-dialog modal-dialog-centered modal-{{ data.options.size }}" [id]="modalId + '-dialog'"
                 [class.modal-dialog-scrollable]="!data.options.disabledBodyScroll">
                 <div class="modal-content" [id]="modalId + '-content'">
-                    <!-- track pela identidade: cada open() recria o conteúdo (o ngTemplateOutlet reaproveitaria a view do mesmo TemplateRef); voltar da fila mantém o estado -->
-                    @for (current of [data]; track current) {
+                    <!-- chave = o objeto de cada open(): recria o conteúdo mesmo com o mesmo TemplateRef (o ngTemplateOutlet reaproveitaria a view). Via método, porque `track current` dispara o aviso NG0956 a cada recriação. -->
+                    @for (current of [data]; track openKey(current)) {
                         @if (isTemplate(data.content)) {
                             <ng-container [ngTemplateOutlet]="data.content"></ng-container>
                         } @else {

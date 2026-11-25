@@ -21,7 +21,7 @@ function dragEvent(type: string, files: File[] = []): Event {
     template: `
         <ng-dd-file [filesList]="filesList()" [maxFiles]="maxFiles()" [maxFileSize]="maxFileSize()" [maxTotalSize]="maxTotalSize()"
             [typeFileAccept]="typeFileAccept()" [multiple]="true" [btnClass]="{ file: 'btn btn-primary', remove: 'btn btn-danger' }"
-            (filesAdd)="added.push($event)" (fileError)="errors.push($event)" (fileRemove)="removed.push($event)">
+            (filesAdd)="onAdd($event)" (fileError)="errors.push($event)" (fileRemove)="removed.push($event)">
         </ng-dd-file>
     `
 })
@@ -35,6 +35,11 @@ class HostComponent {
     readonly added: FileWithBase64[][] = [];
     readonly errors: FileError[] = [];
     readonly removed: { file: FileWithBase64, index: number }[] = [];
+
+    onAdd(files: FileWithBase64[]): void {
+        this.added.push(files);
+        this.filesList.update(list => [...(list ?? []), ...files]);
+    }
 
 }
 
@@ -140,6 +145,50 @@ describe('NgDdFileComponent', () => {
             await choose([1, 2, 3].map(n => makeFile(`${n}.pdf`, 1, 'application/pdf')));
 
             expect(host.added[0].map(f => f.name)).toEqual(['1.pdf', '2.pdf']);
+        });
+
+        it('emits a count error for each file cut by maxFiles', async () => {
+            await set(() => host.maxFiles.set(2));
+
+            await choose([1, 2, 3, 4].map(n => makeFile(`${n}.pdf`, 1, 'application/pdf')));
+
+            expect(host.errors.map(e => [e.type, e.file?.name])).toEqual([['count', '3.pdf'], ['count', '4.pdf']]);
+        });
+
+        it('reports size and type errors before the count cut', async () => {
+            await set(() => {
+                host.maxFiles.set(1);
+                host.maxFileSize.set(10);
+                host.typeFileAccept.set('.pdf');
+            });
+
+            await choose([makeFile('ok.pdf', 1, 'application/pdf'), makeFile('big.pdf', 20, 'application/pdf'), makeFile('a.txt', 1, 'text/plain')]);
+
+            expect(host.errors.map(e => [e.type, e.file?.name])).toEqual([['size', 'big.pdf'], ['type', 'a.txt']]);
+            expect(host.added[0].map(f => f.name)).toEqual(['ok.pdf']);
+        });
+
+        it('counts a batch still reading previews against maxFiles', async () => {
+            await set(() => host.maxFiles.set(2));
+
+            // Images wait for FileReader, so the second drop starts before the first one emits.
+            dropzone().dispatchEvent(dragEvent('drop', [makeFile('a.png', 1, 'image/png')]));
+            dropzone().dispatchEvent(dragEvent('drop', [makeFile('b.png', 1, 'image/png'), makeFile('c.png', 1, 'image/png')]));
+            await vi.waitFor(() => expect(host.added.length).toBe(2));
+
+            expect(host.added.flat().map(f => f.name)).toEqual(['a.png', 'b.png']);
+            expect(host.errors.map(e => [e.type, e.file?.name])).toEqual([['count', 'c.png']]);
+        });
+
+        it('counts a pending batch against maxTotalSize', async () => {
+            await set(() => host.maxTotalSize.set(15));
+
+            dropzone().dispatchEvent(dragEvent('drop', [makeFile('a.png', 10, 'image/png')]));
+            dropzone().dispatchEvent(dragEvent('drop', [makeFile('b.png', 10, 'image/png')]));
+            await vi.waitFor(() => expect(host.added.length + host.errors.length).toBe(2));
+
+            expect(host.added.flat().map(f => f.name)).toEqual(['a.png']);
+            expect(host.errors.map(e => e.type)).toEqual(['total']);
         });
 
         it('counts files already in filesList against maxFiles', async () => {

@@ -170,6 +170,9 @@ export class AppComponent {
       case 'type':
         alert(`File type not allowed: ${error.file?.name}`);
         break;
+      case 'count':
+        alert(`File limit reached, skipped: ${error.file?.name}`);
+        break;
     }
   }
 }
@@ -209,7 +212,7 @@ interface FileWithBase64 extends File {
 }
 
 interface FileError {
-  type: 'size' | 'total' | 'type';   // Error type
+  type: 'size' | 'total' | 'type' | 'count';   // Error type ('count': cut by maxFiles)
   message: string;                   // Error description
   file?: File;                       // The file that caused the error (when applicable)
 }
@@ -228,7 +231,8 @@ Both interfaces are exported from `ng-dd-file`.
 - Template bindings and outputs don't change.
 - Setting an input from code (`ref.instance.filesList = [...]`) no longer works: use `ref.setInput('filesList', [...])`.
 - Update `filesList` with a new array (`[...list, ...files]`, `filter`), not `push`/`splice`: the component is `OnPush`, so a list mutated in place doesn't re-render it (1.x used default change detection).
-- `maxFiles` now counts the files already in `filesList` (1.x only counted the new batch, so a list could pass the limit).
+- `maxFiles` now counts the files already in `filesList` (1.x only counted the new batch, so a list could pass the limit). `maxFiles` and `maxTotalSize` also count a batch that is still reading image previews, so two batches dropped at once can't pass the limits together.
+- Each file cut by `maxFiles` now emits `fileError` with the new type `'count'` (1.x dropped it silently). A `switch` on `error.type` without a `default` gets a new case to handle.
 - `fileBrowseHandler()`, `triggerIputFile()` and the directive's `onDragOver()`/`onDragLeave()`/`ondrop()` and `fileOver` are no longer public. `droppedFile` is typed `FileList` (was `any`).
 - The `id="fileDropRef"` on the hidden input was removed (it repeated when the component was used twice).
 - Angular 14 to 17 stay on 1.x.

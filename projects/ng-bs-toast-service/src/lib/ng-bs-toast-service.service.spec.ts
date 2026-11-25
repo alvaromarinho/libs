@@ -75,6 +75,20 @@ describe('NgBsToastService', () => {
       expect(late).toEqual([]);
     });
 
+    it('keeps only the newest 20 buffered toasts and completes the Observable of the dropped ones', () => {
+      const closed: number[] = [];
+      for (let i = 0; i < 23; i++) {
+        fresh.send(`t${i}`, null).subscribe({ complete: () => closed.push(i) });
+      }
+      const late: InternalToastMessage[] = [];
+      fresh.listen().subscribe(m => late.push(m));
+
+      expect(closed).toEqual([0, 1, 2]);
+      expect(late.length).toBe(20);
+      expect(late[0].title).toBe('t3');
+      expect(late[19].title).toBe('t22');
+    });
+
     it('delivers a buffered toast only once', () => {
       fresh.send('primeiro', null);
       fresh.listen().subscribe().unsubscribe();

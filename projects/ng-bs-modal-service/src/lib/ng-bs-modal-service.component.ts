@@ -68,6 +68,10 @@ export class NgBsModalServiceComponent implements OnInit {
         });
     }
 
+    protected openKey(data: NgBsModalServiceData): NgBsModalServiceData {
+        return data;
+    }
+
     protected isTemplate(variable: unknown): variable is TemplateRef<unknown> {
         return variable instanceof TemplateRef;
     }
