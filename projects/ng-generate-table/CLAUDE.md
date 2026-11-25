@@ -18,7 +18,7 @@ Dynamic, column-config-driven table component for Angular with sorting, custom c
 - Outputs: `rowClick: { row, event }`, `cellClick: { row, column, event }`, `sortChange: { field, direction: 'ASC'|'DESC'|null }`, `expandedRowsChange: Set<any>`
 - `contentChild('cardMobile')`: optional template for custom mobile card rendering (context: `{ $implicit, rowData, index, expanded }`)
 - `contentChild('rowDetail')`: optional template rendered as a collapsible row/section below expandable data rows (context: `{ $implicit, rowData, index }`)
-- `NgGenerateTableColumns<T>`: `label?`, `field?: keyof T`, `thClass?`/`tdClass?`, `pipe?`/`pipeArgs?`, `width?`, `align?`, `sortable?`, `isAction?`, `template?: (row) => string` (raw HTML: trusted via `safeHtml:'html':true` on desktop, sanitized on mobile), `click?: (row, event) => void`
+- `NgGenerateTableColumns<T>`: `label?`, `field?: keyof T`, `thClass?`/`tdClass?`, `pipe?`/`pipeArgs?`, `width?`, `align?`, `sortable?`, `isAction?`, `template?: (row) => string` (raw HTML: trusted via `safeHtml:'html':true` on desktop and mobile — the consumer escapes user data), `click?: (row, event) => void`
 
 ## How it works
 
@@ -41,7 +41,7 @@ Dynamic, column-config-driven table component for Angular with sorting, custom c
 ## Gotchas
 
 - `DynamicPipe.transform` creates a child `Injector` per call to instantiate the pipe class — this works for stateless/simple pipes but means the pipe instance isn't cached/reused across renders; avoid expensive constructors in pipes passed via `pipe`.
-- `template` strings are **trusted** on desktop (`safeHtml:'html':true`, so `data-bs-*` attributes survive): every API value inside them must be escaped by the consumer. The mobile card view sanitizes them instead (`SecurityContext.HTML`), so the same string can render differently on mobile.
+- `template` strings are **trusted** on desktop and in the mobile card view (`safeHtml:'html':true`, so `data-bs-*` attributes survive): every API value inside them must be escaped by the consumer. Up to 2.0.0 the mobile view sanitized them, so the same string rendered differently there.
 - `refresh()` just calls `cdr.markForCheck()` — useful when mutating `data`/`columns` in place (since `OnPush`) without replacing the array reference.
 - The `.nggt-detail-content`/`.nggt-show` collapse animation uses the CSS `grid-template-rows: 0fr → 1fr` trick (no JS height measurement, no `ng-collapse` dependency). It requires a reasonably modern browser (Chrome 107+/Firefox 67+/Safari 16.4+); on unsupported browsers the content just appears/disappears without animating.
 - The padding for `#rowDetail` content lives on a separate `.nggt-detail-padding` wrapper *inside* `.nggt-detail-inner` (the `overflow: hidden` grid item). Padding can never shrink a box below its own size, so if it were on `.nggt-detail-inner` itself, that box (and the visible content) couldn't collapse fully to 0 height — there'd always be a leftover gap when collapsed.

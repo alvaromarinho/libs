@@ -39,7 +39,7 @@
                                     @if (column.template) {
                                         <div class="nggt-template-cell" [class.nggt-clickable]="!!column.click"
                                             (click)="!rowClickable() && column.click ? onColumnClick(d, column, $event) : null"
-                                            [innerHTML]="column.template(d) | safeHtml">
+                                            [innerHTML]="column.template(d) | safeHtml:'html':true">
                                         </div>
                                     }
                                 </div>

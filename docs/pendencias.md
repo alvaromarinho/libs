@@ -28,3 +28,12 @@ Implementações e correções decididas para depois. O Claude relembra esta lis
 - **Risco:** o botão de fechar tem `aria-label="Close"`. Leitor de tela anuncia em inglês num sistema em português.
 - **Correção proposta:** `aria-label="Fechar notificação"`, ou um input para o texto se a lib precisar servir outro idioma.
 - **Primeiro passo:** trocar o texto e publicar junto com a próxima versão da lib.
+
+## Erro de leitura derruba o lote no dd-file
+
+- **Registrado:** 25/nov/2026
+- **Onde:** ng-dd-file (`ng-dd-file.component.ts`, `addFiles()`, leitura do `base64` com `getBase64`)
+- **Tipo:** correção
+- **Risco:** se o `FileReader` falhar num arquivo (ex.: `NotReadableError`, arquivo removido entre a escolha e a leitura), a promise rejeita e o lote inteiro some, inclusive os arquivos válidos, sem `filesAdd` nem `fileError`. O erro só chega ao `ErrorHandler`. O `pending` é limpo no `finally`, então o limite não trava.
+- **Correção proposta:** `try/catch` em cada leitura; o arquivo que falhar sai do lote e emite `fileError` com tipo novo `'read'` (minor, 2.1.0). Teste com `readAsDataURL` disparando `onerror`, seguido de um drop que precisa ser aceito.
+- **Primeiro passo:** escrever o teste que falha hoje.

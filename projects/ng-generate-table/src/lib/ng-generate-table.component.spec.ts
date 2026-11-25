@@ -357,6 +357,18 @@ describe('NgGenerateTableComponent', () => {
             expect(el().querySelector('table')).toBeNull();
         });
 
+        it('renders the column template as trusted HTML, like the desktop table', async () => {
+            const template = (row: { name: string }): string => `<span data-bs-toggle="tooltip" title="t">${row.name}</span>`;
+            await set(() => host.columns.set([{ label: 'Nome', template }]));
+            const desktop = el().querySelector('td .nggt-template-cell')!.innerHTML;
+
+            await set(() => host.mobile.set(true));
+            const mobile = el().querySelector('.nggt-card .nggt-template-cell')!.innerHTML;
+
+            expect(mobile).toBe(desktop);
+            expect(mobile).toContain('data-bs-toggle="tooltip"');
+        });
+
         it('shows the empty state', async () => {
             await set(() => {
                 host.mobile.set(true);

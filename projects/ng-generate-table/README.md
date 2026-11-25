@@ -190,7 +190,7 @@ interface NgGenerateTableColumns {
 }
 ```
 
-> **Security:** in the table view, the string returned by `template` is rendered as trusted HTML (`bypassSecurityTrustHtml`), so Bootstrap `data-bs-*` attributes keep working. Escape every value that comes from user input before interpolating it (for example `escape` from `lodash-es`): `` template: (row) => `<b>${escape(row.name)}</b>` ``. The mobile card view sanitizes with Angular's `DomSanitizer`.
+> **Security:** the string returned by `template` is rendered as trusted HTML (`bypassSecurityTrustHtml`) in both the table and the mobile card view, so Bootstrap `data-bs-*` attributes keep working. Escape every value that comes from user input before interpolating it (for example `escape` from `lodash-es`): `` template: (row) => `<b>${escape(row.name)}</b>` ``.
 
 ---
 
@@ -763,6 +763,7 @@ export class ContentComponent {
 - Internal members (`hasData`, `emptyStateMessage`, `getCellValue()`, `onSortClick()`, `toggleRowExpand()`, `isRowExpanded()`, `canExpandRow()`, `cardMobile`, `rowDetail`, ...) are no longer public.
 - `thClass` as an array or object now works on `<th>` (1.x printed `a,b` or `[object Object]` there).
 - `emptyMessage`/`loadingMessage` no longer write into the `config` object you pass; they take precedence over it.
+- The mobile card view renders `template` as trusted HTML, like the table (1.x sanitized it there, dropping `data-bs-*` and `style`; 2.0.0 too, fixed in 2.0.1). The same string renders the same in both views; escape user data in it.
 - Angular 14 to 17 stay on 1.x.
 
 ---
