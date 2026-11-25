@@ -15,14 +15,15 @@ Dynamic table generator for Angular with custom templates, pipes, mobile view, a
 - 🎭 **Custom classes** - Style individual columns
 - 📊 **Loading state** - Built-in loading indicator
 - 🔄 **Content projection** - Custom thead, tbody, tfoot
-- ⚡ **Standalone component support** (Angular 14+)
+- ⚡ **Signals and zoneless** - Signal inputs, works with or without zone.js (Angular 18+)
 - 🔧 **NgModule compatible** (backward compatible)
 
 ## 🔧 Compatibility
 
 | ng-generate-table | Angular       | Standalone |
 |-------------------|---------------|------------|
-| 1.0.x             | 14.x - 22.x   | ✅ Yes     |
+| 2.x               | 18.x - 22.x   | ✅ Yes     |
+| 1.x               | 14.x - 22.x   | ✅ Yes     |
 | 0.0.x             | 15.x          | ❌ No      |
 
 ## 📦 Installation
@@ -39,7 +40,7 @@ yarn add ng-generate-table
 
 ## 🚀 Usage
 
-### Method 1: Standalone Component (Angular 14+) ⚡ Recommended
+### Method 1: Standalone Component (Angular 18+) ⚡ Recommended
 
 **app.component.ts:**
 ```typescript
@@ -147,8 +148,9 @@ export class AppComponent {
 | `tableClass`     | `string`                    | -                        | CSS class for table element |
 | `loading`        | `boolean`                   | `false`                  | Show loading state          |
 | `mobileView`     | `boolean`                   | `false`                  | Enable mobile card view     |
-| `emptyMessage`   | `string`                    | `Nenhum dado encontrado` | Message when no data        |
-| `loadingMessage` | `string`                    | `Carregando...`          | Loading message             |
+| `config`         | `NgGenerateTextConfig`      | `{}`                     | `{ emptyMessage?, loadingMessage? }` |
+| `emptyMessage`   | `string`                    | `Nenhum dado encontrado` | Message when no data (wins over `config.emptyMessage`) |
+| `loadingMessage` | `string`                    | `Carregando...`          | Loading message (wins over `config.loadingMessage`) |
 | `rowClickable`   | `boolean`                   | `false`                  | Make rows clickable         |
 | `expandedRows`   | `Set<any>`                  | `new Set()`              | Keys (`row.id ?? index`) of currently expanded rows. Controlled by the consumer. |
 
@@ -156,10 +158,10 @@ export class AppComponent {
 
 | Output       | Type                  | Description |
 |--------------|-----------------------|-------------|
-| `rowClick`   | `EventEmitter<{ row: T; event: Event }>`  | Emitted when row is clicked (requires `rowClickable=true`) |
-| `cellClick`  | `EventEmitter<{ row: T; column: NgGenerateTableColumns<T>; event: Event }>` | Emitted when a cell is clicked |
-| `sortChange` | `EventEmitter<{ field: string; direction: SortDirection }>` | Emitted when sort changes |
-| `expandedRowsChange` | `EventEmitter<Set<any>>` | Emitted with the next `expandedRows` set when the user clicks an expand/collapse toggle |
+| `rowClick`   | `OutputEmitterRef<{ row: T; event: Event }>` | Emitted when row is clicked (requires `rowClickable=true`) |
+| `cellClick`  | `OutputEmitterRef<{ row: T; column: NgGenerateTableColumns<T>; event: Event }>` | Emitted when a cell is clicked |
+| `sortChange` | `OutputEmitterRef<{ field: string; direction: SortDirection }>` | Emitted when sort changes |
+| `expandedRowsChange` | `OutputEmitterRef<Set<any>>` | Emitted with the next `expandedRows` set when the user clicks an expand/collapse toggle |
 
 ### NgGenerateTableColumns Interface (adicionar propriedades)
 
@@ -175,8 +177,8 @@ export class AppComponent {
 interface NgGenerateTableColumns {
   label?: string;                         // Column header label
   field?: keyof T & string;               // Data field name
-  thClass?: string;                       // CSS class for th element
-  tdClass?: string;                       // CSS class for td element
+  thClass?: string | string[] | Record<string, boolean>; // CSS classes for th element
+  tdClass?: string | string[] | Record<string, boolean>; // CSS classes for td element
   pipe?: Type<PipeTransform>;             // Angular pipe to apply
   pipeArgs?: any[];                       // Arguments for the pipe
   template?: (row: T) => string;          // Custom HTML template function
@@ -749,6 +751,19 @@ export class ContentComponent {
 - `type?`: `'html'` (default) or `'url'`
 
 **Returns:** Sanitized HTML or URL safe to render in Angular templates
+
+---
+
+## Upgrading from 1.x
+
+2.0 uses signal inputs and `contentChild`, so it runs in zoneless apps (Angular 22 default); it still works with zone.js.
+
+- Template bindings, outputs and `[(expandedRows)]` don't change. `refresh()` is still public, for when `data` is mutated in place (prefer passing a new array).
+- Setting an input from code (`ref.instance.data = rows`) no longer works: use `ref.setInput('data', rows)`.
+- Internal members (`hasData`, `emptyStateMessage`, `getCellValue()`, `onSortClick()`, `toggleRowExpand()`, `isRowExpanded()`, `canExpandRow()`, `cardMobile`, `rowDetail`, ...) are no longer public.
+- `thClass` as an array or object now works on `<th>` (1.x printed `a,b` or `[object Object]` there).
+- `emptyMessage`/`loadingMessage` no longer write into the `config` object you pass; they take precedence over it.
+- Angular 14 to 17 stay on 1.x.
 
 ---
 

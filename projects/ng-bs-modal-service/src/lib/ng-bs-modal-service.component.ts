@@ -1,107 +1,83 @@
-import { ChangeDetectorRef, Component, OnInit, OnDestroy, TemplateRef, ChangeDetectionStrategy } from '@angular/core';
-import { NgBsModalService } from './ng-bs-modal-service.service';
-import { NgBsModalServiceData } from './ng-bs-modal-service.model';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, DestroyRef, OnInit, TemplateRef, inject, signal } from '@angular/core';
+import { NgTemplateOutlet } from '@angular/common';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { Carousel, Modal } from 'bootstrap';
-import { CommonModule } from '@angular/common';
-import { Subscription } from 'rxjs';
+import { NgBsModalService } from './ng-bs-modal-service.service';
+import { NgBsModalServiceContent, NgBsModalServiceData } from './ng-bs-modal-service.model';
 
 @Component({
     selector: 'ng-bs-modal-service',
-    imports: [CommonModule],
+    standalone: true,
+    imports: [NgTemplateOutlet],
     templateUrl: './ng-bs-modal-service.component.html',
-    changeDetection: ChangeDetectionStrategy.Eager,
+    changeDetection: ChangeDetectionStrategy.OnPush,
     styleUrls: [`./ng-bs-modal-service.component.css`]
 })
-export class NgBsModalServiceComponent implements OnInit, OnDestroy {
+export class NgBsModalServiceComponent implements OnInit {
 
-    modal: Modal | undefined;
-    modalData: NgBsModalServiceData | null = null;
-    modalQueue: NgBsModalServiceData[] = [];
-    keepInQueue?: boolean;
-    action: 'open' | 'close' | 'closeAll' = 'close';
-    html = {} as {
+    protected readonly modalData = signal<NgBsModalServiceData | null>(null);
+    protected readonly currentImgIndex = signal<number | undefined>(undefined);
+    protected readonly modalId = `modal-${Math.floor(Math.random() * 100000)}`;
+    protected readonly carouselId = Math.floor(Math.random() * 10000);
+
+    private modal: Modal | undefined;
+    private modalQueue: NgBsModalServiceData[] = [];
+    private keepInQueue?: boolean;
+    private action: 'open' | 'close' | 'closeAll' = 'close';
+    private html = {} as {
         modal: HTMLElement | null;
         dialog: HTMLElement | null;
         content: HTMLElement | null;
         backdrop: HTMLElement | null;
     };
-
-    modalId = `modal-${Math.floor(Math.random() * 100000)}`;
-    carouselId = Math.floor(Math.random() * 10000);
-    currentImgIndex?: number;
-
-    private subscriptions = new Subscription();
-    private boundShownHandler?: () => void;
-    private boundHiddenHandler?: () => void;
     private carouselKeyHandler?: (e: KeyboardEvent) => void;
 
-    constructor(
-        private changeDetectorRef: ChangeDetectorRef,
-        private modalService: NgBsModalService
-    ) { }
+    private readonly changeDetectorRef = inject(ChangeDetectorRef);
+    private readonly modalService = inject(NgBsModalService);
+    private readonly destroyRef = inject(DestroyRef);
 
-    ngOnInit() {
-        this.boundShownHandler = () => {
-            if (!!document.getElementById(`carousel-${this.carouselId}`)) {
+    ngOnInit(): void {
+        const shownHandler = (): void => {
+            if (document.getElementById(`carousel-${this.carouselId}`)) {
                 this.setCarouselEvents();
             }
         };
-
-        this.boundHiddenHandler = () => {
+        const hiddenHandler = (): void => {
             this.closeModal();
             this.cleanCarouselIndicator();
             this.cleanCarouselEvents();
         };
 
-        document.addEventListener('shown.bs.modal', this.boundShownHandler);
-        document.addEventListener('hidden.bs.modal', this.boundHiddenHandler);
+        document.addEventListener('shown.bs.modal', shownHandler);
+        document.addEventListener('hidden.bs.modal', hiddenHandler);
 
-        this.subscriptions.add(
-            this.modalService.get().subscribe((modalData: NgBsModalServiceData) => {
-                this.action = modalData.action;
-                this.action === 'open' ? this.handleModalQueue(modalData) : this.modal?.hide();
-            })
-        );
+        this.destroyRef.onDestroy(() => {
+            document.removeEventListener('shown.bs.modal', shownHandler);
+            document.removeEventListener('hidden.bs.modal', hiddenHandler);
+            this.cleanCarouselEvents();
+            this.modal?.dispose();
+        });
+
+        this.modalService.get().pipe(takeUntilDestroyed(this.destroyRef)).subscribe(modalData => {
+            this.action = modalData.action;
+            if (this.action === 'open') {
+                this.handleModalQueue(modalData);
+            } else {
+                this.modal?.hide();
+            }
+        });
     }
 
-    ngOnDestroy() {
-        if (this.boundShownHandler) {
-            document.removeEventListener('shown.bs.modal', this.boundShownHandler);
-        }
-        if (this.boundHiddenHandler) {
-            document.removeEventListener('hidden.bs.modal', this.boundHiddenHandler);
-        }
-        this.cleanCarouselEvents();
-        this.subscriptions.unsubscribe();
-        this.modal?.dispose();
-    }
-
-    isModalContent(variable: any): boolean {
+    protected isTemplate(variable: unknown): variable is TemplateRef<unknown> {
         return variable instanceof TemplateRef;
     }
 
-    isString(variable: any): boolean {
+    protected isString(variable: unknown): variable is string {
         return typeof variable === 'string';
     }
 
-    get modalClass(): string {
-        return this.modalData?.options?.customClass?.modal || '';
-    }
-
-    get modalHeaderClass(): string {
-        return this.modalData?.options?.customClass?.modalHeader || '';
-    }
-
-    get modalBodyClass(): string {
-        return this.modalData?.options?.customClass?.modalBody || '';
-    }
-
-    get modalFooterClass(): string {
-        return this.modalData?.options?.customClass?.modalFooter || '';
-    }
-
-    get showCloseButton(): boolean {
-        return !this.modalData?.options?.withoutClose;
+    protected asContent(content: NgBsModalServiceData['content']): NgBsModalServiceContent {
+        return content as NgBsModalServiceContent;
     }
 
     private closeModal() {
@@ -154,7 +130,11 @@ export class NgBsModalServiceComponent implements OnInit, OnDestroy {
     }
 
     private setModalData(modal: NgBsModalServiceData) {
-        this.modalData = modal;
+        this.modalData.set(modal);
+        if (modal.options?.carousel) {
+            this.currentImgIndex.set(modal.options.carousel.index);
+        }
+        // Bootstrap needs the modal element in the DOM right now, not on the next render.
         this.changeDetectorRef.detectChanges();
 
         const modalElement = document.getElementById(this.modalId);
@@ -174,7 +154,7 @@ export class NgBsModalServiceComponent implements OnInit, OnDestroy {
         this.html.dialog = modalElement.querySelector('.modal-dialog');
         this.html.content = modalElement.querySelector('.modal-content');
 
-        if (this.modalData?.options?.popoverTo) {
+        if (modal.options?.popoverTo) {
             // Aguardar o próximo tick para garantir que o backdrop seja criado
             setTimeout(() => {
                 this.html.backdrop = document.querySelector('.modal-backdrop');
@@ -183,14 +163,10 @@ export class NgBsModalServiceComponent implements OnInit, OnDestroy {
         } else {
             this.removePopoverStyle();
         }
-
-        if (this.modalData?.options?.carousel) {
-            this.currentImgIndex = this.modalData.options.carousel.index;
-        }
     }
 
     private createPopoverStyle() {
-        const popoverTo = this.modalData?.options?.popoverTo;
+        const popoverTo = this.modalData()?.options?.popoverTo;
         if (!popoverTo || !this.html.dialog || !this.html.content || !this.html.modal || !this.html.backdrop) {
             return;
         }
@@ -282,6 +258,7 @@ export class NgBsModalServiceComponent implements OnInit, OnDestroy {
 
         indicatorActive?.classList.remove('active');
         itemActive?.classList.remove('active');
-        this.currentImgIndex = undefined;
+        this.currentImgIndex.set(undefined);
     }
+
 }

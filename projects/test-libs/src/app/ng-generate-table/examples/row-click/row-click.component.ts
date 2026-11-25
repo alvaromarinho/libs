@@ -1,4 +1,4 @@
-import { AfterViewInit, Component, signal, ChangeDetectionStrategy } from '@angular/core';
+import { AfterViewInit, Component, signal } from '@angular/core';
 import { NgGenerateTableComponent, NgGenerateTableColumns } from 'ng-generate-table';
 import { NgCollapseComponent } from 'ng-collapse';
 
@@ -8,7 +8,6 @@ declare const Prism: any;
     selector: 'gt-row-click-example',
     standalone: true,
     imports: [NgGenerateTableComponent, NgCollapseComponent],
-    changeDetection: ChangeDetectionStrategy.Eager,
     templateUrl: './row-click.component.html'
 })
 export class GTRowClickExampleComponent implements AfterViewInit {

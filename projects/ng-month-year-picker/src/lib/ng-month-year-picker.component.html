@@ -1,25 +1,25 @@
-<button type="button" class="trigger" [disabled]="disabled" (click)="toggle($event)">
-    {{ displayLabel }}
+<button type="button" class="trigger" [disabled]="disabled()" (click)="toggle($event)">
+    {{ displayLabel() }}
 </button>
 
-@if (showPicker) {
+@if (showPicker()) {
     <div class="dropdown" (click)="$event.stopPropagation()">
         <div class="nav">
-            <button type="button" class="nav-btn" (click)="pickerYear = pickerYear - 1" aria-label="Ano anterior">
+            <button type="button" class="nav-btn" (click)="changeYear(-1)" aria-label="Ano anterior">
                 <svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="8 2 4 6 8 10"></polyline></svg>
             </button>
-            <span class="year">{{ pickerYear }}</span>
-            <button type="button" class="nav-btn" (click)="pickerYear = pickerYear + 1" aria-label="Próximo ano">
+            <span class="year">{{ pickerYear() }}</span>
+            <button type="button" class="nav-btn" (click)="changeYear(1)" aria-label="Próximo ano">
                 <svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="4 2 8 6 4 10"></polyline></svg>
             </button>
         </div>
         <div class="grid">
-            @for (m of monthNames; track m; let i = $index) {
+            @for (m of monthNames(); track m; let i = $index) {
                 <button type="button" class="month-btn" [class.selected]="isSelected(i)" (click)="select(i)">
                     {{ m }}
                 </button>
             }
         </div>
-        <button type="button" class="today-btn" (click)="selectToday()">{{ todayLabel }}</button>
+        <button type="button" class="today-btn" (click)="selectToday()">{{ todayLabel() }}</button>
     </div>
 }

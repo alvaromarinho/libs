@@ -73,7 +73,7 @@ Detectar fechamento (X, backdrop, ESC ou <code>close()</code> — <code>open()</
         <p class="text-muted small mb-2">Clique em uma miniatura para abrir o carrossel embutido no modal (<code>options.carousel</code>).</p>
         <div class="d-flex overflow-auto">
             @for (img of images; track img.url; let last = $last; let i = $index) {
-                <div [ngClass]="{'me-3': !last}" style="cursor:pointer" (click)="showModalImg(i)">
+                <div [class.me-3]="!last" style="cursor:pointer" (click)="showModalImg(i)">
                     <img class="rounded" [src]="img.url" [alt]="img.name" height="100" width="100">
                 </div>
             }

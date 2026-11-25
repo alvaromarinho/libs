@@ -1,6 +1,6 @@
 {
   "name": "ng-bs-calendar",
-  "version": "1.4.1",
+  "version": "2.0.0",
   "description": "Calendar component for Angular and Bootstrap 5 with scheduling support",
   "author": "Alvaro Marinho",
   "license": "MIT",
@@ -23,8 +23,8 @@
     "url": "https://github.com/alvaromarinho/libs/tree/master/projects/ng-bs-calendar"
   },
   "peerDependencies": {
-    "@angular/common": ">=14.0.0 <23.0.0",
-    "@angular/core": ">=14.0.0 <23.0.0",
+    "@angular/common": ">=18.0.0 <23.0.0",
+    "@angular/core": ">=18.0.0 <23.0.0",
     "bootstrap": "^5.0.0",
     "dayjs": "^1.11.0"
   },

@@ -14,14 +14,15 @@ Calendar component for Angular and Bootstrap 5 with scheduling support using day
 - 🔄 Week navigation
 - 📍 Click events on calendar cells
 - 🌐 Internationalization support
-- ⚡ **Standalone component support** (Angular 14+)
+- ⚡ **Signals and zoneless** - Signal inputs, works with or without zone.js (Angular 18+)
 - 🔧 **NgModule compatible** (backward compatible)
 
 ## 🔧 Compatibility
 
 | ng-bs-calendar | Angular       | Bootstrap | Date lib     | Standalone |
 |----------------|---------------|-----------|--------------|------------|
-| 1.3.x          | 14.x - 22.x   | 5.x       | dayjs 1.11.x | ✅ Yes     |
+| 2.x            | 18.x - 22.x   | 5.x       | dayjs 1.11.x | ✅ Yes     |
+| 1.3.x - 1.4.x  | 14.x - 22.x   | 5.x       | dayjs 1.11.x | ✅ Yes     |
 | 1.2.x          | 14.x - 22.x   | 5.x       | dayjs 1.11.x | ✅ Yes     |
 | 1.0.x - 1.1.x  | 14.x - 22.x   | 5.x       | Luxon 3.x    | ✅ Yes     |
 | 0.0.x          | 15.x          | 5.x       | Luxon 3.x    | ❌ No      |
@@ -66,7 +67,7 @@ Make sure Bootstrap CSS and JS are included in your `angular.json`:
 
 ## 🚀 Usage
 
-### Method 1: Standalone Component (Angular 14+) ⚡ Recommended
+### Method 1: Standalone Component (Angular 18+) ⚡ Recommended
 
 **app.component.ts:**
 ```typescript
@@ -225,9 +226,9 @@ export class AppComponent {
 
 | Input         | Type              | Default      | Description |
 |---------------|-------------------|--------------|-------------|
-| `data`        | `CalendarData[]`  | `[]`         | Array of calendar events. Reactive — can be replaced after init (e.g. `[data]="events$ \| async"` resolving, or the host refetching after `changeWeek`); the grid recomputes overlap sizing and redraws. Doesn't re-emit `changeWeek` on its own (that'd loop back into the fetch that changed `data`). |
+| `data`        | `CalendarData[]`  | `[]`         | Array of calendar events. Reactive — can be replaced after init (e.g. `[data]="events$ \| async"` resolving, or the host refetching after `changeWeek`); the grid recomputes overlap sizing and redraws. The objects you pass are not modified. Doesn't re-emit `changeWeek` on its own (that'd loop back into the fetch that changed `data`). |
 | `loading`     | `boolean`         | `false`      | Shows loading state |
-| `start`       | `string`          | current week | Start date in 'YYYY-MM-DD' format |
+| `start`       | `string`          | current week (today in `view: 'day'`) | Start date in 'YYYY-MM-DD' format. Read once on init; navigate with the buttons afterwards. |
 | `showButtons` | `boolean`         | `true`       | Show/hide navigation buttons |
 | `view`        | `'week' \| 'day'` | `'week'`     | Grid mode — `'day'` shows a single day filling the available width (no forced horizontal scroll), navigating one day at a time. The library doesn't auto-switch by viewport; bind it yourself, e.g. `[view]="isMobile() ? 'day' : 'week'"` from `BreakpointObserver`. Reactive — can be toggled after init; toggling re-anchors on the day currently visible (not necessarily "today") and re-emits `changeWeek` for the new range. A `CalendarView` type (`'week' | 'day'`) is exported for typing your own state. |
 
@@ -238,6 +239,16 @@ export class AppComponent {
 | `changeWeek`     | `{ start: string, end: string }` | Emitted when the visible range changes — on navigation (`prevWeek`/`todayWeek`/`nextWeek`) and whenever `view` toggles. Fetch/update `data` for `[start, end]` when this fires. |
 | `clickCell`      | `CalendarData` | Emitted when a cell/event with data is clicked |
 | `clickEmptyCell` | `{ day: string, hour: string }` | Emitted when an empty hour-slot cell is clicked (mouse or keyboard — Enter/Space) — `day` (`yyyy-MM-dd`) and `hour` (`HH:mm`) identify the clicked slot, useful for opening a create-event form prefilled with that date/time. The clicked cell also gets a `.cell-selected` border, so the user can see which slot they picked; it stays until another empty cell is clicked. |
+
+### Upgrading from 1.x
+
+2.0 uses signal inputs and derives the grid with `computed`, so it renders in zoneless apps (Angular 22 default); it still works with zone.js.
+
+- Template bindings and outputs don't change. `prevWeek()`, `todayWeek()` and `nextWeek()` stay public.
+- Setting an input from code (`ref.instance.data = events`) no longer works: use `ref.setInput('data', events)`.
+- The component no longer writes `_size` into the event objects you pass in `data` (it works on copies), so `clickCell` emits a copy: compare by `id`, not by reference; and `null` in `[data]` (async pipe before it resolves) is treated as `[]`.
+- `today` and the internal grid fields (`schedule`, `scheduleFlat`, `hours`, ...) are no longer public.
+- Angular 14 to 17 stay on 1.x.
 
 ### CalendarData Interface
 

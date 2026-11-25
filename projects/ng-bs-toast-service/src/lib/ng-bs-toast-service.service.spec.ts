@@ -47,11 +47,55 @@ describe('NgBsToastService', () => {
     expect(emitted[0].position).toBe('bottom-center');
   });
 
-  it('replays the last message to a late subscriber (ReplaySubject fix)', () => {
-    service.send('primeiro', null);
-    const late: InternalToastMessage[] = [];
-    service.listen().subscribe(m => late.push(m));
-    expect(late).toEqual([{ id: 0, title: 'primeiro', message: null, style: undefined, duration: undefined, theme: undefined, position: undefined }]);
+  describe('without a listener', () => {
+    let fresh: NgBsToastService;
+
+    beforeEach(() => {
+      fresh = new NgBsToastService();
+    });
+
+    it('buffers every toast sent before the first listener and delivers them in order', () => {
+      fresh.send('primeiro', null);
+      fresh.send('segundo', null);
+      const late: InternalToastMessage[] = [];
+      fresh.listen().subscribe(m => late.push(m));
+      expect(late.map(m => m.title)).toEqual(['primeiro', 'segundo']);
+    });
+
+    it('dismiss() and dismissAll() also drop buffered toasts and complete their Observable', () => {
+      const closed: string[] = [];
+      fresh.send('a', null).subscribe({ complete: () => closed.push('a') });
+      fresh.send('b', null).subscribe({ complete: () => closed.push('b') });
+      fresh.send('c', null).subscribe({ complete: () => closed.push('c') });
+      fresh.dismiss(0);
+      fresh.dismissAll();
+      const late: InternalToastMessage[] = [];
+      fresh.listen().subscribe(m => late.push(m));
+      expect(closed).toEqual(['a', 'b', 'c']);
+      expect(late).toEqual([]);
+    });
+
+    it('delivers a buffered toast only once', () => {
+      fresh.send('primeiro', null);
+      fresh.listen().subscribe().unsubscribe();
+      const second: InternalToastMessage[] = [];
+      fresh.listen().subscribe(m => second.push(m));
+      expect(second).toEqual([]);
+    });
+
+    it('does not replay an old toast to a new listener after the previous one left', () => {
+      const first: InternalToastMessage[] = [];
+      const sub = fresh.listen().subscribe(m => first.push(m));
+      fresh.send('visto', null);
+      sub.unsubscribe();
+
+      fresh.send('enquanto ninguém ouve', null);
+      const next: InternalToastMessage[] = [];
+      fresh.listen().subscribe(m => next.push(m));
+
+      expect(first.map(m => m.title)).toEqual(['visto']);
+      expect(next.map(m => m.title)).toEqual(['enquanto ninguém ouve']);
+    });
   });
 
   it('dismiss() emits the id on listenDismiss()', () => {

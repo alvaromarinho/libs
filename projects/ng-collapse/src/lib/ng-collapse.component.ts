@@ -1,12 +1,13 @@
 
-import { Component, Input, OnChanges, OnDestroy, SimpleChanges, ChangeDetectionStrategy, ElementRef, ViewChild, AfterViewInit, ChangeDetectorRef } from '@angular/core';
+import { AfterViewInit, ChangeDetectionStrategy, Component, ElementRef, OnDestroy, effect, input, signal, untracked, viewChild } from '@angular/core';
 
 @Component({
     selector: 'ng-collapse',
+    standalone: true,
     imports: [],
     changeDetection: ChangeDetectionStrategy.OnPush,
     template: `
-        <div #collapseContainer class="ng-collapse" [class.show]="isExpanded"[class.overflow]="showOverflow"[style.max-height.px]="maxHeightValue">
+        <div #collapseContainer class="ng-collapse" [class.show]="isExpanded()" [class.overflow]="showOverflow()" [style.max-height.px]="maxHeightValue()">
             <ng-content></ng-content>
         </div>
     `,
@@ -16,51 +17,55 @@ import { Component, Input, OnChanges, OnDestroy, SimpleChanges, ChangeDetectionS
         .ng-collapse.overflow { overflow: visible; }
     `]
 })
-export class NgCollapseComponent implements OnChanges, AfterViewInit, OnDestroy {
+export class NgCollapseComponent implements AfterViewInit, OnDestroy {
 
-    @Input() toggle = false;
-    @Input() transitionDuration = 500;
+    readonly toggle = input(false);
+    readonly transitionDuration = input(500);
 
-    @ViewChild('collapseContainer', { static: true })
-    private collapseContainer!: ElementRef<HTMLDivElement>;
+    private readonly collapseContainer = viewChild.required<ElementRef<HTMLDivElement>>('collapseContainer');
 
-    protected isExpanded = false;
-    protected showOverflow = false;
-    protected maxHeightValue: number = 0;
+    protected readonly isExpanded = signal(false);
+    protected readonly showOverflow = signal(false);
+    protected readonly maxHeightValue = signal(0);
 
     private timers: number[] = [];
     private resizeObserver?: ResizeObserver;
+    // Último toggle aplicado no DOM. No Angular 18 o primeiro run do effect vem depois do ngAfterViewInit:
+    // sem essa comparação, um toggle inicial true fecharia e reabriria animando na carga.
+    private appliedToggle?: boolean;
 
-    constructor(private cdr: ChangeDetectorRef) { }
+    constructor() {
+        // Anima o DOM quando toggle muda depois da view pronta; o valor inicial é tratado no ngAfterViewInit.
+        // untracked: grava signal sem allowSignalWrites, que o Angular 18 exigiria.
+        effect(() => {
+            const expand = this.toggle();
+            untracked(() => {
+                if (this.appliedToggle !== undefined && this.appliedToggle !== expand) {
+                    this.appliedToggle = expand;
+                    this.updateCollapse(expand);
+                }
+            });
+        });
+    }
 
     ngAfterViewInit(): void {
         if (typeof ResizeObserver !== 'undefined') {
             this.resizeObserver = new ResizeObserver(() => {
-                if (this.isExpanded && this.showOverflow) {
-                    const height = this.calculateHeight();
-                    if (height !== this.maxHeightValue) {
-                        this.maxHeightValue = height;
-                        this.cdr.markForCheck();
-                    }
+                if (this.isExpanded() && this.showOverflow()) {
+                    this.maxHeightValue.set(this.calculateHeight());
                 }
             });
 
-            this.resizeObserver.observe(this.collapseContainer.nativeElement);
+            this.resizeObserver.observe(this.collapseContainer().nativeElement);
         }
 
-        if (this.toggle) {
+        if (this.toggle()) {
             // Inicializa aberto sem animação
-            this.maxHeightValue = this.calculateHeight();
-            this.isExpanded = true;
-            this.showOverflow = true;
-            this.cdr.markForCheck();
+            this.maxHeightValue.set(this.calculateHeight());
+            this.isExpanded.set(true);
+            this.showOverflow.set(true);
         }
-    }
-
-    ngOnChanges(changes: SimpleChanges): void {
-        if (changes['toggle'] && !changes['toggle'].firstChange) {
-            this.updateCollapse(this.toggle);
-        }
+        this.appliedToggle = this.toggle();
     }
 
     ngOnDestroy(): void {
@@ -72,57 +77,45 @@ export class NgCollapseComponent implements OnChanges, AfterViewInit, OnDestroy 
         this.clearTimer();
 
         if (expand) {
-            // Abrir
-            this.showOverflow = false;
-            this.isExpanded = false;
-            this.maxHeightValue = 0;
-            this.cdr.detectChanges();
+            // Abrir: parte de fechado, marca show e só depois mede a altura
+            this.showOverflow.set(false);
+            this.isExpanded.set(false);
+            this.maxHeightValue.set(0);
 
             this.schedule(() => {
-                this.isExpanded = true;
-                this.cdr.detectChanges();
+                this.isExpanded.set(true);
 
                 this.schedule(() => {
-                    this.maxHeightValue = this.calculateHeight();
-                    this.cdr.markForCheck();
+                    this.maxHeightValue.set(this.calculateHeight());
 
                     // Ativa overflow após transição
                     this.schedule(() => {
-                        this.showOverflow = true;
-                        this.cdr.markForCheck();
-                    }, this.transitionDuration);
+                        this.showOverflow.set(true);
+                    }, this.transitionDuration());
                 }, 10);
             }, 10);
         } else {
+            this.showOverflow.set(false);
 
-            this.showOverflow = false;
-
-            if (this.isExpanded) {
-                this.maxHeightValue = this.calculateHeight();
-                this.cdr.detectChanges();
+            if (this.isExpanded()) {
+                this.maxHeightValue.set(this.calculateHeight());
 
                 this.schedule(() => {
-                    this.maxHeightValue = 0;
-                    this.cdr.markForCheck();
+                    this.maxHeightValue.set(0);
 
                     this.schedule(() => {
-                        this.isExpanded = false;
-                        this.cdr.markForCheck();
+                        this.isExpanded.set(false);
                     }, 300);
                 }, 10);
             } else {
-                this.maxHeightValue = 0;
-                this.isExpanded = false;
-                this.cdr.markForCheck();
+                this.maxHeightValue.set(0);
+                this.isExpanded.set(false);
             }
         }
     }
 
     private calculateHeight(): number {
-        if (!this.collapseContainer) return 0;
-
-        const element = this.collapseContainer.nativeElement;
-        return element.scrollHeight;
+        return this.collapseContainer().nativeElement.scrollHeight;
     }
 
     private schedule(fn: () => void, delay: number): void {

@@ -12,14 +12,15 @@ Simple and smooth collapse/expand component for Angular with CSS transitions.
 - 📦 **Lightweight** - No dependencies (except Angular)
 - 🔄 **Toggle control** - Easy show/hide content
 - 🎭 **Content projection** - Use with any content
-- ⚡ **Standalone component support** (Angular 14+)
+- ⚡ **Signals and zoneless** - Signal inputs, works with or without zone.js (Angular 18+)
 - 🔧 **NgModule compatible** (backward compatible)
 
 ## 🔧 Compatibility
 
 | ng-collapse | Angular       | Standalone |
 |-------------|---------------|------------|
-| 1.0.x       | 14.x - 22.x   | ✅ Yes     |
+| 2.x         | 18.x - 22.x   | ✅ Yes     |
+| 1.x         | 14.x - 22.x   | ✅ Yes     |
 | 0.0.x       | 15.x          | ❌ No      |
 
 ## 📦 Installation
@@ -134,10 +135,18 @@ export class AppComponent {
   selector: 'ng-collapse'
 })
 class NgCollapseComponent {
-  @Input() toggle?: boolean;
-  @Input() transitionDuration = 500;
+  readonly toggle = input(false);
+  readonly transitionDuration = input(500);
 }
 ```
+
+### Upgrading from 1.x
+
+2.0 uses signal inputs, so it runs in zoneless apps (Angular 22 default) and still works with zone.js.
+
+- Template bindings (`[toggle]="open"`) don't change.
+- Setting an input from code (`ref.instance.toggle = true`) no longer works: use `ref.setInput('toggle', true)`.
+- Angular 14 to 17 stay on 1.x.
 
 ---
 

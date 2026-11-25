@@ -18,21 +18,22 @@ Drag-and-drop file upload component for Angular, with size/type validation and i
 
 ## How it works
 
-- `fileBrowseHandler()` is the single entry point for both the file `<input>` (`change`) and drag/drop (`droppedFile` from the directive) — it accepts `FileList` or an event-like object with `.target.files`.
-- Validation order per file: `maxTotalSize` (checked once for the whole batch including existing `filesList`, aborts entirely if exceeded) → `maxFileSize` (per file, skips file) → `typeFileAccept` (per file, skips file) → `maxFiles` (stops adding once reached).
+- Inputs are signal inputs; the directive keeps `fileOver` in a signal bound through `host`. Template members are `protected`.
+- `onInputChange()` (file `<input>` `change`) and `onDrop()` (`droppedFile` from the directive) both feed the private `addFiles(File[])`.
+- Validation order per file: `maxTotalSize` (checked once for the whole batch including existing `filesList`, aborts entirely if exceeded) → `maxFileSize` (per file, skips file) → `typeFileAccept` (per file, skips file) → `maxFiles` (stops adding once `filesList.length` + accepted files reaches it).
 - Images (`file.type.startsWith('image/')`) get a `base64` data URL attached via `FileReader` for preview; non-images are passed through as-is (`FileWithBase64` extends `File` with optional `base64`/`url`).
 - `isValidFileType()` supports three `accept` syntaxes: extension (`.pdf`), MIME wildcard (`image/*`), and exact MIME type (`application/pdf`).
-- The component does **not** maintain its own file list state — `filesList` is an `@Input` the consumer owns; `filesAdd`/`fileRemove` are emitted for the consumer to update it.
+- The component does **not** maintain its own file list state — `filesList` is an input the consumer owns; `filesAdd`/`fileRemove` are emitted for the consumer to update it **with a new array** (the component is `OnPush`; `push`/`splice` in place won't re-render it).
 
 ## Gotchas
 
-- `$event.target.value = ''` is reset after processing so selecting the same file twice in a row still fires `change`.
-- `maxTotalSize` check happens **before** per-file validation and uses the *entire* incoming `filesArray` plus existing `filesList` — a single oversized batch rejects all new files with one `fileError` (type `'total'`), even if some individual files would have passed.
-- `fileBrowseHandler` is `async` (due to `getBase64`) — `filesAdd` emits only after all image previews resolve.
+- The input's `value` is reset before processing (also when the batch is rejected) so selecting the same file twice in a row still fires `change`.
+- `maxTotalSize` check happens **before** per-file validation and uses the *entire* incoming batch plus existing `filesList` — a single oversized batch rejects all new files with one `fileError` (type `'total'`), even if some individual files would have passed.
+- `addFiles` is `async` (due to `getBase64`) — `filesAdd` emits only after all image previews resolve.
 
 ## Dependencies
 
-Peer deps only: `@angular/core`/`common` `>=14 <23`. No third-party libs.
+Peer deps only: `@angular/core`/`common` `>=18 <23` (2.x; 1.x covered 14+). Uses only APIs available in Angular 18: no `linkedSignal`, `resource` or `ChangeDetectionStrategy.Eager`. No third-party libs.
 
 ## Build & test
 
@@ -40,3 +41,5 @@ Peer deps only: `@angular/core`/`common` `>=14 <23`. No third-party libs.
 ng build ng-dd-file
 ng test ng-dd-file
 ```
+
+Specs are zoneless and drive host components through the DOM (file input `change` with a stubbed `files`, synthetic `drop` events with `dataTransfer`). `filesAdd` waits for `FileReader`, so tests use `vi.waitFor`.

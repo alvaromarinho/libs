@@ -1,64 +1,69 @@
-import { Component, EventEmitter, HostListener, Input, OnChanges, Output, ChangeDetectionStrategy } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, input, output, signal } from '@angular/core';
 
 @Component({
     selector: 'ng-month-year-picker',
     standalone: true,
     templateUrl: './ng-month-year-picker.component.html',
-    changeDetection: ChangeDetectionStrategy.Eager,
+    changeDetection: ChangeDetectionStrategy.OnPush,
     styleUrl: './ng-month-year-picker.component.css',
+    host: { '(document:click)': 'close()' },
 })
-export class NgMonthYearPickerComponent implements OnChanges {
+export class NgMonthYearPickerComponent {
 
     /** Texto exibido no botão. Se vazio, é derivado de `value` + `monthNames`. */
-    @Input() label?: string;
-    @Input() todayLabel = 'Hoje';
-    @Input() monthNames: string[] = ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun', 'Jul', 'Ago', 'Set', 'Out', 'Nov', 'Dez'];
-    @Input() disabled = false;
-    @Input() value = ''; /** `YYYY-MM`. */
-    @Output() valueChange = new EventEmitter<string>();
+    readonly label = input<string>();
+    readonly todayLabel = input('Hoje');
+    readonly monthNames = input(['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun', 'Jul', 'Ago', 'Set', 'Out', 'Nov', 'Dez']);
+    readonly disabled = input(false);
+    /** `YYYY-MM`. */
+    readonly value = input('');
+    readonly valueChange = output<string>();
 
-    showPicker = false;
-    pickerYear = new Date().getFullYear();
+    protected readonly showPicker = signal(false);
+    protected readonly pickerYear = signal(new Date().getFullYear());
 
-    get displayLabel(): string {
-        if (this.label) return this.label;
-        const [y, m] = this.value.split('-').map(Number);
-        if (!y || !m) return '';
-        return `${this.monthNames[m - 1]} ${y}`;
+    private readonly selectedYear = computed(() => parseInt(this.value()?.split('-')[0]) || 0);
+    private readonly selectedMonth = computed(() => parseInt(this.value()?.split('-')[1]) || 0);
+
+    protected readonly displayLabel = computed(() => {
+        const label = this.label();
+        if (label) return label;
+        const year = this.selectedYear();
+        const month = this.selectedMonth();
+        if (!year || !month) return '';
+        return `${this.monthNames()[month - 1]} ${year}`;
+    });
+
+    protected close(): void {
+        this.showPicker.set(false);
     }
 
-    private get selectedYear(): number { return parseInt(this.value?.split('-')[0]) || 0; }
-    private get selectedMonth(): number { return parseInt(this.value?.split('-')[1]) || 0; }
-
-    ngOnChanges() {
-        if (!this.showPicker) this.pickerYear = this.selectedYear || new Date().getFullYear();
-    }
-
-    @HostListener('document:click')
-    onDocumentClick() {
-        this.showPicker = false;
-    }
-
-    toggle(event: Event) {
+    protected toggle(event: Event): void {
         event.stopPropagation();
-        if (this.disabled) return;
-        if (!this.showPicker) this.pickerYear = this.selectedYear || new Date().getFullYear();
-        this.showPicker = !this.showPicker;
+        if (this.disabled()) return;
+        // pickerYear só aparece com o picker aberto: sincroniza ao abrir, sem reagir a value enquanto aberto.
+        if (!this.showPicker()) this.pickerYear.set(this.selectedYear() || new Date().getFullYear());
+        this.showPicker.update(show => !show);
     }
 
-    select(monthIndex: number) {
-        const value = `${this.pickerYear}-${String(monthIndex + 1).padStart(2, '0')}`;
+    protected changeYear(delta: number): void {
+        this.pickerYear.update(year => year + delta);
+    }
+
+    protected select(monthIndex: number): void {
+        const value = `${this.pickerYear()}-${String(monthIndex + 1).padStart(2, '0')}`;
         this.valueChange.emit(value);
-        this.showPicker = false;
+        this.showPicker.set(false);
     }
 
-    selectToday() {
+    protected selectToday(): void {
         const today = new Date();
-        this.pickerYear = today.getFullYear();
+        this.pickerYear.set(today.getFullYear());
         this.select(today.getMonth());
     }
 
-    isSelected(monthIndex: number): boolean {
-        return this.selectedYear === this.pickerYear && this.selectedMonth === monthIndex + 1;
+    protected isSelected(monthIndex: number): boolean {
+        return this.selectedYear() === this.pickerYear() && this.selectedMonth() === monthIndex + 1;
     }
+
 }

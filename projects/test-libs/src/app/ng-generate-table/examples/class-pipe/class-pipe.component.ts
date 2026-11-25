@@ -1,4 +1,4 @@
-import { AfterViewInit, Component, signal, ChangeDetectionStrategy } from '@angular/core';
+import { AfterViewInit, Component, signal } from '@angular/core';
 import { DatePipe } from '@angular/common';
 import { NgGenerateTableComponent, NgGenerateTableColumns } from 'ng-generate-table';
 import { NgCollapseComponent } from 'ng-collapse';
@@ -9,7 +9,6 @@ declare const Prism: any;
     selector: 'gt-class-pipe-example',
     standalone: true,
     imports: [NgGenerateTableComponent, NgCollapseComponent],
-    changeDetection: ChangeDetectionStrategy.Eager,
     templateUrl: './class-pipe.component.html'
 })
 export class GTClassPipeExampleComponent implements AfterViewInit {

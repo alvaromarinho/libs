@@ -1,193 +1,270 @@
+import { Component, signal } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { NgBsPaginationComponent } from './ng-bs-pagination.component';
+import { PaginationFirstLast, PaginationLayout, PaginationPrevNext } from './ng-bs-pagination.model';
+
+@Component({
+    standalone: true,
+    imports: [NgBsPaginationComponent],
+    template: `
+        <ng-bs-pagination [total]="total()" [current]="current()" [itemPerPage]="itemPerPage()" [maxPagesToShow]="maxPagesToShow()"
+            [size]="size()" [layout]="layout()" [prevNext]="prevNext()" [firstLast]="firstLast()"
+            (change)="onChange($event)" (first)="onChange($event)" (last)="onChange($event)">
+        </ng-bs-pagination>
+    `
+})
+class HostComponent {
+
+    readonly total = signal(200);
+    readonly current = signal(1);
+    readonly itemPerPage = signal(10);
+    readonly maxPagesToShow = signal(5);
+    readonly size = signal<'sm' | 'md' | 'lg'>('md');
+    readonly layout = signal<PaginationLayout | undefined>(undefined);
+    readonly prevNext = signal<PaginationPrevNext | undefined>(undefined);
+    readonly firstLast = signal<PaginationFirstLast | undefined>(undefined);
+    readonly emitted: number[] = [];
+
+    onChange(page: number): void {
+        this.emitted.push(page);
+        this.current.set(page);
+    }
+
+}
+
+@Component({
+    standalone: true,
+    imports: [NgBsPaginationComponent],
+    template: `
+        <ng-bs-pagination [total]="45" [current]="2">
+            <ng-template let-start="start" let-end="end" let-total="total" let-totalPages="totalPages">
+                <span class="custom-info">{{ start }}-{{ end }}/{{ total }} ({{ totalPages }})</span>
+            </ng-template>
+        </ng-bs-pagination>
+    `
+})
+class TemplateHostComponent {
+
+}
 
 describe('NgBsPaginationComponent', () => {
-  let component: NgBsPaginationComponent;
-  let fixture: ComponentFixture<NgBsPaginationComponent>;
+    let fixture: ComponentFixture<HostComponent>;
+    let host: HostComponent;
 
-  beforeEach(async () => {
-    await TestBed.configureTestingModule({
-      imports: [ NgBsPaginationComponent ]
-    })
-    .compileComponents();
+    const el = (): HTMLElement => fixture.nativeElement;
+    const pageNumbers = (): number[] => Array.from(el().querySelectorAll('.page-item:not([title]) .page-link'))
+        .map(b => Number(b.textContent)).filter(n => !isNaN(n) && n > 0);
+    const numbered = (): HTMLButtonElement[] => Array.from(el().querySelectorAll<HTMLButtonElement>('.page-link'))
+        .filter(b => !b.title);
+    const byTitle = (title: string): HTMLButtonElement => el().querySelector<HTMLButtonElement>(`.page-link[title="${title}"]`)!;
+    const info = (): string => el().querySelector('.text-muted')?.textContent?.trim() ?? '';
+    const wrapper = (): HTMLElement => el().querySelector('ng-bs-pagination > div')!;
 
-    fixture = TestBed.createComponent(NgBsPaginationComponent);
-    component = fixture.componentInstance;
-    fixture.detectChanges();
-  });
+    const set = async (fn: () => void): Promise<void> => {
+        fn();
+        await fixture.whenStable();
+    };
 
-  it('should create', () => {
-    expect(component).toBeTruthy();
-  });
+    beforeEach(async () => {
+        await TestBed.configureTestingModule({
+            imports: [HostComponent]
+        }).compileComponents();
 
-  describe('totalPages', () => {
-    it('rounds up partial pages', () => {
-      component.total = 95;
-      component.itemPerPage = 10;
-      expect(component.totalPages).toBe(10);
+        fixture = TestBed.createComponent(HostComponent);
+        host = fixture.componentInstance;
+        await fixture.whenStable();
     });
 
-    it('is at least 1 when total is 0', () => {
-      component.total = 0;
-      expect(component.totalPages).toBe(1);
-    });
-  });
-
-  describe('pages window', () => {
-    beforeEach(() => {
-      component.total = 200; // 20 páginas
-      component.itemPerPage = 10;
-      component.maxPagesToShow = 5;
+    it('should create', () => {
+        expect(el().querySelector('.pagination')).toBeTruthy();
     });
 
-    it('centers the window on current', () => {
-      component.current = 10;
-      expect(component.pages).toEqual([8, 9, 10, 11, 12]);
+    describe('total pages', () => {
+        it('rounds up partial pages', async () => {
+            await set(() => {
+                host.total.set(95);
+                host.current.set(10);
+            });
+            expect(pageNumbers().at(-1)).toBe(10);
+        });
+
+        it('renders nothing when there is a single page or no items', async () => {
+            await set(() => host.total.set(5));
+            expect(el().querySelector('.pagination')).toBeNull();
+            await set(() => host.total.set(0));
+            expect(el().querySelector('.pagination')).toBeNull();
+        });
     });
 
-    it('clamps at the start', () => {
-      component.current = 1;
-      expect(component.pages).toEqual([1, 2, 3, 4, 5]);
+    describe('pages window', () => {
+        it('centers the window on current', async () => {
+            await set(() => host.current.set(10));
+            expect(pageNumbers()).toEqual([8, 9, 10, 11, 12]);
+        });
+
+        it('clamps at the start', () => {
+            expect(pageNumbers()).toEqual([1, 2, 3, 4, 5]);
+        });
+
+        it('clamps at the end', async () => {
+            await set(() => host.current.set(20));
+            expect(pageNumbers()).toEqual([16, 17, 18, 19, 20]);
+        });
+
+        it('shows fewer pages when totalPages < maxPagesToShow', async () => {
+            await set(() => host.total.set(25));
+            expect(pageNumbers()).toEqual([1, 2, 3]);
+        });
+
+        it('respects maxPagesToShow', async () => {
+            await set(() => {
+                host.maxPagesToShow.set(3);
+                host.current.set(10);
+            });
+            expect(pageNumbers()).toEqual([9, 10, 11]);
+        });
+
+        it('marks the current page as active', async () => {
+            await set(() => host.current.set(2));
+            expect(el().querySelector('.page-item.active')?.textContent?.trim()).toBe('2');
+        });
     });
 
-    it('clamps at the end', () => {
-      component.current = 20;
-      expect(component.pages).toEqual([16, 17, 18, 19, 20]);
+    describe('info', () => {
+        it('shows start/end for a middle page', async () => {
+            await set(() => host.current.set(3));
+            expect(info()).toBe('Mostrando 21–30 de 200');
+        });
+
+        it('clamps end on the last page', async () => {
+            await set(() => {
+                host.total.set(95);
+                host.current.set(10);
+            });
+            expect(info()).toBe('Mostrando 91–95 de 95');
+        });
+
+        it('hides when layout.showInfo is false', async () => {
+            await set(() => host.layout.set({ showInfo: false }));
+            expect(el().querySelector('.text-muted')).toBeNull();
+        });
+
+        it('renders a projected template with the info context', async () => {
+            const custom = TestBed.createComponent(TemplateHostComponent);
+            await custom.whenStable();
+            expect(custom.nativeElement.querySelector('.custom-info')?.textContent).toBe('11-20/45 (5)');
+        });
     });
 
-    it('shows fewer pages when totalPages < maxPagesToShow', () => {
-      component.total = 25; // 3 páginas
-      expect(component.pages).toEqual([1, 2, 3]);
-    });
-  });
+    describe('inputs merge with defaults', () => {
+        it('layout merges partial values (default is stacked, info at start)', async () => {
+            expect(wrapper().classList).toContain('flex-column');
+            await set(() => host.layout.set({ infoPosition: 'end' }));
+            expect(wrapper().classList).toContain('flex-column');
+            expect(wrapper().classList).toContain('flex-column-reverse');
+        });
 
-  describe('infoContext', () => {
-    it('computes start/end for a middle page', () => {
-      component.total = 95;
-      component.itemPerPage = 10;
-      component.current = 3;
-      expect(component.infoContext).toEqual({ start: 21, end: 30, total: 95, current: 3, totalPages: 10 });
-    });
+        it('prevNext merges nested labels', async () => {
+            await set(() => host.prevNext.set({ mode: 'text', labels: { prev: 'Anterior' } }));
+            expect(byTitle('Página anterior').textContent?.trim()).toBe('Anterior');
+            expect(byTitle('Próxima página').textContent?.trim()).toBe('›');
+            expect(byTitle('Página anterior').querySelector('span')?.getAttribute('aria-hidden')).toBeNull();
+        });
 
-    it('clamps end on the last page', () => {
-      component.total = 95;
-      component.itemPerPage = 10;
-      component.current = 10;
-      expect(component.infoContext.end).toBe(95);
-    });
+        it('icon mode hides the label from screen readers', () => {
+            expect(byTitle('Página anterior').querySelector('span')?.getAttribute('aria-hidden')).toBe('true');
+        });
 
-    it('start is 0 when total is 0', () => {
-      component.total = 0;
-      expect(component.infoContext.start).toBe(0);
-    });
-  });
+        it('firstLast merges nested labels and can hide the buttons', async () => {
+            expect(byTitle('Primeira página').textContent?.trim()).toBe('«');
+            expect(byTitle('Última página').textContent?.trim()).toBe('»');
+            await set(() => host.firstLast.set({ show: false }));
+            expect(byTitle('Primeira página')).toBeNull();
+        });
 
-  describe('input setters merge with defaults', () => {
-    it('layout merges partial values', () => {
-      component.layout = { type: 'center' };
-      expect(component.layout).toEqual({ type: 'center', infoPosition: 'start', showInfo: true });
-    });
-
-    it('prevNext merges nested labels', () => {
-      component.prevNext = { labels: { prev: 'Anterior' } };
-      expect(component.prevNext.labels.prev).toBe('Anterior');
-      expect(component.prevNext.labels.next).toBe('›');
-      expect(component.prevNext.mode).toBe('icon');
+        it('goes back to defaults when the input is cleared', async () => {
+            await set(() => host.prevNext.set({ labels: { prev: 'Anterior' } }));
+            await set(() => host.prevNext.set(undefined));
+            expect(byTitle('Página anterior').textContent?.trim()).toBe('‹');
+        });
     });
 
-    it('firstLast merges nested labels', () => {
-      component.firstLast = { show: false };
-      expect(component.firstLast.show).toBe(false);
-      expect(component.firstLast.labels).toEqual({ first: '«', last: '»' });
-    });
-  });
+    describe('navigation', () => {
+        beforeEach(async () => {
+            await set(() => {
+                host.total.set(100);
+                host.current.set(5);
+            });
+        });
 
-  describe('navigation emits', () => {
-    beforeEach(() => {
-      component.total = 100;
-      component.itemPerPage = 10;
-      component.current = 5;
-    });
+        it('emits change when clicking a page', async () => {
+            numbered().find(b => b.textContent?.trim() === '6')!.click();
+            await fixture.whenStable();
+            expect(host.emitted).toEqual([6]);
+            expect(el().querySelector('.page-item.active')?.textContent?.trim()).toBe('6');
+        });
 
-    it('goTo emits change for a valid page', () => {
-      let emitted = 0;
-      component.change.subscribe((p: number) => emitted = p);
-      component.goTo(6);
-      expect(emitted).toBe(6);
-    });
+        it('emits change for prev and next', async () => {
+            byTitle('Página anterior').click();
+            await fixture.whenStable();
+            byTitle('Próxima página').click();
+            expect(host.emitted).toEqual([4, 5]);
+        });
 
-    it('goTo does not emit for current page or out of range', () => {
-      let count = 0;
-      component.change.subscribe(() => count++);
-      component.goTo(5);   // página atual
-      component.goTo(0);   // abaixo do range
-      component.goTo(11);  // acima do range
-      expect(count).toBe(0);
-    });
+        it('does not emit for the current page', () => {
+            numbered().find(b => b.textContent?.trim() === '5')!.click();
+            expect(host.emitted).toEqual([]);
+        });
 
-    it('goFirst emits 1, but not when already on first page', () => {
-      let emitted = 0;
-      component.first.subscribe((p: number) => emitted = p);
-      component.goFirst();
-      expect(emitted).toBe(1);
+        it('does not go below the first or past the last page', async () => {
+            await set(() => host.current.set(1));
+            byTitle('Página anterior').click();
+            byTitle('Primeira página').click();
+            await set(() => host.current.set(10));
+            byTitle('Próxima página').click();
+            byTitle('Última página').click();
+            expect(host.emitted).toEqual([]);
+        });
 
-      component.current = 1;
-      emitted = 0;
-      component.goFirst();
-      expect(emitted).toBe(0);
-    });
+        it('disables first/prev on the first page and next/last on the last', async () => {
+            await set(() => host.current.set(1));
+            expect(byTitle('Primeira página').parentElement!.classList).toContain('disabled');
+            expect(byTitle('Página anterior').parentElement!.classList).toContain('disabled');
+            expect(byTitle('Próxima página').parentElement!.classList).not.toContain('disabled');
+        });
 
-    it('goLast emits totalPages, but not when already on last page', () => {
-      let emitted = 0;
-      component.last.subscribe((p: number) => emitted = p);
-      component.goLast();
-      expect(emitted).toBe(10);
-
-      component.current = 10;
-      emitted = 0;
-      component.goLast();
-      expect(emitted).toBe(0);
-    });
-  });
-
-  describe('css classes', () => {
-    it('sizeClass is empty for md and pagination-sm/lg otherwise', () => {
-      expect(component.sizeClass).toBe('');
-      component.size = 'sm';
-      expect(component.sizeClass).toBe('pagination-sm');
-      component.size = 'lg';
-      expect(component.sizeClass).toBe('pagination-lg');
+        it('first emits 1 and last emits totalPages', () => {
+            byTitle('Primeira página').click();
+            expect(host.emitted).toEqual([1]);
+            byTitle('Última página').click();
+            expect(host.emitted).toEqual([1, 10]);
+        });
     });
 
-    it('wrapperClasses reflects stacked layout with info at end', () => {
-      component.layout = { type: 'stacked', infoPosition: 'end' };
-      expect(component.wrapperClasses).toContain('flex-column-reverse');
-    });
+    describe('css classes', () => {
+        it('size adds pagination-sm/lg and nothing for md', async () => {
+            const ul = (): Element => el().querySelector('ul')!;
+            expect(ul().className).toBe('pagination mb-0');
+            await set(() => host.size.set('sm'));
+            expect(ul().classList).toContain('pagination-sm');
+            expect(ul().classList).toContain('pagination');
+            await set(() => host.size.set('lg'));
+            expect(ul().classList).toContain('pagination-lg');
+            expect(ul().classList).not.toContain('pagination-sm');
+        });
 
-    it('wrapperClasses reflects center layout', () => {
-      component.layout = { type: 'center' };
-      expect(component.wrapperClasses).toContain('justify-content-center');
-      expect(component.wrapperClasses).not.toContain('flex-column');
-    });
-  });
+        it('center layout centers without flex-column', async () => {
+            await set(() => host.layout.set({ type: 'center' }));
+            expect(wrapper().classList).toContain('justify-content-center');
+            expect(wrapper().classList).toContain('gap-3');
+            expect(wrapper().classList).not.toContain('flex-column');
+        });
 
-  describe('rendering', () => {
-    it('renders nothing when there is a single page', () => {
-      component.total = 5;
-      component.itemPerPage = 10;
-      fixture.detectChanges();
-      expect(fixture.nativeElement.querySelector('.pagination')).toBeNull();
+        it('split layout with info at end reverses the row', async () => {
+            await set(() => host.layout.set({ type: 'split', infoPosition: 'end' }));
+            expect(wrapper().classList).toContain('justify-content-between');
+            expect(wrapper().classList).toContain('flex-row-reverse');
+        });
     });
-
-    it('renders page buttons and marks current as active', () => {
-      component.total = 30;
-      component.itemPerPage = 10;
-      component.current = 2;
-      fixture.detectChanges();
-
-      const active = fixture.nativeElement.querySelector('.page-item.active');
-      expect(active?.textContent?.trim()).toBe('2');
-    });
-  });
 });

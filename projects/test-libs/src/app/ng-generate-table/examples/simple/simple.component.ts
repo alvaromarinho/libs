@@ -1,4 +1,4 @@
-import { AfterViewInit, Component, signal, ChangeDetectionStrategy } from '@angular/core';
+import { AfterViewInit, Component, signal } from '@angular/core';
 import { NgGenerateTableComponent, NgGenerateTableColumns, SortDirection } from 'ng-generate-table';
 import { NgCollapseComponent } from 'ng-collapse';
 
@@ -8,7 +8,6 @@ declare const Prism: any;
     selector: 'gt-simple-example',
     standalone: true,
     imports: [NgGenerateTableComponent, NgCollapseComponent],
-    changeDetection: ChangeDetectionStrategy.Eager,
     templateUrl: './simple.component.html'
 })
 export class GTSimpleExampleComponent implements AfterViewInit {

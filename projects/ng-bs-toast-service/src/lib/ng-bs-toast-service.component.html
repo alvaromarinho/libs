@@ -1,36 +1,34 @@
-@for (position of positions; track position) {
-    @if (toastsForPosition(position).length) {
-        <div class="toast-container position-fixed p-3" [ngClass]="positionClasses[position]">
-            @for (toast of toastsForPosition(position); track toast.id) {
-                <div class="toast"
-                    [id]="'toast_' + toast.id"
-                    [ngClass]="toastClasses(toast)"
-                    [attr.data-bs-theme]="isDarkTheme(toast) ? 'dark' : null"
-                    [attr.data-paused]="toast.paused ? 'true' : null"
-                    [style.--toast-duration.ms]="toast.resolvedDuration"
-                    [attr.role]="isUrgent(toast) ? 'alert' : 'status'"
-                    [attr.aria-live]="isUrgent(toast) ? 'assertive' : 'polite'"
-                    aria-atomic="true"
-                    (mouseenter)="pauseToast(toast)"
-                    (mouseleave)="resumeToast(toast)">
-                    <div class="toast-body d-flex">
-                        <button type="button" class="btn-close btn-sm p-2" [class]="closeButtonClass(toast)"
-                            data-bs-dismiss="toast" aria-label="Close"></button>
-                        <div class="flex-shrink-0 h-100">
-                            <i class="bi fs-3 lh-sm" [ngClass]="iconClasses(toast)"></i>
-                        </div>
-                        <div class="d-flex flex-column justify-content-center flex-grow-1 ms-2 ps-1 me-3">
-                            <div class="fs-6 lh-sm fw-bold">{{ toast.title }}</div>
-                            @if (toast.message) {
-                                <div class="lh-sm mt-1">{{ toast.message }}</div>
-                            }
-                        </div>
+@for (position of positions(); track position) {
+    <div class="toast-container position-fixed p-3" [class]="positionClasses[position]">
+        @for (toast of toastsFor(position); track toast.id) {
+            <div class="toast"
+                [id]="'toast_' + toast.id"
+                [class]="toast.classes"
+                [attr.data-bs-theme]="toast.dark ? 'dark' : null"
+                [attr.data-paused]="toast.paused() ? 'true' : null"
+                [style.--toast-duration.ms]="toast.resolvedDuration"
+                [attr.role]="toast.urgent ? 'alert' : 'status'"
+                [attr.aria-live]="toast.urgent ? 'assertive' : 'polite'"
+                aria-atomic="true"
+                (mouseenter)="pauseToast(toast)"
+                (mouseleave)="resumeToast(toast)">
+                <div class="toast-body d-flex">
+                    <button type="button" class="btn-close btn-sm p-2" [class]="toast.closeClass"
+                        data-bs-dismiss="toast" aria-label="Close"></button>
+                    <div class="flex-shrink-0 h-100">
+                        <i class="bi fs-3 lh-sm" [class]="toast.iconClass"></i>
                     </div>
-                    <div class="toast-progress">
-                        <div class="toast-progress-bar" [style]="progressBarStyle(toast)"></div>
+                    <div class="d-flex flex-column justify-content-center flex-grow-1 ms-2 ps-1 me-3">
+                        <div class="fs-6 lh-sm fw-bold">{{ toast.title }}</div>
+                        @if (toast.message) {
+                            <div class="lh-sm mt-1">{{ toast.message }}</div>
+                        }
                     </div>
                 </div>
-            }
-        </div>
-    }
+                <div class="toast-progress">
+                    <div class="toast-progress-bar" [style]="toast.progressStyle"></div>
+                </div>
+            </div>
+        }
+    </div>
 }

@@ -14,14 +14,15 @@ Modal service for Angular and Bootstrap 5 with advanced features like queue mana
 - 🎨 **Custom styling** - Flexible CSS classes
 - 🔒 **Static backdrop** - Prevent closing on click outside
 - 📱 **Responsive sizes** - sm, lg, xl
-- ⚡ **Standalone component support** (Angular 14+)
+- ⚡ **Signals and zoneless** - Signal state, works with or without zone.js (Angular 18+)
 - 🔧 **NgModule compatible** (backward compatible)
 
 ## 🔧 Compatibility
 
 | ng-bs-modal-service | Angular       | Bootstrap | Standalone |
 |---------------------|---------------|-----------|------------|
-| 1.0.x               | 14.x - 22.x   | 5.x       | ✅ Yes     |
+| 2.x                 | 18.x - 22.x   | 5.x       | ✅ Yes     |
+| 1.x                 | 14.x - 22.x   | 5.x       | ✅ Yes     |
 | 0.1.x               | 15.x          | 5.x       | ❌ No      |
 
 ## 📦 Installation
@@ -58,7 +59,7 @@ Make sure Bootstrap CSS and JS are included in your `angular.json`:
 
 ## 🚀 Usage
 
-### Method 1: Standalone Component (Angular 14+) ⚡ Recommended
+### Method 1: Standalone Component (Angular 18+) ⚡ Recommended
 
 **app.component.ts:**
 ```typescript
@@ -480,6 +481,17 @@ export class AppComponent {
   }
 }
 ```
+
+---
+
+## Upgrading from 1.x
+
+2.0 keeps the current modal and the carousel index in signals, so it renders in zoneless apps (Angular 22 default); it still works with zone.js. In 1.x under zoneless the carousel opened with no active slide.
+
+- `open()`, `close()`, `closeAll()` and the options don't change. `get()` is now typed `Observable<NgBsModalServiceData>`.
+- Internal members (`modalData`, `modalQueue`, `action`, `html`, `isModalContent()`, `isString()`, `modalClass` and the other class getters, `showCloseButton`) are no longer public.
+- In a signal-based component, pass the template from `viewChild`: `readonly body = viewChild.required<TemplateRef<unknown>>('body')` and `open({ body: this.body() })`.
+- Angular 14 to 17 stay on 1.x.
 
 ---
 

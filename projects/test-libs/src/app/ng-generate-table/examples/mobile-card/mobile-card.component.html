@@ -37,13 +37,13 @@ Template:
 
             <ng-template #cardMobile let-row>
                 <div class="card mb-2 border-start border-4"
-                    [ngClass]="'border-' + $any(row).badge"
+                    [class]="'border-' + $any(row).badge"
                     style="cursor:pointer"
                     (click)="lastRow.set($any(row).name + ' — ' + $any(row).email)">
                     <div class="card-body py-2">
                         <div class="fw-bold">{{ $any(row).name }}</div>
                         <div class="text-muted small">{{ $any(row).email }}</div>
-                        <span class="badge mt-1" [ngClass]="'bg-' + $any(row).badge">{{ $any(row).role }}</span>
+                        <span class="badge mt-1" [class]="'bg-' + $any(row).badge">{{ $any(row).role }}</span>
                     </div>
                 </div>
             </ng-template>

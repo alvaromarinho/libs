@@ -1,4 +1,4 @@
-import { AfterViewInit, Component, inject, signal, ChangeDetectionStrategy } from '@angular/core';
+import { AfterViewInit, Component, inject, signal } from '@angular/core';
 import { NgBsToastService, ToastPosition, ToastStyle, ToastTheme } from 'ng-bs-toast-service';
 import { NgCollapseComponent } from 'ng-collapse';
 import { PageHeaderComponent } from '../shared/page-header/page-header.component';
@@ -13,7 +13,6 @@ const THEMES: ToastTheme[] = ['bootstrap', 'bootstrap-dark'];
     selector: 'bs-toast-example',
     standalone: true,
     imports: [NgCollapseComponent, PageHeaderComponent],
-    changeDetection: ChangeDetectionStrategy.Eager,
     templateUrl: './ng-bs-toast-service.component.html'
 })
 export class BsToastExampleComponent implements AfterViewInit {

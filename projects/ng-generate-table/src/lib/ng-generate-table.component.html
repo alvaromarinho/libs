@@ -1,15 +1,15 @@
 <!-- mobile view -->
-@if (mobileView) {
+@if (mobileView()) {
     <div class="nggt-mobile-container" role="list">
-        @if (hasData) {
-            @for (d of data; track trackByData($index, d)) {
+        @if (hasData()) {
+            @for (d of data(); track trackByData($index, d)) {
                 <!-- Custom card template -->
-                @if (cardMobile) {
-                    <ng-container [ngTemplateOutlet]="cardMobile"
+                @if (cardMobile(); as card) {
+                    <ng-container [ngTemplateOutlet]="card"
                         [ngTemplateOutletContext]="{$implicit: d, rowData: d, index: $index, expanded: isRowExpanded(d, $index)}"></ng-container>
                 } @else {
-                    <div role="listitem" class="nggt-card" [ngClass]="{'nggt-card-clickable': rowClickable}"
-                        (click)="rowClickable ? onRowClick(d, $event) : null">
+                    <div role="listitem" class="nggt-card" [class.nggt-card-clickable]="rowClickable()"
+                        (click)="rowClickable() ? onRowClick(d, $event) : null">
                         <!-- Expand/collapse toggle -->
                         @if (canExpandRow(d, $index)) {
                             <button type="button" class="nggt-expand-toggle nggt-card-expand-toggle" [class.nggt-expanded]="isRowExpanded(d, $index)"
@@ -21,14 +21,14 @@
                                 </svg>
                             </button>
                         }
-                        @for (column of columns; track $index) {
+                        @for (column of columns(); track $index) {
                             <div class="nggt-row">
                                 @if (!column.isAction && column.label) {
                                     <div class="nggt-card-label">
                                         {{ column.label }}
                                     </div>
                                 }
-                                <div class="nggt-card-value" [ngClass]="column.tdClass">
+                                <div class="nggt-card-value" [class]="column.tdClass ?? ''">
                                     <!-- Field with pipe -->
                                     @if (column.field && !column.template) {
                                         <span>
@@ -37,8 +37,8 @@
                                     }
                                     <!-- Template -->
                                     @if (column.template) {
-                                        <div class="nggt-template-cell" [ngClass]="{'nggt-clickable': !!column.click}"
-                                            (click)="!rowClickable && column.click ? onColumnClick(d, column, $event) : null"
+                                        <div class="nggt-template-cell" [class.nggt-clickable]="!!column.click"
+                                            (click)="!rowClickable() && column.click ? onColumnClick(d, column, $event) : null"
                                             [innerHTML]="column.template(d) | safeHtml">
                                         </div>
                                     }
@@ -50,7 +50,7 @@
                             <div class="nggt-detail-content" [class.nggt-show]="isRowExpanded(d, $index)">
                                 <div class="nggt-detail-inner">
                                     <div class="nggt-detail-padding">
-                                        <ng-container [ngTemplateOutlet]="rowDetail"
+                                        <ng-container [ngTemplateOutlet]="rowDetail()!"
                                             [ngTemplateOutletContext]="{$implicit: d, rowData: d, index: $index}"></ng-container>
                                     </div>
                                 </div>
@@ -61,22 +61,22 @@
             }
         }
         <!-- Empty state for mobile -->
-        @if (!hasData) {
+        @if (!hasData()) {
             <div class="nggt-empty-state" role="status">
-                @if (loading) {
+                @if (loading()) {
                     <div class="nggt-empty-icon">
                         <div class="spinner-border" role="progressbar"></div>
                     </div>
                 }
-                <span class="nggt-empty-message">{{ emptyStateMessage }}</span>
+                <span class="nggt-empty-message">{{ emptyStateMessage() }}</span>
             </div>
         }
     </div>
 } @else {
-    <div class="nggt-table-wrapper" [ngClass]="{'nggt-table-loading': loading}">
-        <table class="nggt" [ngClass]="tableClass" role="table">
+    <div class="nggt-table-wrapper" [class.nggt-table-loading]="loading()">
+        <table class="nggt" [class]="tableClass() ?? ''" role="table">
             <!-- Loading overlay -->
-            @if (loading) {
+            @if (loading()) {
                 <div class="table-spinner" role="status">
                     <div class="spinner-border" role="progressbar"></div>
                 </div>
@@ -86,10 +86,10 @@
             <!-- Main header -->
             <thead>
                 <tr role="row">
-                    @for (column of columns; track $index) {
-                        <th role="columnheader" class="{{ column.thClass }}" [attr.scope]="'col'"
-                            [attr.tabindex]="column.sortable ? 0 : null" [ngStyle]="getColumnStyles(column)"
-                            [ngClass]="{ 'nggt-th-sortable': column.sortable, 'nggt-th-sorted': isSorted(column) }">
+                    @for (column of columns(); track $index) {
+                        <th role="columnheader" [class]="column.thClass ?? ''" [attr.scope]="'col'"
+                            [attr.tabindex]="column.sortable ? 0 : null" [style]="getColumnStyles(column)"
+                            [class.nggt-th-sortable]="!!column.sortable" [class.nggt-th-sorted]="isSorted(column)">
                             <div class="nggt-th-content" (click)="onSortClick(column, $event)"
                                 (keydown.enter)="onSortClick(column, $event)" (keydown.space)="onSortClick(column, $event)">
                                 <span class="nggt-th-label">{{ column.label || '' }}</span>
@@ -129,32 +129,32 @@
             <ng-content select="tbody[position='top']"></ng-content>
             <tbody>
                 <!-- Empty state row -->
-                @if (!hasData) {
+                @if (!hasData()) {
                     <tr role="row">
-                        <td [attr.colspan]="columns.length" class="nggt-empty-cell" role="cell">
+                        <td [attr.colspan]="columns().length" class="nggt-empty-cell" role="cell">
                             <div class="nggt-empty-state">
-                                @if (loading) {
+                                @if (loading()) {
                                     <div class="nggt-empty-icon">
                                         <div class="spinner-border" role="progressbar"></div>
                                     </div>
                                 }
-                                <span class="nggt-empty-message">{{ emptyStateMessage }}</span>
+                                <span class="nggt-empty-message">{{ emptyStateMessage() }}</span>
                             </div>
                         </td>
                     </tr>
                 }
                 <!-- Data rows -->
-                @if (hasData) {
-                    @for (d of data; track trackByData($index, d); let rowIndex = $index) {
-                        <tr role="row" [ngClass]="{'nggt-row-clickable': rowClickable}" [attr.tabindex]="rowClickable ? 0 : null"
-                            [attr.role]="rowClickable ? 'button' : 'row'" (click)="rowClickable ? onRowClick(d, $event) : null"
-                            (keydown.enter)="rowClickable ? onRowClick(d, $event) : null"
-                            (keydown.space)="rowClickable ? onRowClick(d, $event) : null">
-                            @for (column of columns; track $index; let colIndex = $index) {
-                                <td role="cell" [ngClass]="column.tdClass" [ngStyle]="getColumnStyles(column)"
-                                    (click)="!rowClickable ? onCellClick(d, column, $event) : null">
+                @if (hasData()) {
+                    @for (d of data(); track trackByData($index, d); let rowIndex = $index) {
+                        <tr role="row" [class.nggt-row-clickable]="rowClickable()" [attr.tabindex]="rowClickable() ? 0 : null"
+                            [attr.role]="rowClickable() ? 'button' : 'row'" (click)="rowClickable() ? onRowClick(d, $event) : null"
+                            (keydown.enter)="rowClickable() ? onRowClick(d, $event) : null"
+                            (keydown.space)="rowClickable() ? onRowClick(d, $event) : null">
+                            @for (column of columns(); track $index; let colIndex = $index) {
+                                <td role="cell" [class]="column.tdClass ?? ''" [style]="getColumnStyles(column)"
+                                    (click)="!rowClickable() ? onCellClick(d, column, $event) : null">
                                     <!-- Expand/collapse toggle (always in the first column) -->
-                                    @if (colIndex === 0 && hasExpandToggle()) {
+                                    @if (colIndex === 0 && rowDetail()) {
                                         @if (canExpandRow(d, rowIndex)) {
                                             <button type="button" class="nggt-expand-toggle" [class.nggt-expanded]="isRowExpanded(d, rowIndex)"
                                                 [attr.aria-expanded]="isRowExpanded(d, rowIndex)"
@@ -176,12 +176,12 @@
                                     }
                                     <!-- Template -->
                                     @if (column.template) {
-                                        <div class="nggt-template-cell" [ngClass]="{'nggt-clickable': !!column.click}"
+                                        <div class="nggt-template-cell" [class.nggt-clickable]="!!column.click"
                                             [attr.tabindex]="column.click ? 0 : null"
                                             [innerHTML]="column.template(d) | safeHtml:'html':true"
-                                            (click)="!rowClickable ? onColumnClick(d, column, $event) : null"
-                                            (keydown.enter)="!rowClickable ? onColumnClick(d, column, $event) : null"
-                                            (keydown.space)="!rowClickable ? onColumnClick(d, column, $event) : null">
+                                            (click)="!rowClickable() ? onColumnClick(d, column, $event) : null"
+                                            (keydown.enter)="!rowClickable() ? onColumnClick(d, column, $event) : null"
+                                            (keydown.space)="!rowClickable() ? onColumnClick(d, column, $event) : null">
                                         </div>
                                     }
                                 </td>
@@ -190,11 +190,11 @@
                         <!-- Expandable detail row -->
                         @if (canExpandRow(d, rowIndex)) {
                             <tr class="nggt-row-detail" role="row">
-                                <td [attr.colspan]="columns.length" role="cell">
+                                <td [attr.colspan]="columns().length" role="cell">
                                     <div class="nggt-detail-content" [class.nggt-show]="isRowExpanded(d, rowIndex)">
                                         <div class="nggt-detail-inner">
                                             <div class="nggt-detail-padding">
-                                                <ng-container [ngTemplateOutlet]="rowDetail"
+                                                <ng-container [ngTemplateOutlet]="rowDetail()!"
                                                     [ngTemplateOutletContext]="{$implicit: d, rowData: d, index: rowIndex}"></ng-container>
                                             </div>
                                         </div>
@@ -212,5 +212,3 @@
         </table>
     </div>
 }
-
-<!-- desktop view -->

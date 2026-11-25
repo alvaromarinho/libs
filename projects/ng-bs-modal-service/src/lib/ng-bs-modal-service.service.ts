@@ -7,14 +7,14 @@ import { NgBsModalServiceContent, NgBsModalServiceData, NgBsModalServiceOptions 
 })
 export class NgBsModalService {
 
-    private subject = new Subject<NgBsModalServiceData>()
+    private subject = new Subject<NgBsModalServiceData>();
 
-    get(): Observable<any> {
+    get(): Observable<NgBsModalServiceData> {
         return this.subject.asObservable();
     }
 
     open(content: NgBsModalServiceContent | TemplateRef<any>, options?: NgBsModalServiceOptions): Observable<void> {
-        options = options || {} as any;
+        options = options || {};
         const closed = new Subject<void>();
         this.subject.next({ action: 'open', content, options, closed });
         return closed.asObservable();

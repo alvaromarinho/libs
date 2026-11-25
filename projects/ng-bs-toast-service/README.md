@@ -9,7 +9,7 @@ Toast notification service for Angular and Bootstrap 5 with Bootstrap Icons supp
 
 - 🎯 **Service-based notifications** - Show toasts from anywhere
 - 🎨 **All 8 Bootstrap colors** - primary, secondary, success, danger, warning, info, light, dark
-- 🖤 **2 render themes** - bootstrap (solid) and bootstrap-dark (native dark mode); default set via `[theme]` @Input, overridable per `send()` call
+- 🖤 **2 render themes** - bootstrap (solid) and bootstrap-dark (native dark mode); default set via the `[theme]` input, overridable per `send()` call
 - ⏱️ **Countdown progress bar** - visual auto-dismiss timer, pauses on hover
 - 🔔 **Style-aware auto-dismiss** - warning 7s, danger 10s, rest 4s (or pass your own `duration`)
 - 📍 **7 positions** - top/middle/bottom × start/center/end, one container per position
@@ -17,14 +17,15 @@ Toast notification service for Angular and Bootstrap 5 with Bootstrap Icons supp
 - ✋ **Programmatic dismiss** - `dismiss(id)`, `dismissAll()`, or subscribe to `send()`'s Observable
 - 📱 **Mobile-friendly** - full width, glued to the top under 576px
 - 🎭 **Bootstrap Icons** - Beautiful icon integration
-- ⚡ **Standalone component support** (Angular 14+)
+- ⚡ **Signals and zoneless** - Signal state, works with or without zone.js (Angular 18+)
 - 🔧 **NgModule compatible** (backward compatible)
 
 ## 🔧 Compatibility
 
 | ng-bs-toast-service | Angular       | Bootstrap | Bootstrap Icons | Standalone |
 |---------------------|---------------|-----------|-----------------|------------|
-| 1.0.x               | 14.x - 22.x   | 5.x       | 1.x             | ✅ Yes     |
+| 2.x                 | 18.x - 22.x   | 5.x       | 1.x             | ✅ Yes     |
+| 1.x                 | 14.x - 22.x   | 5.x       | 1.x             | ✅ Yes     |
 | 0.0.x               | 15.x          | 5.x       | 1.x             | ❌ No      |
 
 ## 📦 Installation
@@ -63,7 +64,7 @@ Make sure Bootstrap CSS/JS and Bootstrap Icons are included in your `angular.jso
 
 ## 🚀 Usage
 
-### Method 1: Standalone Component (Angular 14+) ⚡ Recommended
+### Method 1: Standalone Component (Angular 18+) ⚡ Recommended
 
 **app.component.ts:**
 ```typescript
@@ -194,7 +195,7 @@ class NgBsToastService {
 | `message`  | `string \| null`              | Yes      | -                   | Toast message content                                          |
 | `style`    | `ToastStyle`                  | No       | `'primary'`         | One of the 8 Bootstrap colors                                  |
 | `duration` | `number`                     | No       | resolved from style | `warning` 7000ms, `danger` 10000ms, rest 4000ms                |
-| `options.theme`    | `ToastTheme`          | No       | the component's `[theme]` @Input (`'bootstrap'` by default) | `'bootstrap'` \| `'bootstrap-dark'` |
+| `options.theme`    | `ToastTheme`          | No       | the component's `[theme]` input (`'bootstrap'` by default) | `'bootstrap'` \| `'bootstrap-dark'` |
 | `options.position` | `ToastPosition`       | No       | `'top-end'`           | any of the 7 positions below                                   |
 
 ```typescript
@@ -336,7 +337,7 @@ All 8 Bootstrap colors, each with its own icon:
 
 ## 🖤 Themes
 
-Independent from `style` — pick how the toast is rendered. Set a default for every toast via the component's `[theme]` @Input, or override per `send()` call:
+Independent from `style` — pick how the toast is rendered. Set a default for every toast via the component's `[theme]` input, or override per `send()` call:
 
 - **`bootstrap`** (default) — solid `text-bg-{style}` toast, bootstrap's contrast-computed text color. The progress bar uses a translucent white/black overlay (not the style color) — `bg-{style}` would be the same color as the background and disappear.
 - **`bootstrap-dark`** — the same color pairing bootstrap's own `.alert-{style}` uses: `bg-{style}-subtle` / `text-{style}-emphasis` / `border-{style}-subtle`, all dark-mode aware via `data-bs-theme="dark"`. The progress bar uses the style's own `*-text-emphasis` color, which bootstrap already tunes to stay legible against `*-bg-subtle` — including for style `'dark'`, where a plain `bg-dark` bar would be nearly invisible dark-on-dark.
@@ -454,6 +455,18 @@ const closed$ = this.toastService.send('Uploading…', null, 'primary', 999999);
 // later, e.g. on upload complete:
 this.toastService.dismissAll(); // or keep the id from an internal event and call dismiss(id)
 ```
+
+---
+
+### Upgrading from 1.x
+
+2.0 keeps its state in signals, so toasts appear, count down and close in zoneless apps (Angular 22 default); it still works with zone.js.
+
+- `send()`, `dismiss()`, `dismissAll()` and the component's `[theme]`/`[maxToastsPerPosition]` bindings don't change.
+- Setting an input from code (`ref.instance.theme = ...`) no longer works: use `ref.setInput('theme', ...)`.
+- Internal members (`toastData`, `toastsForPosition()`, `pauseToast()`, `resumeToast()`, `toastClasses()`, `iconClasses()`, `progressBarStyle()`, `closeButtonClass()`, ...) are no longer public.
+- Toasts sent while no `<ng-bs-toast-service>` is listening are all delivered, in order, to the next one (1.x kept only the last). A component created later no longer re-shows a toast that was already shown.
+- Angular 14 to 17 stay on 1.x.
 
 ---
 

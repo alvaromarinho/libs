@@ -1,4 +1,4 @@
-import { AfterViewInit, Component, signal, ChangeDetectionStrategy } from '@angular/core';
+import { AfterViewInit, Component, signal } from '@angular/core';
 import { NgDdFileComponent } from 'ng-dd-file';
 import { NgCollapseComponent } from 'ng-collapse';
 import { PageHeaderComponent } from '../shared/page-header/page-header.component';
@@ -9,7 +9,6 @@ declare const Prism: any;
     selector: 'dd-file-example',
     standalone: true,
     imports: [NgDdFileComponent, NgCollapseComponent, PageHeaderComponent],
-    changeDetection: ChangeDetectionStrategy.Eager,
     templateUrl: './ng-dd-file.component.html'
 })
 export class DdFileExampleComponent implements AfterViewInit {

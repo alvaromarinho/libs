@@ -1,5 +1,6 @@
 import { Injectable } from '@angular/core';
-import { Observable, ReplaySubject, Subject } from 'rxjs';
+import { Observable, Subject, concat, defer, from } from 'rxjs';
+import { finalize } from 'rxjs/operators';
 
 export type ToastStyle = 'primary' | 'secondary' | 'success' | 'danger' | 'warning' | 'info' | 'light' | 'dark';
 
@@ -48,9 +49,11 @@ export function resolveToastDuration(style?: ToastStyle): number {
 @Injectable({ providedIn: 'root' })
 export class NgBsToastService {
 
-    // ReplaySubject(1) so a toast fired before NgBsToastServiceComponent finishes
-    // subscribing (ngOnInit race) isn't silently dropped.
-    private stream = new ReplaySubject<InternalToastMessage>(1);
+    // Toasts sent while no NgBsToastServiceComponent is listening (before its ngOnInit, or between
+    // a destroy and a new instance) wait here and are delivered once, to the next listener.
+    private stream = new Subject<InternalToastMessage>();
+    private buffer: InternalToastMessage[] = [];
+    private listeners = 0;
     private dismissRequests = new Subject<number>();
     private dismissAllRequests = new Subject<void>();
     private closedSubjects = new Map<number, Subject<void>>();
@@ -62,7 +65,7 @@ export class NgBsToastService {
         const closed$ = new Subject<void>();
         this.closedSubjects.set(id, closed$);
 
-        this.stream.next({
+        const toast: InternalToastMessage = {
             id,
             title,
             message,
@@ -70,23 +73,39 @@ export class NgBsToastService {
             duration,
             theme: options?.theme,
             position: options?.position,
-        });
+        };
+        if (this.listeners > 0) {
+            this.stream.next(toast);
+        } else {
+            this.buffer.push(toast);
+        }
 
         return closed$.asObservable();
     }
 
     /** Closes a specific toast by the id emitted internally (subscribe to send()'s Observable instead when possible). */
     dismiss(id: number): void {
+        const index = this.buffer.findIndex(t => t.id === id);
+        if (index !== -1) {
+            this.buffer.splice(index, 1);
+            this.notifyClosed(id);
+            return;
+        }
         this.dismissRequests.next(id);
     }
 
     /** Closes every toast currently shown or queued. */
     dismissAll(): void {
+        this.buffer.splice(0).forEach(t => this.notifyClosed(t.id));
         this.dismissAllRequests.next();
     }
 
     listen(): Observable<InternalToastMessage> {
-        return this.stream.asObservable();
+        return defer(() => {
+            this.listeners++;
+            const pending = this.buffer.splice(0);
+            return concat(from(pending), this.stream).pipe(finalize(() => this.listeners--));
+        });
     }
 
     listenDismiss(): Observable<number> {

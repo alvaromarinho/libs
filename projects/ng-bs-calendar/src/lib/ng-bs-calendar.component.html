@@ -1,45 +1,43 @@
-
-
-<div class="cal-header d-flex align-items-center justify-content-between flex-wrap" [ngClass]="{'mb-2': showButtons}">
+<div class="cal-header d-flex align-items-center justify-content-between flex-wrap" [class.mb-2]="showButtons()">
   <ng-content></ng-content>
-  @if (showButtons) {
+  @if (showButtons()) {
     <div class="cal-header-buttons ms-auto">
-      <button class="btn btn-sm btn-outline-secondary ms-2 px-3" (click)="prevWeek()" [attr.aria-label]="view === 'day' ? 'Dia anterior' : 'Semana anterior'">«</button>
+      <button class="btn btn-sm btn-outline-secondary ms-2 px-3" (click)="prevWeek()" [attr.aria-label]="view() === 'day' ? 'Dia anterior' : 'Semana anterior'">«</button>
       <button class="btn btn-sm btn-outline-secondary ms-2" (click)="todayWeek()" aria-label="Ir para hoje">HOJE</button>
-      <button class="btn btn-sm btn-outline-secondary ms-2 px-3" (click)="nextWeek()" [attr.aria-label]="view === 'day' ? 'Próximo dia' : 'Próxima semana'">»</button>
+      <button class="btn btn-sm btn-outline-secondary ms-2 px-3" (click)="nextWeek()" [attr.aria-label]="view() === 'day' ? 'Próximo dia' : 'Próxima semana'">»</button>
     </div>
   }
 </div>
 
-@if (loading) {
+@if (loading()) {
   <div class="position-absolute w-100 d-flex justify-content-center pt-5">
     <div class="spinner-border text-dark"></div>
   </div>
 }
 
-@if (!loading) {
+@if (!loading()) {
   <div class="d-flex h-100">
     <div class="card card-body" id="schedule">
       <div class="container-fluid">
-        @for (hour of hours; track hour; let indexHour = $index; let firstRow = $first) {
-          <div class="row border-inside-top" [ngClass]="{'position-sticky bg-body': firstRow || indexHour == 1, 'top-0': firstRow, 'top-day': indexHour == 1}"
-            [id]="hour">
-            @for (day of gridCols; track $index; let indexDay = $index; let firstCol = $first) {
-              <div [ngClass]="{'col-day border-inside-start': !firstCol, 'col-1': firstCol, 'px-0': !firstRow && !firstCol}">
+        @for (hour of hours(); track $index; let indexHour = $index; let firstRow = $first) {
+          <div class="row border-inside-top" [class.position-sticky]="firstRow || indexHour == 1" [class.bg-body]="firstRow || indexHour == 1"
+            [class.top-0]="firstRow" [class.top-day]="indexHour == 1" [id]="hour">
+            @for (day of gridCols(); track $index; let indexDay = $index; let firstCol = $first) {
+              <div [class.col-day]="!firstCol" [class.border-inside-start]="!firstCol" [class.col-1]="firstCol" [class.px-0]="!firstRow && !firstCol">
                 <!-- MONTH CELL -->
                 @if (firstRow && firstCol) {
                   <div class="py-2">
-                    <div class="opacity-50 text-nowrap">{{ schedule.startWeek | date:'yyyy' }}</div>
-                    <div class="fs-5 fw-lighter lh-sm text-nowrap">{{ schedule.startWeek | date:'MMM' | uppercase }}</div>
+                    <div class="opacity-50 text-nowrap">{{ schedule().startWeek | date:'yyyy' }}</div>
+                    <div class="fs-5 fw-lighter lh-sm text-nowrap">{{ schedule().startWeek | date:'MMM' | uppercase }}</div>
                   </div>
                 }
                 <!-- HEADER ROW -->
                 @if (firstRow && !firstCol) {
                   <div class="py-2">
-                    <span class="opacity-50">{{ schedule.week[indexDay-1].label | date:'E' }}</span>
+                    <span class="opacity-50">{{ schedule().week[indexDay-1].label | date:'E' }}</span>
                     <div class="fs-4 fw-lighter lh-1">
-                      {{ schedule.week[indexDay-1].label | date:'dd' }}
-                      @if (today == schedule.week[indexDay-1].label) {
+                      {{ schedule().week[indexDay-1].label | date:'dd' }}
+                      @if (today == schedule().week[indexDay-1].label) {
                         <span class="fw-bolder text-danger default"
                         data-bs-toggle="tooltip" data-bs-title="Hoje">•</span>
                       }
@@ -60,9 +58,9 @@
                 }
                 @if (indexHour == 1 && !firstCol) {
                   <div class="d-flex flex-column px-1 pb-1 w-100">
-                    @for (obj of schedule.week[indexDay-1].allDay; track obj; let index = $index; let count = $count) {
+                    @for (obj of schedule().week[indexDay-1].allDay; track obj; let index = $index; let count = $count) {
                       <div class="badge pointer text-truncate border text-start mt-1 w-100" (click)="clickCell.emit(obj)"
-                        style="border-color:rgba(0,0,0, .25) !important;" [ngStyle]="{backgroundColor: obj.color+'80'}"
+                        style="border-color:rgba(0,0,0, .25) !important;" [style.background-color]="obj.color + '80'"
                         data-bs-toggle="tooltip" data-bs-placement="bottom" data-bs-html="true" [attr.data-bs-title]="getTooltipHtml(obj)">
                         <span>{{ obj.title }}</span>
                       </div>
@@ -71,19 +69,17 @@
                 }
                 @if (!firstRow && indexHour != 1 && !firstCol) {
                   <div class="d-flex flex-column h-100">
-                    @if (schedule.week[indexDay-1].hours[hour!]) {
+                    @if (schedule().week[indexDay-1].hours[hour!]) {
                       <div class="position-relative h-100">
-                        @for (obj of schedule.week[indexDay-1].hours[hour!]; track obj; let index = $index; let count = $count) {
+                        @for (obj of schedule().week[indexDay-1].hours[hour!]; track obj; let index = $index; let count = $count) {
                           <div class="position-absolute start-0 end-0 h-100 text-truncate text-start badge rounded-0 border-start border-end pointer"
                             style="border-color:rgba(0,0,0, .25) !important;"
-                            [ngClass]="{'border-top rounded-top': obj._startNow, 'border-bottom rounded-bottom': obj._endNow }"
+                            [class.border-top]="obj._startNow" [class.rounded-top]="obj._startNow"
+                            [class.border-bottom]="obj._endNow" [class.rounded-bottom]="obj._endNow"
                             (click)="clickCell.emit(obj)" data-bs-toggle="tooltip" data-bs-html="true" [attr.data-bs-title]="getTooltipHtml(obj)"
-                                    [ngStyle]="{
-                                        backgroundColor: obj.color+'80',
-                                        zIndex: index,
-                                        width: 100/(obj._size >= 5 ? 5 : obj._size )+'%',
-                                        marginLeft: 100/obj._size*getIndexPosition(obj, index)+'%'
-                                    }">
+                            [style.background-color]="obj.color + '80'" [style.z-index]="index"
+                            [style.width.%]="100 / (obj._size >= 5 ? 5 : obj._size)"
+                            [style.margin-left.%]="100 / obj._size * getIndexPosition(obj, index)">
                             <span>{{ obj._startNow || hour == '00:00' ? obj.title : '' }}</span>
                           </div>
                         }
@@ -92,10 +88,10 @@
                       <div class="h-100 w-100 cell-blocked" aria-hidden="true"></div>
                     } @else {
                       <div class="h-100 w-100 pointer" role="button" tabindex="0" aria-label="Novo evento"
-                        [class.cell-selected]="selectedEmptyCell?.day === schedule.week[indexDay-1].label && selectedEmptyCell?.hour === hour"
-                        (click)="onEmptyCellClick(schedule.week[indexDay-1].label, hour!)"
-                        (keydown.enter)="onEmptyCellClick(schedule.week[indexDay-1].label, hour!)"
-                        (keydown.space)="$event.preventDefault(); onEmptyCellClick(schedule.week[indexDay-1].label, hour!)">
+                        [class.cell-selected]="selectedEmptyCell()?.day === schedule().week[indexDay-1].label && selectedEmptyCell()?.hour === hour"
+                        (click)="onEmptyCellClick(schedule().week[indexDay-1].label, hour!)"
+                        (keydown.enter)="onEmptyCellClick(schedule().week[indexDay-1].label, hour!)"
+                        (keydown.space)="$event.preventDefault(); onEmptyCellClick(schedule().week[indexDay-1].label, hour!)">
                       </div>
                     }
                   </div>

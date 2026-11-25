@@ -1,81 +1,78 @@
-@if (modalData && modalData.options) {
-  <div class="modal fade" [id]="modalId" tabindex="-1"
-    [attr.data-bs-backdrop]="modalData.options.staticBackdrop ? 'static' : null"
-    [attr.data-bs-keyboard]="modalData.options.staticBackdrop ? 'false' : 'true'"
-    [ngClass]="modalClass">
-    <div class="modal-dialog modal-dialog-centered modal-{{ modalData.options.size }}" [id]="modalId + '-dialog'"
-      [ngClass]="{'modal-dialog-scrollable':!modalData.options.disabledBodyScroll}">
-      <div class="modal-content" [id]="modalId + '-content'">
-        <!-- track pela identidade: cada open() recria o conteúdo (o ngTemplateOutlet reaproveitaria a view do mesmo TemplateRef); voltar da fila mantém o estado -->
-        @for (current of [modalData]; track current) {
-        @if (isModalContent(modalData.content)) {
-          <ng-container [ngTemplateOutlet]="$any(modalData.content)"></ng-container>
-        }
-        @if (!isModalContent(modalData.content)) {
-          @if ($any(modalData.content).header) {
-            <div class="modal-header py-2" [ngClass]="modalHeaderClass">
-              @if (!isString($any(modalData.content).header)) {
-                <ng-container [ngTemplateOutlet]="$any(modalData.content).header"></ng-container>
-              }
-              @if (isString($any(modalData.content).header)) {
-                <h5 class="modal-title">{{ $any(modalData.content).header }}</h5>
-              }
-              @if (showCloseButton) {
-                <button type="button" class="btn-close" data-bs-dismiss="modal">
-                </button>
-              }
-            </div>
-          }
-          <div class="modal-body" [ngClass]="modalBodyClass">
-            @if (!isString($any(modalData.content).body)) {
-              <ng-container [ngTemplateOutlet]="$any(modalData.content).body"></ng-container>
-            }
-            @if (isString($any(modalData.content).body)) {
-              <div [innerHtml]="$any(modalData.content).body"></div>
-            }
-            <!-- carousel -->
-            @if (modalData.options.carousel) {
-              <div id="carousel-{{carouselId}}" class="carousel slide">
-                <div class="carousel-indicators">
-                  @for (img of modalData.options.carousel.images; track img; let index = $index) {
-                    <button type="button" [attr.data-bs-target]="'#carousel-'+carouselId" [attr.data-bs-slide-to]="index"
-                    [ngClass]="{'active': index == currentImgIndex}"></button>
-                  }
+@if (modalData(); as data) {
+    @if (data.options) {
+        <div class="modal fade" [id]="modalId" tabindex="-1"
+            [attr.data-bs-backdrop]="data.options.staticBackdrop ? 'static' : null"
+            [attr.data-bs-keyboard]="data.options.staticBackdrop ? 'false' : 'true'"
+            [class]="data.options.customClass?.modal ?? ''">
+            <div class="modal-dialog modal-dialog-centered modal-{{ data.options.size }}" [id]="modalId + '-dialog'"
+                [class.modal-dialog-scrollable]="!data.options.disabledBodyScroll">
+                <div class="modal-content" [id]="modalId + '-content'">
+                    <!-- track pela identidade: cada open() recria o conteúdo (o ngTemplateOutlet reaproveitaria a view do mesmo TemplateRef); voltar da fila mantém o estado -->
+                    @for (current of [data]; track current) {
+                        @if (isTemplate(data.content)) {
+                            <ng-container [ngTemplateOutlet]="data.content"></ng-container>
+                        } @else {
+                            @if (asContent(data.content); as content) {
+                                @if (content.header) {
+                                    <div class="modal-header py-2" [class]="data.options.customClass?.modalHeader ?? ''">
+                                        @if (isString(content.header)) {
+                                            <h5 class="modal-title">{{ content.header }}</h5>
+                                        } @else {
+                                            <ng-container [ngTemplateOutlet]="content.header"></ng-container>
+                                        }
+                                        @if (!data.options.withoutClose) {
+                                            <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                                        }
+                                    </div>
+                                }
+                                <div class="modal-body" [class]="data.options.customClass?.modalBody ?? ''">
+                                    @if (isString(content.body)) {
+                                        <div [innerHtml]="content.body"></div>
+                                    } @else if (content.body) {
+                                        <ng-container [ngTemplateOutlet]="content.body"></ng-container>
+                                    }
+                                    <!-- carousel -->
+                                    @if (data.options.carousel; as carousel) {
+                                        <div id="carousel-{{ carouselId }}" class="carousel slide">
+                                            <div class="carousel-indicators">
+                                                @for (img of carousel.images; track img; let index = $index) {
+                                                    <button type="button" [attr.data-bs-target]="'#carousel-' + carouselId" [attr.data-bs-slide-to]="index"
+                                                        [class.active]="index === currentImgIndex()"></button>
+                                                }
+                                            </div>
+                                            <div class="carousel-inner">
+                                                @for (img of carousel.images; track img; let index = $index) {
+                                                    <div class="carousel-item h-100" [class.active]="index === currentImgIndex()">
+                                                        <img class="carousel-image" [src]="img.url" [alt]="img.name">
+                                                        <div class="carousel-caption d-none d-md-block" tabindex="-1">{{ img.name }}</div>
+                                                    </div>
+                                                }
+                                            </div>
+                                            @if (carousel.images.length > 1) {
+                                                <button class="carousel-control-prev" type="button"
+                                                    [attr.data-bs-target]="'#carousel-' + carouselId" data-bs-slide="prev">
+                                                    <span class="carousel-control-prev-icon"></span>
+                                                    <span class="visually-hidden">Previous</span>
+                                                </button>
+                                                <button class="carousel-control-next" type="button"
+                                                    [attr.data-bs-target]="'#carousel-' + carouselId" data-bs-slide="next">
+                                                    <span class="carousel-control-next-icon"></span>
+                                                    <span class="visually-hidden">Next</span>
+                                                </button>
+                                            }
+                                        </div>
+                                    }
+                                </div>
+                                @if (content.footer) {
+                                    <div class="modal-footer" [class]="data.options.customClass?.modalFooter ?? ''">
+                                        <ng-container [ngTemplateOutlet]="content.footer"></ng-container>
+                                    </div>
+                                }
+                            }
+                        }
+                    }
                 </div>
-                <div class="carousel-inner">
-                  @for (img of modalData.options.carousel.images; track img; let index = $index) {
-                    <div class="carousel-item h-100"
-                      [ngClass]="{'active': index == currentImgIndex}">
-                      <img class="carousel-image" [src]="img.url" [alt]="img.name">
-                      <div class="carousel-caption d-none d-md-block" tabindex="-1">{{ img.name }}</div>
-                    </div>
-                  }
-                </div>
-                @if (modalData.options.carousel.images.length > 1) {
-                  <button class="carousel-control-prev" type="button"
-                    [attr.data-bs-target]="'#carousel-'+carouselId" data-bs-slide="prev">
-                    <span class="carousel-control-prev-icon"></span>
-                    <span class="visually-hidden">Previous</span>
-                  </button>
-                }
-                @if (modalData.options.carousel.images.length > 1) {
-                  <button class="carousel-control-next" type="button"
-                    [attr.data-bs-target]="'#carousel-'+carouselId" data-bs-slide="next">
-                    <span class="carousel-control-next-icon"></span>
-                    <span class="visually-hidden">Next</span>
-                  </button>
-                }
-              </div>
-            }
-          </div>
-          @if ($any(modalData.content).footer) {
-            <div class="modal-footer" [ngClass]="modalFooterClass">
-              <ng-container [ngTemplateOutlet]="$any(modalData.content).footer"></ng-container>
             </div>
-          }
-        }
-        }
-      </div>
-    </div>
-  </div>
+        </div>
+    }
 }

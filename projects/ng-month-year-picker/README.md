@@ -14,14 +14,15 @@ Month/year picker dropdown component for Angular. Self-contained — no Bootstra
 - ⏭️ **Jump to today** - Built-in "Hoje" button in the dropdown
 - 🚫 **Disableable** - `disabled` input blocks opening the picker
 - 🎨 **Themeable** - colors/spacing via `--ng-month-year-picker-*` CSS custom properties
-- ⚡ **Standalone component support** (Angular 14+)
+- ⚡ **Signals and zoneless** - Signal inputs, works with or without zone.js (Angular 18+)
 - 🔧 **NgModule compatible** (backward compatible)
 
 ## 🔧 Compatibility
 
 | ng-month-year-picker | Angular       | Standalone |
 |------------------|---------------|-----------|
-| 1.0.x            | 14.x - 22.x   | ✅ Yes     |
+| 2.x              | 18.x - 22.x   | ✅ Yes     |
+| 1.x              | 14.x - 22.x   | ✅ Yes     |
 
 ## 📦 Installation
 
@@ -39,7 +40,7 @@ No additional CSS or peer dependencies are required — just Angular.
 
 ## 🚀 Usage
 
-### Method 1: Standalone Component (Angular 14+) ⚡ Recommended
+### Method 1: Standalone Component (Angular 18+) ⚡ Recommended
 
 **app.component.ts:**
 ```typescript
@@ -120,7 +121,16 @@ export class AppComponent {
 
 | Output       | Type                   | Description                                  |
 |--------------|------------------------|-----------------------------------------------|
-| `valueChange`| `EventEmitter<string>`| Emitted with `YYYY-MM` when a month is picked |
+| `valueChange`| `OutputEmitterRef<string>`| Emitted with `YYYY-MM` when a month is picked |
+
+### Upgrading from 1.x
+
+2.0 uses signal inputs, so it runs in zoneless apps (Angular 22 default) and still works with zone.js.
+
+- Template bindings (`[value]` + `(valueChange)`, or `[(value)]`) don't change.
+- Setting an input from code (`ref.instance.value = '2026-05'`) no longer works: use `ref.setInput('value', '2026-05')`.
+- Internal members (`toggle()`, `select()`, `selectToday()`, `isSelected()`, `showPicker`, `pickerYear`, `displayLabel`) are no longer public.
+- Angular 14 to 17 stay on 1.x.
 
 ---
 
@@ -204,7 +214,7 @@ ng-month-year-picker {
 
 ## ⚠️ Important Notes
 
-1. **`value` is one-way**: the component never mutates it. Update it yourself from `valueChange`.
+1. **`value` is one-way**: the component never mutates it. Update it yourself from `valueChange`, or use `[(value)]`.
 
 2. **Year navigation is independent**: browsing years with the chevrons only changes the dropdown's displayed year (`pickerYear`) — it doesn't affect `value` until a month is actually picked.
 

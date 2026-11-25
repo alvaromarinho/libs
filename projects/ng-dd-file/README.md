@@ -14,14 +14,15 @@ Drag and drop file upload component for Angular with multiple files support, fil
 - 📊 **Multiple files** - Support for single or multiple uploads
 - 🎨 **Customizable** - Custom labels and CSS classes
 - 🔍 **File type filter** - Accept specific file types
-- ⚡ **Standalone component support** (Angular 14+)
+- ⚡ **Signals and zoneless** - Signal inputs, works with or without zone.js (Angular 18+)
 - 🔧 **NgModule compatible** (backward compatible)
 
 ## 🔧 Compatibility
 
 | ng-dd-file | Angular       | Standalone |
 |------------|---------------|------------|
-| 1.0.x      | 14.x - 22.x   | ✅ Yes     |
+| 2.x        | 18.x - 22.x   | ✅ Yes     |
+| 1.x        | 14.x - 22.x   | ✅ Yes     |
 | 0.1.x      | 15.x          | ❌ No      |
 
 ## 📦 Installation
@@ -38,7 +39,7 @@ yarn add ng-dd-file
 
 ## 🚀 Usage
 
-### Method 1: Standalone Component (Angular 14+) ⚡ Recommended
+### Method 1: Standalone Component (Angular 18+) ⚡ Recommended
 
 **app.component.ts:**
 ```typescript
@@ -71,12 +72,12 @@ export class AppComponent {
   filesList: File[] = [];
 
   onFilesAdd(files: File[]) {
-    this.filesList.push(...files);
+    this.filesList = [...this.filesList, ...files];
     console.log('Files added:', files);
   }
 
   onFileRemove(event: { file: File, index: number }) {
-    this.filesList.splice(event.index, 1);
+    this.filesList = this.filesList.filter((_, i) => i !== event.index);
     console.log('File removed:', event);
   }
 
@@ -149,11 +150,11 @@ export class AppComponent {
   filesList: any[] = [];
 
   filesAdd(files: any[]) {
-    this.filesList.push(...files);
+    this.filesList = [...this.filesList, ...files];
   }
 
   fileRemove(event: { file: any, index: number }) {
-    this.filesList.splice(event.index, 1);
+    this.filesList = this.filesList.filter((_, i) => i !== event.index);
   }
 
   fileError(error: FileError) {
@@ -183,9 +184,9 @@ export class AppComponent {
 | Input            | Type                              | Default | Description |
 |------------------|-----------------------------------|---------|-------------|
 | `btnClass`       | `{ file?: string, remove?: string }` | -    | Custom CSS classes for file input and remove button |
-| `filesList`      | `any[]`                           | -       | Array of files to display |
+| `filesList`      | `FileWithBase64[]`                | -       | Array of files to display (owned by the parent) |
 | `labels`         | `{ text: string, btn: string }`   | `{ text: 'Arraste e solte os arquivos', btn: 'SELECIONE O ARQUIVO' }` | Drag area text and button label |
-| `maxFiles`       | `number`                          | -       | Maximum number of files allowed |
+| `maxFiles`       | `number`                          | -       | Maximum number of files allowed, counting `filesList` |
 | `maxFileSize`    | `number` (KB)                     | -       | Maximum size per file in kilobytes |
 | `maxTotalSize`   | `number` (KB)                     | -       | Maximum total size of all files in kilobytes |
 | `multiple`       | `boolean`                         | `false` | Allow multiple file selection |
@@ -195,9 +196,9 @@ export class AppComponent {
 
 | Output       | Type                                                    | Description                    |
 |--------------|---------------------------------------------------------|--------------------------------|
-| `filesAdd`   | `EventEmitter<FileWithBase64[]>`                        | Emitted when files are added   |
-| `fileRemove` | `EventEmitter<{ file: FileWithBase64, index: number }>` | Emitted when a file is removed |
-| `fileError`  | `EventEmitter<FileError>`                               | Emitted when validation fails  |
+| `filesAdd`   | `OutputEmitterRef<FileWithBase64[]>`                    | Emitted when files are added   |
+| `fileRemove` | `OutputEmitterRef<{ file: FileWithBase64, index: number }>` | Emitted when a file is removed |
+| `fileError`  | `OutputEmitterRef<FileError>`                           | Emitted when validation fails  |
 
 ### Interfaces
 
@@ -212,6 +213,25 @@ interface FileError {
   message: string;                   // Error description
   file?: File;                       // The file that caused the error (when applicable)
 }
+```
+
+Both interfaces are exported from `ng-dd-file`.
+
+### Directive
+
+`[ddFile]` (`NgDdFileDirective`) can be used alone: it adds the `fileover` class while dragging over and emits `droppedFile: FileList` on drop.
+
+### Upgrading from 1.x
+
+2.0 uses signal inputs, so it runs in zoneless apps (Angular 22 default) and still works with zone.js.
+
+- Template bindings and outputs don't change.
+- Setting an input from code (`ref.instance.filesList = [...]`) no longer works: use `ref.setInput('filesList', [...])`.
+- Update `filesList` with a new array (`[...list, ...files]`, `filter`), not `push`/`splice`: the component is `OnPush`, so a list mutated in place doesn't re-render it (1.x used default change detection).
+- `maxFiles` now counts the files already in `filesList` (1.x only counted the new batch, so a list could pass the limit).
+- `fileBrowseHandler()`, `triggerIputFile()` and the directive's `onDragOver()`/`onDragLeave()`/`ondrop()` and `fileOver` are no longer public. `droppedFile` is typed `FileList` (was `any`).
+- The `id="fileDropRef"` on the hidden input was removed (it repeated when the component was used twice).
+- Angular 14 to 17 stay on 1.x.
 
 ---
 
@@ -250,11 +270,11 @@ export class ImageUploadComponent {
   images: any[] = [];
 
   onImagesAdd(files: any[]) {
-    this.images.push(...files);
+    this.images = [...this.images, ...files];
   }
 
   onImageRemove(event: { file: any, index: number }) {
-    this.images.splice(event.index, 1);
+    this.images = this.images.filter((_, i) => i !== event.index);
   }
 }
 ```
@@ -285,7 +305,7 @@ export class PdfUploadComponent {
   documents: File[] = [];
 
   onPdfAdd(files: File[]) {
-    this.documents.push(...files);
+    this.documents = [...this.documents, ...files];
   }
 
   onError(error: FileError) {
@@ -368,12 +388,12 @@ export class FormUploadComponent {
   constructor(private http: HttpClient) {}
 
   onFilesAdd(files: File[]) {
-    this.files.push(...files);
+    this.files = [...this.files, ...files];
     this.error = '';
   }
 
   onFileRemove(event: { file: File, index: number }) {
-    this.files.splice(event.index, 1);
+    this.files = this.files.filter((_, i) => i !== event.index);
   }
 
   onFileError(error: FileError) {
@@ -439,7 +459,7 @@ export class ValidatedUploadComponent {
   errorMessage = '';
 
   onFilesAdd(files: File[]) {
-    this.files.push(...files);
+    this.files = [...this.files, ...files];
     this.errorMessage = '';
   }
 
@@ -555,12 +575,12 @@ export class AppComponent {
   error = '';
 
   onFilesAdd(files: any[]) {
-    this.files.push(...files);
+    this.files = [...this.files, ...files];
     this.error = '';
   }
 
   onFileRemove(event: { file: any, index: number }) {
-    this.files.splice(event.index, 1);
+    this.files = this.files.filter((_, i) => i !== event.index);
   }
 
   onError(error: FileError) {

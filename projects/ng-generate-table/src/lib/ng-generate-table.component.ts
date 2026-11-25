@@ -1,5 +1,5 @@
-import { Component, ContentChild, EventEmitter, Input, Output, TemplateRef, ChangeDetectionStrategy, OnInit, Type, PipeTransform, ChangeDetectorRef } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit, PipeTransform, TemplateRef, Type, computed, contentChild, inject, input, output, signal } from '@angular/core';
+import { NgTemplateOutlet } from '@angular/common';
 import { DynamicPipe } from './dynamic.pipe';
 import { SafeHtmlPipe } from './safeHtml.pipe';
 
@@ -31,149 +31,121 @@ export interface NgGenerateTextConfig {
 
 @Component({
     selector: 'ng-generate-table',
-    imports: [CommonModule, DynamicPipe, SafeHtmlPipe],
+    standalone: true,
+    imports: [NgTemplateOutlet, DynamicPipe, SafeHtmlPipe],
     templateUrl: './ng-generate-table.component.html',
     styleUrls: ['./ng-generate-table.component.css'],
     changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class NgGenerateTableComponent<T = any> implements OnInit {
 
-    @Input() data: T[] = [];
-    @Input() columns: NgGenerateTableColumns<T>[] = [];
-    @Input() tableClass?: string;
-    @Input() loading = false;
-    @Input() mobileView = false;
-    @Input() rowClickable = false;
+    readonly data = input<T[]>([]);
+    readonly columns = input<NgGenerateTableColumns<T>[]>([]);
+    readonly tableClass = input<string>();
+    readonly loading = input(false);
+    readonly mobileView = input(false);
+    readonly rowClickable = input(false);
 
     /** Keys (row.id ?? index) of rows currently expanded. Controlled by the consumer. */
-    @Input() expandedRows = new Set<any>();
+    readonly expandedRows = input(new Set<any>());
 
     /** Optional: decides whether a given row can be expanded. If omitted, all rows are expandable. */
-    @Input() expandableRow?: (row: T, index: number) => boolean;
+    readonly expandableRow = input<(row: T, index: number) => boolean>();
 
-    @Input() config: NgGenerateTextConfig = {
-        emptyMessage: 'Nenhum dado encontrado',
-        loadingMessage: 'Carregando...'
-    };
+    readonly config = input<NgGenerateTextConfig>({});
+    /** Shortcut for `config.emptyMessage`; wins over it when both are set. */
+    readonly emptyMessage = input<string>();
+    /** Shortcut for `config.loadingMessage`; wins over it when both are set. */
+    readonly loadingMessage = input<string>();
 
-    @Input() set emptyMessage(value: string) {
-        this.config.emptyMessage = value;
+    readonly rowClick = output<{ row: T, event: Event }>();
+    readonly cellClick = output<{ row: T, column: NgGenerateTableColumns<T>, event: Event }>();
+    readonly sortChange = output<{ field: string, direction: SortDirection }>();
+    readonly expandedRowsChange = output<Set<any>>();
+
+    protected readonly cardMobile = contentChild<TemplateRef<unknown>>('cardMobile');
+    protected readonly rowDetail = contentChild<TemplateRef<unknown>>('rowDetail');
+
+    // Not a computed: refresh() after an in-place mutation must see the new length.
+    protected hasData(): boolean {
+        return this.data()?.length > 0;
     }
 
-    @Input() set loadingMessage(value: string) {
-        this.config.loadingMessage = value;
-    }
+    protected readonly emptyStateMessage = computed(() => this.loading()
+        ? (this.loadingMessage() || this.config().loadingMessage || 'Carregando...')
+        : (this.emptyMessage() || this.config().emptyMessage || 'Nenhum dado encontrado'));
 
-    @Output() rowClick = new EventEmitter<{ row: T; event: Event }>();
-    @Output() cellClick = new EventEmitter<{ row: T; column: NgGenerateTableColumns<T>; event: Event }>();
-    @Output() sortChange = new EventEmitter<{ field: string; direction: SortDirection }>();
-    @Output() expandedRowsChange = new EventEmitter<Set<any>>();
+    private readonly currentSort = signal<{ field: string, direction: SortDirection } | null>(null);
+    private readonly cdr = inject(ChangeDetectorRef);
 
-    @ContentChild('cardMobile', { static: false }) cardMobile?: TemplateRef<any>;
-    @ContentChild('rowDetail', { static: false }) rowDetail?: TemplateRef<any>;
-
-    private currentSort: { field: string; direction: SortDirection } | null = null;
-
-    constructor(private cdr: ChangeDetectorRef) { }
-
-    ngOnInit() {
+    ngOnInit(): void {
         this.validateInputs();
     }
 
-    private validateInputs() {
-        if (!this.columns || this.columns.length === 0) {
-            console.warn('[ng-generate-table] Nenhuma coluna foi fornecida. O componente não será renderizado corretamente.');
-        }
-        this.columns.forEach((col, index) => {
-            if (!col.field && !col.template && !col.isAction) {
-                console.warn(`[ng-generate-table] Coluna ${index} não possui 'field' nem 'template'.`);
-            }
-            if (col.sortable && !col.field) {
-                console.warn(`[ng-generate-table] Coluna ${index} é sortable mas não possui 'field'.`);
-            }
-        });
+    /** Re-renders after the consumer mutated `data` in place (prefer passing a new array). */
+    refresh(): void {
+        this.cdr.markForCheck();
     }
 
-    trackByData(index: number, item: T): any {
-        return (item as any)['id'] ?? index;
+    protected trackByData(index: number, item: T): unknown {
+        return (item as { id?: unknown })['id'] ?? index;
     }
 
-    isRowExpanded(row: T, index: number): boolean {
-        return this.expandedRows.has(this.trackByData(index, row));
+    protected isRowExpanded(row: T, index: number): boolean {
+        return this.expandedRows().has(this.trackByData(index, row));
     }
 
-    hasExpandToggle(): boolean {
-        return !!this.rowDetail;
+    protected canExpandRow(row: T, index: number): boolean {
+        const expandableRow = this.expandableRow();
+        return !!this.rowDetail() && (!expandableRow || expandableRow(row, index));
     }
 
-    canExpandRow(row: T, index: number): boolean {
-        return this.hasExpandToggle() && (!this.expandableRow || this.expandableRow(row, index));
-    }
-
-    toggleRowExpand(row: T, index: number, event: Event) {
+    protected toggleRowExpand(row: T, index: number, event: Event): void {
         event.stopPropagation();
 
         const key = this.trackByData(index, row);
-        const expandedRows = new Set(this.expandedRows);
-
-        expandedRows.has(key) ? expandedRows.delete(key) : expandedRows.add(key);
+        const expandedRows = new Set(this.expandedRows());
+        if (expandedRows.has(key)) {
+            expandedRows.delete(key);
+        } else {
+            expandedRows.add(key);
+        }
 
         this.expandedRowsChange.emit(expandedRows);
     }
 
-    onRowClick(row: T, event: Event) {
-        if (this.rowClickable) {
+    protected onRowClick(row: T, event: Event): void {
+        if (this.rowClickable()) {
             this.rowClick.emit({ row, event });
         }
     }
 
-    onCellClick(row: T, column: NgGenerateTableColumns<T>, event: Event) {
-        event.stopPropagation(); // Evita conflito com rowClick
+    protected onCellClick(row: T, column: NgGenerateTableColumns<T>, event: Event): void {
+        event.stopPropagation(); // Avoids also firing rowClick.
         this.cellClick.emit({ row, column, event });
     }
 
-    onColumnClick(row: T, column: NgGenerateTableColumns<T>, event: Event) {
+    protected onColumnClick(row: T, column: NgGenerateTableColumns<T>, event: Event): void {
         if (column.click) {
-            event.stopPropagation(); // Evita conflito com rowClick
+            event.stopPropagation(); // Avoids also firing rowClick.
             column.click(row, event);
         }
     }
 
-    getCellValue(row: T, column: NgGenerateTableColumns<T>): any {
+    protected getCellValue(row: T, column: NgGenerateTableColumns<T>): unknown {
         if (!column.field) return null;
-        return (row as any)[column.field] ?? null;
+        return row[column.field] ?? null;
     }
 
-    get hasData(): boolean {
-        return this.data && this.data.length > 0;
-    }
-
-    get emptyStateMessage(): string {
-        return this.loading
-            ? (this.config.loadingMessage || 'Carregando...')
-            : (this.config.emptyMessage || 'Nenhum dado encontrado');
-    }
-
-    refresh() {
-        this.cdr.markForCheck();
-    }
-
-    getColumnStyles(column: NgGenerateTableColumns<T>): Record<string, any> {
-        const styles: Record<string, any> = {};
-
-        if (column.width) {
-            styles['width'] = column.width;
-        }
-
-        if (column.align) {
-            styles['text-align'] = column.align;
-        }
-
+    protected getColumnStyles(column: NgGenerateTableColumns<T>): Record<string, string> {
+        const styles: Record<string, string> = {};
+        if (column.width) styles['width'] = column.width;
+        if (column.align) styles['text-align'] = column.align;
         return styles;
     }
 
-    // Ciclo: ASC -> DESC -> null
-    onSortClick(column: NgGenerateTableColumns<T>, event: Event): void {
+    // Cycle: ASC -> DESC -> null
+    protected onSortClick(column: NgGenerateTableColumns<T>, event: Event): void {
         event.preventDefault();
         event.stopPropagation();
 
@@ -184,37 +156,35 @@ export class NgGenerateTableComponent<T = any> implements OnInit {
             return;
         }
 
-        let newDirection: SortDirection = null;
+        const current = this.getSortDirection(column);
+        const direction: SortDirection = current === 'ASC' ? 'DESC' : current === 'DESC' ? null : 'ASC';
 
-        // Se já está ordenando por esta coluna
-        if (this.currentSort && this.currentSort.field === column.field) {
-            newDirection =
-                this.currentSort.direction === 'ASC' ? 'DESC' :
-                this.currentSort.direction === 'DESC' ? null :
-                'ASC';
-        } else {
-            newDirection = 'ASC';
-        }
-
-        if (newDirection === null) {
-            this.currentSort = null;
-        } else {
-            this.currentSort = {
-                field: column.field,
-                direction: newDirection
-            };
-        }
-
-        this.sortChange.emit({ field: column.field, direction: newDirection });
-        this.cdr.markForCheck();
+        this.currentSort.set(direction ? { field: column.field, direction } : null);
+        this.sortChange.emit({ field: column.field, direction });
     }
 
-    isSorted(column: NgGenerateTableColumns<T>): boolean {
+    protected isSorted(column: NgGenerateTableColumns<T>): boolean {
         return this.getSortDirection(column) !== null;
     }
 
-    getSortDirection(column: NgGenerateTableColumns<T>): SortDirection {
-        return !this.currentSort || this.currentSort.field !== column.field ? null : this.currentSort.direction;
+    protected getSortDirection(column: NgGenerateTableColumns<T>): SortDirection {
+        const sort = this.currentSort();
+        return !sort || sort.field !== column.field ? null : sort.direction;
+    }
+
+    private validateInputs(): void {
+        const columns = this.columns();
+        if (!columns || columns.length === 0) {
+            console.warn('[ng-generate-table] Nenhuma coluna foi fornecida. O componente não será renderizado corretamente.');
+        }
+        columns.forEach((col, index) => {
+            if (!col.field && !col.template && !col.isAction) {
+                console.warn(`[ng-generate-table] Coluna ${index} não possui 'field' nem 'template'.`);
+            }
+            if (col.sortable && !col.field) {
+                console.warn(`[ng-generate-table] Coluna ${index} é sortable mas não possui 'field'.`);
+            }
+        });
     }
 
 }

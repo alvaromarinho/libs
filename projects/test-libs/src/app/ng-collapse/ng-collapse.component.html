@@ -36,7 +36,7 @@
             mudar o valor e clicar no botão novamente.
         </p>
         <div class="d-flex flex-column flex-md-row align-items-md-center mb-3">
-            <button class="btn px-5" [ngClass]="toggle() ? 'btn-danger' : 'btn-primary'"
+            <button class="btn px-5" [class]="toggle() ? 'btn-danger' : 'btn-primary'"
                 (click)="toggle.set(!toggle())">
                 {{ toggle() ? 'Esconder' : 'Mostrar' }}
             </button>

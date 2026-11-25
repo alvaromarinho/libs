@@ -1,13 +1,12 @@
-import { CommonModule } from '@angular/common';
-import { Component, ElementRef, EventEmitter, Input, Output, ViewChild, ChangeDetectionStrategy } from '@angular/core';
+import { ChangeDetectionStrategy, Component, ElementRef, input, output, viewChild } from '@angular/core';
 import { NgDdFileDirective } from './ng-dd-file.directive';
 
-interface FileWithBase64 extends File {
+export interface FileWithBase64 extends File {
     base64?: string;
     url?: string;
 }
 
-interface FileError {
+export interface FileError {
     type: 'size' | 'total' | 'type';
     message: string;
     file?: File;
@@ -15,132 +14,118 @@ interface FileError {
 
 @Component({
     selector: 'ng-dd-file',
-    imports: [CommonModule, NgDdFileDirective],
+    standalone: true,
+    imports: [NgDdFileDirective],
     templateUrl: './ng-dd-file.component.html',
-    changeDetection: ChangeDetectionStrategy.Eager,
+    changeDetection: ChangeDetectionStrategy.OnPush,
     styleUrls: ['./ng-dd-file.component.css']
 })
 export class NgDdFileComponent {
 
-    @ViewChild('fileDropRef', { static: false }) fileDropRef!: ElementRef<HTMLInputElement>;
+    readonly btnClass = input<{ file?: string, remove?: string }>();
+    readonly filesList = input<FileWithBase64[]>();
+    readonly labels = input({ text: 'Arraste e solte os arquivos', btn: 'SELECIONE O ARQUIVO' });
+    readonly maxFiles = input<number>();
+    /** Em KB. */
+    readonly maxFileSize = input<number>();
+    /** Em KB. */
+    readonly maxTotalSize = input<number>();
+    readonly multiple = input<boolean>();
+    readonly typeFileAccept = input('*');
 
-    @Input() btnClass?: { file?: string, remove?: string };
-    @Input() filesList?: FileWithBase64[];
-    @Input() labels = { text: 'Arraste e solte os arquivos', btn: 'SELECIONE O ARQUIVO' };
-    @Input() maxFiles?: number;
-    @Input() maxFileSize?: number; // em KB
-    @Input() maxTotalSize?: number; // em KB
-    @Input() multiple?: boolean;
-    @Input() typeFileAccept: string = '*';
+    readonly fileError = output<FileError>();
+    readonly fileRemove = output<{ file: FileWithBase64, index: number }>();
+    readonly filesAdd = output<FileWithBase64[]>();
 
-    @Output() fileError = new EventEmitter<FileError>();
-    @Output() fileRemove = new EventEmitter<{ file: FileWithBase64, index: number }>();
-    @Output() filesAdd = new EventEmitter<FileWithBase64[]>();
+    private readonly fileDropRef = viewChild<ElementRef<HTMLInputElement>>('fileDropRef');
 
-    triggerIputFile() {
-        this.fileDropRef.nativeElement.click();
+    protected limitReached(): boolean {
+        const maxFiles = this.maxFiles();
+        return !!maxFiles && (this.filesList()?.length ?? 0) >= maxFiles;
     }
 
-    async fileBrowseHandler($event: any) {
-        const filesArray: FileList = $event.target?.files || $event;
+    protected triggerInputFile(): void {
+        this.fileDropRef()?.nativeElement.click();
+    }
+
+    protected async onInputChange(event: Event): Promise<void> {
+        const input = event.target as HTMLInputElement;
+        const files = Array.from(input.files ?? []);
+        input.value = '';
+        await this.addFiles(files);
+    }
+
+    protected async onDrop(files: FileList): Promise<void> {
+        await this.addFiles(Array.from(files));
+    }
+
+    protected removeFile(file: FileWithBase64, index: number): void {
+        this.fileRemove.emit({ file, index });
+    }
+
+    private async addFiles(selected: File[]): Promise<void> {
+        const current = this.filesList() ?? [];
+        const maxTotalSize = this.maxTotalSize();
+        const maxFileSize = this.maxFileSize();
+        const maxFiles = this.maxFiles();
         const files: FileWithBase64[] = [];
-        
-        if (this.maxTotalSize) {
-            let total = 0;
-            const allFiles = [...(this.filesList || []), ...Array.from(filesArray)];
-            
-            for (const file of allFiles) {
-                total += file.size;
-            }
-            
-            if (total > (this.maxTotalSize * 1024)) {
-                this.fileError.emit({
-                    type: 'total',
-                    message: 'Capacidade máxima dos arquivos atingida!'
-                });
+
+        if (maxTotalSize) {
+            const total = [...current, ...selected].reduce((sum, file) => sum + file.size, 0);
+            if (total > maxTotalSize * 1024) {
+                this.fileError.emit({ type: 'total', message: 'Capacidade máxima dos arquivos atingida!' });
                 return;
             }
         }
-        
-        for (const file of Array.from(filesArray)) {
-            if (this.maxFileSize && file.size > (this.maxFileSize * 1024)) {
-                this.fileError.emit({
-                    type: 'size',
-                    message: 'Arquivo maior que o permitido!',
-                    file: file
-                });
+
+        // maxFiles conta os arquivos que já estão em filesList.
+        const available = maxFiles ? Math.max(0, maxFiles - current.length) : Infinity;
+
+        for (const file of selected) {
+            if (files.length >= available) break;
+
+            if (maxFileSize && file.size > maxFileSize * 1024) {
+                this.fileError.emit({ type: 'size', message: 'Arquivo maior que o permitido!', file });
                 continue;
             }
-            
+
             if (!this.isValidFileType(file)) {
-                this.fileError.emit({
-                    type: 'type',
-                    message: 'Tipo de arquivo não permitido!',
-                    file: file
-                });
+                this.fileError.emit({ type: 'type', message: 'Tipo de arquivo não permitido!', file });
                 continue;
             }
-            
+
             const fileWithBase64 = file as FileWithBase64;
-
             if (this.isImg(file)) {
-                fileWithBase64.base64 = await this.getBase64(file) as string;
+                fileWithBase64.base64 = await this.getBase64(file);
             }
-            
             files.push(fileWithBase64);
-            
-            if (this.maxFiles && files.length >= this.maxFiles) {
-                break;
-            }
         }
-        
-        if ($event.target) {
-            $event.target.value = '';
-        }
-        
-        this.filesAdd.emit(files);
-    }
 
-    removeFile(file: FileWithBase64, index: number) {
-        this.fileRemove.emit({ file, index });
+        this.filesAdd.emit(files);
     }
 
     private isImg(file: File): boolean {
         return file.type.startsWith('image/');
     }
-    
 
     private isValidFileType(file: File): boolean {
-        if (this.typeFileAccept === '*') {
-            return true;
-        }
-        
-        const acceptedTypes = this.typeFileAccept.split(',').map(type => type.trim());
-        
-        for (const acceptedType of acceptedTypes) {
-            if (acceptedType.startsWith('.')) {
-                if (file.name.toLowerCase().endsWith(acceptedType.toLowerCase())) {
-                    return true;
-                }
-            } else if (acceptedType.endsWith('/*')) {
-                const mimePrefix = acceptedType.slice(0, -2);
-                if (file.type.startsWith(mimePrefix)) {
-                    return true;
-                }
-            } else if (file.type === acceptedType) {
-                return true;
-            }
-        }
-        
-        return false;
-    }
+        const accept = this.typeFileAccept();
+        if (accept === '*') return true;
 
-    private async getBase64(file: File): Promise<string | ArrayBuffer | null> {
-        return new Promise((resolve, reject) => {
-            const reader = new FileReader();
-            reader.readAsDataURL(file);
-            reader.onload = () => resolve(reader.result);
-            reader.onerror = error => reject(error);
+        return accept.split(',').map(type => type.trim()).some(acceptedType => {
+            if (acceptedType.startsWith('.')) return file.name.toLowerCase().endsWith(acceptedType.toLowerCase());
+            if (acceptedType.endsWith('/*')) return file.type.startsWith(acceptedType.slice(0, -1));
+            return file.type === acceptedType;
         });
     }
+
+    private getBase64(file: File): Promise<string> {
+        return new Promise((resolve, reject) => {
+            const reader = new FileReader();
+            reader.onload = () => resolve(reader.result as string);
+            reader.onerror = () => reject(reader.error);
+            reader.readAsDataURL(file);
+        });
+    }
+
 }

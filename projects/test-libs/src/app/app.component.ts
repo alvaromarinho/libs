@@ -1,5 +1,4 @@
-import { Component, signal, ChangeDetectionStrategy } from '@angular/core';
-import { NgClass } from '@angular/common';
+import { Component, signal } from '@angular/core';
 import { RouterOutlet, RouterLink, RouterLinkActive } from '@angular/router';
 import { NgCollapseComponent } from 'ng-collapse';
 import { NgBsModalServiceComponent } from 'ng-bs-modal-service';
@@ -9,9 +8,7 @@ import { NgBsToastServiceComponent } from 'ng-bs-toast-service';
     selector: 'app-root',
     templateUrl: './app.component.html',
     standalone: true,
-    changeDetection: ChangeDetectionStrategy.Eager,
     imports: [
-        NgClass,
         RouterOutlet,
         RouterLink,
         RouterLinkActive,

@@ -13,14 +13,15 @@ Configurable pagination component for Angular and Bootstrap 5.
 - ⏮️ **First/Last navigation** - Optional, with icon or text labels
 - 📝 **Custom info text** - Override "Mostrando X–Y de Z" via content projection
 - 📏 **Sizes** - `sm`, `md`, `lg` (Bootstrap pagination sizes)
-- ⚡ **Standalone component support** (Angular 14+)
+- ⚡ **Signals and zoneless** - Signal inputs, works with or without zone.js (Angular 18+)
 - 🔧 **NgModule compatible** (backward compatible)
 
 ## 🔧 Compatibility
 
 | ng-bs-pagination | Angular       | Bootstrap | Standalone |
 |-------------------|---------------|-----------|------------|
-| 1.0.x             | 14.x - 22.x   | 5.x       | ✅ Yes     |
+| 2.x               | 18.x - 22.x   | 5.x       | ✅ Yes     |
+| 1.x               | 14.x - 22.x   | 5.x       | ✅ Yes     |
 
 ## 📦 Installation
 
@@ -53,7 +54,7 @@ Make sure Bootstrap CSS is included in your `angular.json`:
 
 ## 🚀 Usage
 
-### Method 1: Standalone Component (Angular 14+) ⚡ Recommended
+### Method 1: Standalone Component (Angular 18+) ⚡ Recommended
 
 **app.component.ts:**
 ```typescript
@@ -148,9 +149,18 @@ export class AppComponent {
 
 | Output   | Type                 | Description                                  |
 |----------|----------------------|-----------------------------------------------|
-| `change` | `EventEmitter<number>` | Emitted when a page number / prev / next is clicked |
-| `first`  | `EventEmitter<number>` | Emitted when the "first page" button is clicked     |
-| `last`   | `EventEmitter<number>` | Emitted when the "last page" button is clicked      |
+| `change` | `OutputEmitterRef<number>` | Emitted when a page number / prev / next is clicked |
+| `first`  | `OutputEmitterRef<number>` | Emitted when the "first page" button is clicked     |
+| `last`   | `OutputEmitterRef<number>` | Emitted when the "last page" button is clicked      |
+
+### Upgrading from 1.x
+
+2.0 uses signal inputs and `contentChild`, so it runs in zoneless apps (Angular 22 default) and still works with zone.js.
+
+- Template bindings and outputs don't change. Partial `layout`/`prevNext`/`firstLast` objects still merge with the defaults (now via input `transform`).
+- Setting an input from code (`ref.instance.current = 2`) no longer works: use `ref.setInput('current', 2)`.
+- Internal members (`totalPages`, `pages`, `infoContext`, `sizeClass`, `wrapperClasses`, `infoTemplate`, `goTo()`, `goFirst()`, `goLast()`) are no longer public.
+- Angular 14 to 17 stay on 1.x.
 
 ### Interfaces
 
@@ -182,7 +192,7 @@ interface PaginationFirstLast {
 Defaults:
 
 ```typescript
-const DEFAULT_LAYOUT = { type: 'split', infoPosition: 'start', showInfo: true };
+const DEFAULT_LAYOUT = { type: 'stacked', infoPosition: 'start', showInfo: true };
 const DEFAULT_PREV_NEXT = { mode: 'icon', labels: { prev: '‹', next: '›' } };
 const DEFAULT_FIRST_LAST = { show: true, mode: 'icon', labels: { first: '«', last: '»' } };
 ```
@@ -193,11 +203,21 @@ const DEFAULT_FIRST_LAST = { show: true, mode: 'icon', labels: { first: '«', la
 
 ## 💡 Examples
 
-### Default (split layout, info on the left)
+### Default (stacked: info above, buttons below)
 
 ```html
 <ng-bs-pagination
   [total]="124" [current]="current()" [itemPerPage]="10"
+  (change)="current.set($event)" (first)="current.set($event)" (last)="current.set($event)">
+</ng-bs-pagination>
+```
+
+### Split, info on the left
+
+```html
+<ng-bs-pagination
+  [total]="124" [current]="current()" [itemPerPage]="10"
+  [layout]="{ type: 'split' }"
   (change)="current.set($event)" (first)="current.set($event)" (last)="current.set($event)">
 </ng-bs-pagination>
 ```
@@ -222,12 +242,12 @@ const DEFAULT_FIRST_LAST = { show: true, mode: 'icon', labels: { first: '«', la
 </ng-bs-pagination>
 ```
 
-### Stacked (info above, buttons below)
+### Stacked, info below the buttons
 
 ```html
 <ng-bs-pagination
   [total]="124" [current]="current()" [itemPerPage]="10"
-  [layout]="{ type: 'stacked' }"
+  [layout]="{ type: 'stacked', infoPosition: 'end' }"
   (change)="current.set($event)" (first)="current.set($event)" (last)="current.set($event)">
 </ng-bs-pagination>
 ```

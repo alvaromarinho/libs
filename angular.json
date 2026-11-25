@@ -71,9 +71,6 @@
               "base": "dist/test-libs"
             },
             "index": "projects/test-libs/src/index.html",
-            "polyfills": [
-              "zone.js"
-            ],
             "tsConfig": "projects/test-libs/tsconfig.app.json",
             "assets": [
               "projects/test-libs/src/favicon.ico",

@@ -1,5 +1,4 @@
-import { AfterViewInit, Component, inject, signal, TemplateRef, ChangeDetectionStrategy } from '@angular/core';
-import { NgClass } from '@angular/common';
+import { AfterViewInit, Component, inject, signal, TemplateRef } from '@angular/core';
 import { NgBsModalService } from 'ng-bs-modal-service';
 import { NgCollapseComponent } from 'ng-collapse';
 import { PageHeaderComponent } from '../shared/page-header/page-header.component';
@@ -9,9 +8,8 @@ declare const Prism: any;
 @Component({
     selector: 'bs-modal-example',
     standalone: true,
-    imports: [NgClass, NgCollapseComponent, PageHeaderComponent],
+    imports: [NgCollapseComponent, PageHeaderComponent],
     styles: [`:host { --modal-image-height: 50vh; }`],
-    changeDetection: ChangeDetectionStrategy.Eager,
     templateUrl: './ng-bs-modal-service.component.html'
 })
 export class BsModalExampleComponent implements AfterViewInit {

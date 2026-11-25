@@ -1,4 +1,4 @@
-import { AfterViewInit, Component, ViewChild, signal, ChangeDetectionStrategy } from '@angular/core';
+import { AfterViewInit, Component, signal, viewChild } from '@angular/core';
 import { JsonPipe } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import dayjs from 'dayjs';
@@ -12,12 +12,11 @@ declare const Prism: any;
     selector: 'bs-calendar-example',
     standalone: true,
     imports: [NgBsCalendarComponent, NgCollapseComponent, PageHeaderComponent, JsonPipe, FormsModule],
-    changeDetection: ChangeDetectionStrategy.Eager,
     templateUrl: './ng-bs-calendar.component.html'
 })
 export class BsCalendarExampleComponent implements AfterViewInit {
 
-    @ViewChild(NgBsCalendarComponent) calendarComp!: NgBsCalendarComponent;
+    readonly calendarComp = viewChild.required(NgBsCalendarComponent);
 
     toggleCode = signal(false);
     lastEvent = signal<any>(null);
@@ -58,7 +57,7 @@ export class BsCalendarExampleComponent implements AfterViewInit {
         Prism.highlightAll();
     }
 
-    prev()  { this.calendarComp.prevWeek(); }
-    today() { this.calendarComp.todayWeek(); }
-    next()  { this.calendarComp.nextWeek(); }
+    prev()  { this.calendarComp().prevWeek(); }
+    today() { this.calendarComp().todayWeek(); }
+    next()  { this.calendarComp().nextWeek(); }
 }

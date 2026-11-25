@@ -1,9 +1,8 @@
-import { Component, model, ChangeDetectionStrategy } from '@angular/core';
+import { Component, model } from '@angular/core';
 
 @Component({
     selector: 'page-header',
     standalone: true,
-    changeDetection: ChangeDetectionStrategy.Eager,
     templateUrl: './page-header.component.html'
 })
 export class PageHeaderComponent {

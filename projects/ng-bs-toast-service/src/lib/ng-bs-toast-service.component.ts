@@ -1,20 +1,24 @@
-import { OnInit, OnDestroy, Component, Input, ViewChildren, QueryList, ElementRef, ChangeDetectorRef, ChangeDetectionStrategy } from '@angular/core';
-import { NgBsToastService, ToastMessage, ToastPosition, ToastStyle, ToastTheme, resolveToastDuration } from './ng-bs-toast-service.service';
+import { ChangeDetectionStrategy, Component, DestroyRef, Injector, OnInit, WritableSignal, afterNextRender, computed, inject, input, signal } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { Toast } from 'bootstrap';
-import { CommonModule } from '@angular/common';
-import { Subject, takeUntil } from 'rxjs';
+import { InternalToastMessage, NgBsToastService, ToastPosition, ToastStyle, ToastTheme, resolveToastDuration } from './ng-bs-toast-service.service';
 
-interface ToastData extends ToastMessage {
-    id: number;
+interface ToastData extends InternalToastMessage {
     resolvedStyle: ToastStyle;
     resolvedTheme: ToastTheme;
     resolvedPosition: ToastPosition;
     resolvedDuration: number;
+    classes: Record<string, boolean>;
+    iconClass: string;
+    progressStyle: string;
+    closeClass: string;
+    urgent: boolean;
+    dark: boolean;
+    paused: WritableSignal<boolean>;
     instance?: Toast;
     remainingMs: number;
     startedAt?: number;
     timerHandle?: ReturnType<typeof setTimeout>;
-    paused: boolean;
 }
 
 const ALL_POSITIONS: ToastPosition[] = [
@@ -47,249 +51,199 @@ const STYLE_ICONS: Record<ToastStyle, string> = {
 // Styles whose `text-bg-*` background is dark enough to need the white btn-close filter.
 const DARK_BG_STYLES = new Set<ToastStyle>(['primary', 'secondary', 'success', 'danger', 'dark']);
 
+/**
+ * 'bootstrap-dark' uses bootstrap's own `[data-bs-theme=dark]` pairing (the one `.alert-{style}` uses:
+ * *-bg-subtle / *-text-emphasis / *-border-subtle), so it follows dark mode instead of a hand-picked color.
+ */
+function toastClasses(style: ToastStyle, theme: ToastTheme): Record<string, boolean> {
+    if (theme === 'bootstrap-dark') {
+        return { [`bg-${style}-subtle`]: true, [`text-${style}-emphasis`]: true, border: true, [`border-${style}-subtle`]: true };
+    }
+    return { [`text-bg-${style}`]: true };
+}
+
+/**
+ * Both themes sit on a background already tinted with the accent color, so a `bg-{style}` bar would blend in
+ * (worst case: style 'dark'). 'bootstrap' gets a translucent white/black overlay (same side as the close button);
+ * 'bootstrap-dark' gets the style's `*-text-emphasis`, which bootstrap tunes to stay legible on `*-bg-subtle`.
+ */
+function progressStyle(style: ToastStyle, theme: ToastTheme): string {
+    if (theme === 'bootstrap-dark') {
+        return `background-color: var(--bs-${style}-text-emphasis);`;
+    }
+    return DARK_BG_STYLES.has(style) ? 'background-color: rgba(255, 255, 255, .75);' : 'background-color: rgba(0, 0, 0, .5);';
+}
+
 @Component({
     selector: 'ng-bs-toast-service',
-    imports: [CommonModule],
+    standalone: true,
     templateUrl: './ng-bs-toast-service.component.html',
-    changeDetection: ChangeDetectionStrategy.Eager,
+    changeDetection: ChangeDetectionStrategy.OnPush,
     styleUrls: ['./ng-bs-toast-service.component.css']
 })
-export class NgBsToastServiceComponent implements OnInit, OnDestroy {
-
-    @ViewChildren('toastElement') toastElements!: QueryList<ElementRef>;
+export class NgBsToastServiceComponent implements OnInit {
 
     /** Max toasts shown at once per position; the rest wait in a queue. */
-    @Input() maxToastsPerPosition = 5;
+    readonly maxToastsPerPosition = input(5);
 
     /** Default theme applied when a `send()` call doesn't pass its own `options.theme`. */
-    @Input() theme: ToastTheme = 'bootstrap';
+    readonly theme = input<ToastTheme>('bootstrap');
 
-    readonly positions = ALL_POSITIONS;
-    readonly positionClasses = POSITION_CLASSES;
+    protected readonly positionClasses = POSITION_CLASSES;
+    protected readonly toasts = signal<ToastData[]>([]);
+    protected readonly positions = computed(() => ALL_POSITIONS.filter(p => this.toasts().some(t => t.resolvedPosition === p)));
 
-    toastData: ToastData[] = [];
-    private pendingQueue = new Map<ToastPosition, ToastData[]>(ALL_POSITIONS.map(p => [p, []]));
-    private destroy$ = new Subject<void>();
-    private toastCounter = 0;
+    private readonly toastService = inject(NgBsToastService);
+    private readonly injector = inject(Injector);
+    private readonly destroyRef = inject(DestroyRef);
+    private readonly pendingQueue = new Map<ToastPosition, ToastData[]>(ALL_POSITIONS.map(p => [p, []]));
 
-    constructor(
-        private toastService: NgBsToastService,
-        private cdr: ChangeDetectorRef
-    ) { }
-
-    ngOnInit() {
-        this.toastService.listen().pipe(takeUntil(this.destroy$)).subscribe((data) => this.addToast(data));
-        this.toastService.listenDismiss().pipe(takeUntil(this.destroy$)).subscribe((id) => this.dismissToast(id));
-        this.toastService.listenDismissAll().pipe(takeUntil(this.destroy$)).subscribe(() => this.dismissAllToasts());
+    constructor() {
+        this.destroyRef.onDestroy(() => this.closeEverything());
     }
 
-    ngOnDestroy() {
-        this.destroy$.next();
-        this.destroy$.complete();
-
-        this.toastData.forEach(toast => {
-            if (toast.timerHandle) clearTimeout(toast.timerHandle);
-            if (toast.instance) {
-                try {
-                    toast.instance.dispose();
-                } catch (e) {
-                    // Ignore disposal errors if element is already removed
-                }
-            }
-            this.toastService.notifyClosed(toast.id);
-        });
-
-        this.pendingQueue.forEach(queue => {
-            queue.forEach(t => this.toastService.notifyClosed(t.id));
-            queue.length = 0;
-        });
+    ngOnInit(): void {
+        this.toastService.listen().pipe(takeUntilDestroyed(this.destroyRef)).subscribe(data => this.addToast(data));
+        this.toastService.listenDismiss().pipe(takeUntilDestroyed(this.destroyRef)).subscribe(id => this.dismissToast(id));
+        this.toastService.listenDismissAll().pipe(takeUntilDestroyed(this.destroyRef)).subscribe(() => this.dismissAllToasts());
     }
 
-    toastsForPosition(position: ToastPosition): ToastData[] {
-        return this.toastData.filter(t => t.resolvedPosition === position);
+    protected toastsFor(position: ToastPosition): ToastData[] {
+        return this.toasts().filter(t => t.resolvedPosition === position);
     }
 
-    iconFor(style: ToastStyle): string {
-        return STYLE_ICONS[style];
-    }
-
-    isUrgent(toast: ToastData): boolean {
-        return toast.resolvedStyle === 'danger' || toast.resolvedStyle === 'warning';
-    }
-
-    /** Relies on bootstrap's own `[data-bs-theme=dark]` CSS vars (bg-subtle/text-emphasis/border-subtle, btn-close filter). */
-    isDarkTheme(toast: ToastData): boolean {
-        return toast.resolvedTheme === 'bootstrap-dark';
-    }
-
-    toastClasses(toast: ToastData): Record<string, boolean> {
-        if (toast.resolvedTheme === 'bootstrap-dark') {
-            // Same color pairing bootstrap's own `.alert-{style}` uses: *-bg-subtle / *-text-emphasis / *-border-subtle —
-            // all dark-mode aware, so this genuinely follows data-bs-theme="dark" instead of a hand-picked color.
-            return {
-                [`bg-${toast.resolvedStyle}-subtle`]: true,
-                [`text-${toast.resolvedStyle}-emphasis`]: true,
-                'border': true,
-                [`border-${toast.resolvedStyle}-subtle`]: true,
-            };
-        }
-        return { [`text-bg-${toast.resolvedStyle}`]: true };
-    }
-
-    iconClasses(toast: ToastData): Record<string, boolean> {
-        return { [this.iconFor(toast.resolvedStyle)]: true };
-    }
-
-    /**
-     * Both themes sit on a background that's already tinted with the accent color (solid `text-bg-{style}`, or
-     * tinted `{style}-bg-subtle`) — a `bg-{style}` bar would blend in, worst case for style 'dark' (near-invisible
-     * dark-on-dark). Bind a color guaranteed to contrast against that specific background instead:
-     * - 'bootstrap': translucent white/black overlay, same readable-side pick as the close button.
-     * - 'bootstrap-dark': the style's own `*-text-emphasis` color — bootstrap already tunes that to stay legible
-     *   against `*-bg-subtle`, so it reads for every style, 'dark' included.
-     */
-    progressBarStyle(toast: ToastData): string {
-        if (toast.resolvedTheme === 'bootstrap-dark') {
-            return `background-color: var(--bs-${toast.resolvedStyle}-text-emphasis);`;
-        }
-        return DARK_BG_STYLES.has(toast.resolvedStyle)
-            ? 'background-color: rgba(255, 255, 255, .75);'
-            : 'background-color: rgba(0, 0, 0, .5);';
-    }
-
-    closeButtonClass(toast: ToastData): string {
-        return toast.resolvedTheme === 'bootstrap' && DARK_BG_STYLES.has(toast.resolvedStyle) ? 'btn-close-white' : '';
-    }
-
-    pauseToast(toast: ToastData) {
-        if (toast.paused || !toast.timerHandle) return;
+    protected pauseToast(toast: ToastData): void {
+        if (toast.paused() || !toast.timerHandle) return;
         clearTimeout(toast.timerHandle);
         toast.timerHandle = undefined;
         const elapsed = Date.now() - (toast.startedAt ?? Date.now());
         toast.remainingMs = Math.max(toast.remainingMs - elapsed, 0);
-        toast.paused = true;
+        toast.paused.set(true);
     }
 
-    resumeToast(toast: ToastData) {
-        if (!toast.paused || !toast.instance) return;
-        toast.paused = false;
-        toast.startedAt = Date.now();
-        toast.timerHandle = setTimeout(() => toast.instance?.hide(), toast.remainingMs);
+    protected resumeToast(toast: ToastData): void {
+        if (!toast.paused() || !toast.instance) return;
+        toast.paused.set(false);
+        this.startTimer(toast);
     }
 
-    private addToast(data: ToastMessage & { id?: number }) {
+    private addToast(data: InternalToastMessage): void {
         const style = data.style || 'primary';
-        const theme = data.theme || this.theme;
+        const theme = data.theme || this.theme();
         const position = data.position || 'top-end';
         const duration = data.duration ?? resolveToastDuration(style);
-        const id = data.id ?? this.toastCounter++;
 
-        const toastData: ToastData = {
+        const toast: ToastData = {
             ...data,
-            id,
             resolvedStyle: style,
             resolvedTheme: theme,
             resolvedPosition: position,
             resolvedDuration: duration,
+            classes: toastClasses(style, theme),
+            iconClass: STYLE_ICONS[style],
+            progressStyle: progressStyle(style, theme),
+            closeClass: theme === 'bootstrap' && DARK_BG_STYLES.has(style) ? 'btn-close-white' : '',
+            urgent: style === 'danger' || style === 'warning',
+            dark: theme === 'bootstrap-dark',
+            paused: signal(false),
             remainingMs: duration,
-            paused: false,
         };
 
-        const visibleCount = this.toastData.filter(t => t.resolvedPosition === position).length;
-        if (visibleCount >= this.maxToastsPerPosition) {
-            this.pendingQueue.get(position)!.push(toastData);
+        if (this.toastsFor(position).length >= this.maxToastsPerPosition()) {
+            this.pendingQueue.get(position)!.push(toast);
             return;
         }
-        this.showToast(toastData);
+        this.showToast(toast);
     }
 
-    private showToast(toastData: ToastData) {
-        this.toastData.push(toastData);
-        this.cdr.detectChanges();
-        this.initializeToast(toastData, 0);
+    private showToast(toast: ToastData): void {
+        this.toasts.update(list => [...list, toast]);
+        // The element only exists after the next render.
+        afterNextRender(() => this.initializeToast(toast), { injector: this.injector });
     }
 
-    private initializeToast(toastData: ToastData, attempt: number): void {
-        // Maximum 10 attempts (about 500ms total)
-        if (attempt >= 10) {
-            console.error(`Failed to initialize toast ${toastData.id} after ${attempt} attempts`);
+    private initializeToast(toast: ToastData): void {
+        if (!this.toasts().includes(toast)) return;
+        const element = document.getElementById(`toast_${toast.id}`);
+        if (!element) {
+            // Without the element the toast would hold a slot forever and closed$ would never fire.
+            console.error(`ng-bs-toast-service: element for toast ${toast.id} not found`);
+            this.removeToast(toast.id);
             return;
         }
 
-        // Exponential backoff: 0, 10, 20, 40, 80ms...
-        const delay = attempt === 0 ? 0 : Math.min(10 * Math.pow(2, attempt - 1), 100);
-
-        setTimeout(() => {
-            const element = document.getElementById(`toast_${toastData.id}`);
-
-            if (element) {
-                try {
-                    const toastInstance = new Toast(element, { autohide: false });
-
-                    toastData.instance = toastInstance;
-                    toastInstance.show();
-                    toastData.startedAt = Date.now();
-                    toastData.timerHandle = setTimeout(() => toastInstance.hide(), toastData.remainingMs);
-
-                    element.addEventListener('hidden.bs.toast', () => this.removeToast(toastData.id));
-                } catch (error) {
-                    console.error(`Error initializing toast ${toastData.id}:`, error);
-                }
-            } else {
-                this.initializeToast(toastData, attempt + 1);
-            }
-        }, delay);
+        toast.instance = new Toast(element, { autohide: false });
+        element.addEventListener('hidden.bs.toast', () => this.removeToast(toast.id));
+        toast.instance.show();
+        this.startTimer(toast);
     }
 
-    private removeToast(id: number) {
-        const index = this.toastData.findIndex(t => t.id === id);
-        if (index === -1) return;
+    private startTimer(toast: ToastData): void {
+        toast.startedAt = Date.now();
+        toast.timerHandle = setTimeout(() => toast.instance?.hide(), toast.remainingMs);
+    }
 
-        const toastData = this.toastData[index];
-        if (toastData.timerHandle) clearTimeout(toastData.timerHandle);
-        if (toastData.instance) {
-            try {
-                toastData.instance.dispose();
-            } catch (e) {
-                // Ignore disposal errors if element is already removed
-            }
-        }
-        this.toastData.splice(index, 1);
+    private removeToast(id: number): void {
+        const toast = this.toasts().find(t => t.id === id);
+        if (!toast) return;
+
+        this.disposeToast(toast);
+        this.toasts.update(list => list.filter(t => t !== toast));
         this.toastService.notifyClosed(id);
-        this.cdr.detectChanges();
-        this.dequeueNext(toastData.resolvedPosition);
+        this.dequeueNext(toast.resolvedPosition);
     }
 
-    private dequeueNext(position: ToastPosition) {
-        const queue = this.pendingQueue.get(position);
-        if (queue?.length) {
-            this.showToast(queue.shift()!);
+    private disposeToast(toast: ToastData): void {
+        if (toast.timerHandle) clearTimeout(toast.timerHandle);
+        try {
+            toast.instance?.dispose();
+        } catch {
+            // The element may already be gone from the DOM.
         }
     }
 
-    private dismissToast(id: number) {
-        const toast = this.toastData.find(t => t.id === id);
-        if (toast?.instance) {
-            toast.instance.hide(); // triggers 'hidden.bs.toast' -> removeToast()
+    private dequeueNext(position: ToastPosition): void {
+        const next = this.pendingQueue.get(position)!.shift();
+        if (next) this.showToast(next);
+    }
+
+    private dismissToast(id: number): void {
+        const toast = this.toasts().find(t => t.id === id);
+        if (toast) {
+            // No instance yet means it hasn't rendered: remove it directly.
+            if (toast.instance) toast.instance.hide();
+            else this.removeToast(id);
             return;
         }
         for (const queue of this.pendingQueue.values()) {
-            const idx = queue.findIndex(t => t.id === id);
-            if (idx !== -1) {
-                queue.splice(idx, 1);
+            const index = queue.findIndex(t => t.id === id);
+            if (index !== -1) {
+                queue.splice(index, 1);
                 this.toastService.notifyClosed(id);
                 return;
             }
         }
     }
 
-    private dismissAllToasts() {
-        // Clear the queue first: closing a visible toast below would otherwise dequeue
-        // and immediately re-show the next queued one instead of actually closing everything.
+    private dismissAllToasts(): void {
+        // Clear the queues first: closing a visible toast would otherwise promote the next queued one.
+        this.clearQueues();
+        this.toasts().forEach(t => this.dismissToast(t.id));
+    }
+
+    private clearQueues(): void {
         this.pendingQueue.forEach(queue => {
             queue.forEach(t => this.toastService.notifyClosed(t.id));
             queue.length = 0;
         });
-        [...this.toastData].forEach(t => t.instance ? t.instance.hide() : this.removeToast(t.id));
     }
+
+    private closeEverything(): void {
+        this.clearQueues();
+        this.toasts().forEach(toast => {
+            this.disposeToast(toast);
+            this.toastService.notifyClosed(toast.id);
+        });
+    }
+
 }
